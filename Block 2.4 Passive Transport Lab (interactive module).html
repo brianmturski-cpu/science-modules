@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passive Transport Lab</title>
+<style>
+:root{
+  --bg:#f4f6f8;--panel:#ffffff;--ink:#1b1f24;--muted:#56606c;--line:#d3d9e0;--soft:#eef1f5;
+  --accent:#1d5fd1;--accent-ink:#ffffff;--o2:#0f8a5f;--glu:#c2410c;--sugar:#d97706;--water:#2f7bd8;
+  --mem:#7c5c3b;--ok:#067647;--bad:#b42318;--cell:#c8102e;--cellc:#f08a96;--fluid:#fbfcfe;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101317;--panel:#181d23;--ink:#e7ebf0;--muted:#a2acb8;--line:#2d3640;--soft:#202730;
+    --accent:#5a95ff;--accent-ink:#0b1220;--o2:#34d399;--glu:#fb923c;--sugar:#fbbf24;--water:#60a5fa;
+    --mem:#c9a27a;--ok:#4ade80;--bad:#f87171;--cell:#ef4444;--cellc:#fca5a5;--fluid:#151a20;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101317;--panel:#181d23;--ink:#e7ebf0;--muted:#a2acb8;--line:#2d3640;--soft:#202730;
+  --accent:#5a95ff;--accent-ink:#0b1220;--o2:#34d399;--glu:#fb923c;--sugar:#fbbf24;--water:#60a5fa;
+  --mem:#c9a27a;--ok:#4ade80;--bad:#f87171;--cell:#ef4444;--cellc:#fca5a5;--fluid:#151a20;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+header{background:var(--panel);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+header h1{font-size:20px;margin:0;font-weight:700}
+header .sub{color:var(--muted);font-size:14px}
+.station{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:15px}
+select,button,input{font:inherit}
+select,input[type=number]{padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}
+nav{display:flex;gap:6px;padding:10px 16px 0;flex-wrap:wrap}
+nav button{border:1px solid var(--line);border-bottom:none;background:var(--soft);color:var(--ink);padding:9px 14px;border-radius:8px 8px 0 0;cursor:pointer;font-weight:600}
+nav button[aria-selected=true]{background:var(--panel);color:var(--accent)}
+main{padding:0 16px 24px}
+section.tab{display:none;background:var(--panel);border:1px solid var(--line);border-radius:0 8px 8px 8px;padding:16px}
+section.tab.on{display:block}
+h2{font-size:19px;margin:0 0 6px}
+h3{font-size:16px;margin:14px 0 6px}
+p{margin:6px 0}
+.muted{color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+.ctrl{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:10px 0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:none;background:var(--panel);color:var(--ink);padding:7px 11px;cursor:pointer;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:none}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.lbl{font-weight:600;margin-right:4px}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+canvas{display:block;width:100%;height:auto;background:var(--fluid);border:1px solid var(--line);border-radius:8px}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.readout div{background:var(--soft);border-radius:8px;padding:8px 10px}
+.readout b{display:block;font-size:22px}
+.readout span{font-size:13px;color:var(--muted)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{border:1px solid var(--line);padding:5px 7px;text-align:center}
+th{background:var(--soft)}
+.note{background:var(--soft);border-left:4px solid var(--accent);padding:8px 12px;border-radius:4px;margin:10px 0}
+.case{background:var(--soft);border-radius:8px;padding:10px 14px;margin:8px 0}
+.ok{color:var(--ok);font-weight:700}.bad{color:var(--bad);font-weight:700}
+.wide{flex:1 1 560px;min-width:0}
+.side{flex:1 1 300px;min-width:0}
+.bags{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:8px 0}
+.bag{border:2px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--panel);cursor:pointer;text-align:left;color:var(--ink)}
+.bag.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.bag b{display:block}
+.small{font-size:13px}
+footer{color:var(--muted);font-size:13px;padding:0 16px 20px}
+@media (max-width:600px){header h1{font-size:18px}.station{margin-left:0}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Passive Transport Lab</h1><div class="sub">Block 2.4 · Diffusion, osmosis and tonicity</div></div>
+  <label class="station">Station
+    <select id="station"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select>
+  </label>
+</header>
+<nav role="tablist">
+  <button role="tab" aria-selected="true" data-tab="t1">1 · Diffusion chamber</button>
+  <button role="tab" aria-selected="false" data-tab="t2">2 · Osmosis</button>
+  <button role="tab" aria-selected="false" data-tab="t3">3 · Potato lab</button>
+  <button role="tab" aria-selected="false" data-tab="t4">4 · Lethal IV case</button>
+</nav>
+<main>
+
+<!-- ===== TAB 1: DIFFUSION ===== -->
+<section class="tab on" id="t1">
+  <h2>Diffusion chamber</h2>
+  <p>All the molecules start on the left. Each one moves randomly. Run the chamber and record how long it takes until <b>30%</b> of the molecules are on the right side.</p>
+  <div class="ctrl">
+    <div><span class="lbl">Molecule</span><span class="seg" id="dMol"><button data-v="o2" class="on">O₂ (small, nonpolar)</button><button data-v="glucose">Glucose (large, polar)</button></span></div>
+    <div><span class="lbl">Membrane</span><span class="seg" id="dMem"><button data-v="none" class="on">None</button><button data-v="bilayer">Lipid bilayer</button><button data-v="carriers">Bilayer + glucose carriers</button></span></div>
+    <div><span class="lbl">Temperature</span><span class="seg" id="dTemp"><button data-v="5">5 °C</button><button data-v="25" class="on">25 °C</button><button data-v="45">45 °C</button></span></div>
+  </div>
+  <div class="ctrl">
+    <button class="btn" id="dGo">Start</button>
+    <button class="btn ghost" id="dReset">Reset</button>
+    <span><span class="lbl">Speed</span><span class="seg" id="dSpeed"><button data-v="1" class="on">×1</button><button data-v="2">×2</button><button data-v="4">×4</button></span></span>
+  </div>
+  <div class="row">
+    <div class="wide"><canvas id="dcv" width="900" height="400" aria-label="Diffusion chamber"></canvas></div>
+    <div class="side">
+      <div class="readout">
+        <div><span>Model time</span><b id="dT">0.0 s</b></div>
+        <div><span>Molecules on the right</span><b id="dPct">0%</b></div>
+        <div><span>Time to reach 30% on the right</span><b id="d30">—</b></div>
+      </div>
+      <canvas id="dgr" width="420" height="200" aria-label="Percent on the right over time"></canvas>
+      <p class="small muted">Graph: % of molecules on the right side over time. Dashed lines at 30% and 50%.</p>
+    </div>
+  </div>
+  <h3>Your runs</h3>
+  <table id="dLog"><thead><tr><th>Run</th><th>Molecule</th><th>Membrane</th><th>Temp</th><th>Time to 30% (s)</th><th>% on right at end</th></tr></thead><tbody></tbody></table>
+  <p class="small muted">A run stops by itself at 60 model seconds. If 30% is never reached, the time is recorded as “not reached.”</p>
+</section>
+
+<!-- ===== TAB 2: OSMOSIS ===== -->
+<section class="tab" id="t2">
+  <h2>Osmosis: two bags of sugar water</h2>
+  <p>The membrane in the middle lets <b>water</b> through but not <b>sugar</b>. Each side starts with 100 mL. The membrane can slide, like the wall between two soft bags. Predict which side gains water before you press Start.</p>
+  <div class="ctrl">
+    <label><span class="lbl">Left side sugar</span>
+      <select id="oL"><option value="0">0 M (pure water)</option><option value="0.1">0.1 M</option><option value="0.2">0.2 M</option><option value="0.3">0.3 M</option><option value="0.4" selected>0.4 M</option><option value="0.6">0.6 M</option><option value="0.8">0.8 M</option></select></label>
+    <label><span class="lbl">Right side sugar</span>
+      <select id="oR"><option value="0">0 M (pure water)</option><option value="0.1" selected>0.1 M</option><option value="0.2">0.2 M</option><option value="0.3">0.3 M</option><option value="0.4">0.4 M</option><option value="0.6">0.6 M</option><option value="0.8">0.8 M</option></select></label>
+    <button class="btn" id="oGo">Start</button>
+    <button class="btn ghost" id="oReset">Reset</button>
+  </div>
+  <canvas id="ocv" width="900" height="360" aria-label="Osmosis chamber"></canvas>
+  <div class="readout">
+    <div><span>Left volume</span><b id="oVL">100 mL</b></div>
+    <div><span>Left sugar concentration</span><b id="oCL">0.40 M</b></div>
+    <div><span>Right volume</span><b id="oVR">100 mL</b></div>
+    <div><span>Right sugar concentration</span><b id="oCR">0.10 M</b></div>
+    <div><span>Net water moved</span><b id="oNet">0 mL</b></div>
+  </div>
+  <p id="oMsg" class="note" hidden></p>
+  <h3>Your runs</h3>
+  <table id="oLog"><thead><tr><th>Left start</th><th>Right start</th><th>Water moved toward</th><th>Final left volume</th><th>Final right volume</th><th>Final concentrations</th></tr></thead><tbody></tbody></table>
+</section>
+
+<!-- ===== TAB 3: POTATO LAB ===== -->
+<section class="tab" id="t3">
+  <h2>Virtual potato osmosis lab</h2>
+  <p>Six beakers hold sucrose (table sugar) solutions from 0.0 M to 1.0 M. Three potato cores go in each beaker. Follow the steps, copy the masses onto your handout, and calculate the percent change for each core.</p>
+  <div class="ctrl">
+    <button class="btn" id="pCut">1 · Cut and weigh the cores</button>
+    <button class="btn" id="pSoak" disabled>2 · Soak for 24 hours</button>
+    <button class="btn" id="pWeigh" disabled>3 · Blot and weigh</button>
+    <button class="btn ghost" id="pRedo">Start over</button>
+  </div>
+  <canvas id="pcv" width="900" height="250" aria-label="Six beakers with potato cores"></canvas>
+  <p class="small muted">Room temperature 22 °C. Each core is about 1 cm wide and 3 cm long. Your station number changes which potato you get, so stations will not match exactly.</p>
+  <h3>Data</h3>
+  <table id="pTable"><thead><tr><th>Beaker (sucrose)</th><th>Core</th><th>Initial mass (g)</th><th>Final mass (g)</th></tr></thead><tbody></tbody></table>
+  <h3>Check your averages</h3>
+  <p class="small muted">After you calculate the average percent change for a beaker, type it here (for example −8.4). The check accepts answers within 0.3 of the correct value.</p>
+  <table id="pCheck"><thead><tr><th>Beaker</th><th>Your average % change</th><th>Result</th></tr></thead><tbody></tbody></table>
+  <div class="ctrl"><button class="btn ghost" id="pPlot" disabled>Show my station’s averages on a graph</button></div>
+  <canvas id="pgr" width="700" height="380" hidden aria-label="Average percent change graph"></canvas>
+</section>
+
+<!-- ===== TAB 4: LETHAL IV ===== -->
+<section class="tab" id="t4">
+  <h2>The Lethal IV case</h2>
+  <div class="case">
+    <p><b>Patient file.</b> A 67-year-old man is admitted for dehydration. The order reads: “1,000 mL 0.9% sodium chloride IV.” About an hour after the new bag is hung, his urine turns dark red-brown, his back hurts and his blood pressure drops. A nurse stops the IV.</p>
+    <p>Four 1,000 mL bags were in the supply drawer at his bedside. The lab adds a drop of a healthy person’s blood to fluid from each bag and watches the red blood cells. <b>Your job:</b> test all four bags, find the one that was hung, and explain what it did to his cells.</p>
+  </div>
+  <div class="bags" id="bags"></div>
+  <div class="ctrl">
+    <button class="btn" id="rGo">Add blood and watch</button>
+    <button class="btn ghost" id="rReset">Reset</button>
+    <label id="customWrap" hidden><span class="lbl">Custom NaCl %</span><input type="range" id="rCustom" min="0" max="3" step="0.05" value="0.45"> <b id="rCustomV">0.45%</b></label>
+  </div>
+  <div class="row">
+    <div class="wide"><canvas id="rcv" width="900" height="420" aria-label="Red blood cells under a microscope"></canvas></div>
+    <div class="side">
+      <div class="readout">
+        <div><span>Model time</span><b id="rT">0 s</b></div>
+        <div><span>Average volume of unburst cells</span><b id="rV">100%</b></div>
+        <div><span>Cells burst</span><b id="rL">0%</b></div>
+      </div>
+      <canvas id="rgr" width="420" height="200" aria-label="Average cell volume over time"></canvas>
+      <p class="small muted">Graph: average volume of unburst cells (% of normal). Inside a red blood cell the solute concentration is about 290 mOsm/L. Time is slowed down: real red blood cells change volume in about a second.</p>
+    </div>
+  </div>
+  <h3>Your tests</h3>
+  <table id="rLog"><thead><tr><th>Bag</th><th>Label</th><th>NaCl (g per L)</th><th>Average volume at 15 s</th><th>Cells burst at 15 s</th></tr></thead><tbody></tbody></table>
+</section>
+</main>
+<footer>
+  These are simplified models built for class. Their numbers come from equations, not from a real experiment, so your real lab data may differ. Molecules and cells are not to scale.
+</footer>
+
+<script>
+(function(){
+"use strict";
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const R=Math.random;
+function seg(id,cb){const el=$(id);el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;el.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v);});}
+function lineGraph(cv,series,opt){
+  const g=cv.getContext('2d'),W=cv.width,H=cv.height,L=46,B=30,T=10,Rt=10;
+  g.clearRect(0,0,W,H);g.fillStyle=css('--fluid');g.fillRect(0,0,W,H);
+  const x0=opt.xmin,x1=opt.xmax,y0=opt.ymin,y1=opt.ymax;
+  const X=x=>L+(x-x0)/(x1-x0)*(W-L-Rt),Y=y=>H-B-(y-y0)/(y1-y0)*(H-B-T);
+  g.strokeStyle=css('--line');g.lineWidth=1;g.fillStyle=css('--muted');g.font='12px system-ui,Arial';
+  for(const yv of opt.yticks){g.beginPath();g.moveTo(L,Y(yv));g.lineTo(W-Rt,Y(yv));g.stroke();g.textAlign='right';g.fillText(yv+(opt.yunit||''),L-5,Y(yv)+4);}
+  for(const xv of opt.xticks){g.textAlign='center';g.fillText(xv,X(xv),H-B+15);}
+  g.textAlign='center';g.fillText(opt.xlabel,L+(W-L-Rt)/2,H-3);
+  if(opt.dashed){g.setLineDash([5,4]);g.strokeStyle=css('--muted');for(const d of opt.dashed){g.beginPath();g.moveTo(L,Y(d));g.lineTo(W-Rt,Y(d));g.stroke();}g.setLineDash([]);}
+  g.strokeStyle=css('--ink');g.beginPath();g.moveTo(L,T);g.lineTo(L,H-B);g.lineTo(W-Rt,H-B);g.stroke();
+  for(const s of series){g.strokeStyle=s.color;g.lineWidth=2.5;g.beginPath();s.pts.forEach((p,i)=>{const px=X(p[0]),py=Y(p[1]);i?g.lineTo(px,py):g.moveTo(px,py);});g.stroke();}
+}
+/* ---------- tabs ---------- */
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('section.tab').forEach(s=>s.classList.toggle('on',s.id===b.dataset.tab));
+  redrawAll();
+}));
+const station=()=>+$('#station').value;
+
+/* =========================================================
+   TAB 1  DIFFUSION CHAMBER
+   Random walk; diffusion coefficient scales with T/viscosity
+   (water: 5 °C 1.518, 25 °C 0.890, 45 °C 0.596 mPa·s).
+   ========================================================= */
+const D={cv:$('#dcv'),gr:$('#dgr'),W:900,H:400,MID:450,N:400,mol:'o2',mem:'none',temp:25,speed:1,running:false,
+  parts:[],t:0,hist:[],t30:null,runs:0,logged:true,raf:0};
+D.Drel={5:278.15/1.5182/(298.15/0.890),25:1,45:318.15/0.5958/(298.15/0.890)};
+D.base=5000; // px^2 per model second
+D.carriers=[[70,110],[180,220],[290,330]];
+function dReset(){
+  D.running=false;cancelAnimationFrame(D.raf);$('#dGo').textContent='Start';
+  D.parts=[];for(let i=0;i<D.N;i++)D.parts.push({x:8+R()*(D.MID-16),y:8+R()*(D.H-16)});
+  D.t=0;D.hist=[[0,0]];D.t30=null;D.logged=false;dDraw();dReadout();
+}
+function dStep(dt){
+  const coef=D.base*D.Drel[D.temp]*(D.mol==='glucose'?0.35:1);
+  const s=Math.sqrt(2*coef*dt);let right=0;
+  for(const q of D.parts){
+    let nx=q.x+s*gauss(R),ny=q.y+s*gauss(R);
+    if(nx<4)nx=8-nx;if(nx>D.W-4)nx=2*(D.W-4)-nx;if(ny<4)ny=8-ny;if(ny>D.H-4)ny=2*(D.H-4)-ny;
+    if((q.x<D.MID)!==(nx<D.MID)){
+      let ok=false;
+      if(D.mem==='none')ok=true;
+      else if(D.mol==='o2')ok=R()<0.5;
+      else if(D.mem==='carriers')ok=D.carriers.some(c=>ny>c[0]&&ny<c[1])&&R()<0.6;
+      if(!ok)nx=q.x;
+    }
+    q.x=nx;q.y=ny;if(nx>=D.MID)right++;
+  }
+  D.t+=dt;const pct=right/D.N*100;
+  if(D.t30===null&&pct>=30)D.t30=D.t;
+  if(D.hist.length===0||D.t-D.hist[D.hist.length-1][0]>=0.25)D.hist.push([D.t,pct]);
+  return pct;
+}
+function dPct(){let r=0;for(const q of D.parts)if(q.x>=D.MID)r++;return r/D.N*100;}
+function dDraw(){
+  const g=D.cv.getContext('2d');g.clearRect(0,0,D.W,D.H);g.fillStyle=css('--fluid');g.fillRect(0,0,D.W,D.H);
+  // membrane
+  if(D.mem!=='none'){
+    g.fillStyle=css('--mem');g.globalAlpha=.85;
+    for(let y=0;y<D.H;y+=10){g.beginPath();g.arc(D.MID-7,y+5,4,0,7);g.arc(D.MID+7,y+5,4,0,7);g.fill();}
+    g.globalAlpha=.5;g.fillRect(D.MID-3,0,6,D.H);g.globalAlpha=1;
+    if(D.mem==='carriers'){g.fillStyle=css('--accent');for(const c of D.carriers){g.beginPath();g.roundRect?g.roundRect(D.MID-12,c[0],24,c[1]-c[0],8):g.rect(D.MID-12,c[0],24,c[1]-c[0]);g.fill();}
+      g.fillStyle=css('--accent-ink');g.font='bold 11px system-ui';g.textAlign='center';for(const c of D.carriers)g.fillText('C',D.MID,(c[0]+c[1])/2+4);}
+  }else{g.setLineDash([6,6]);g.strokeStyle=css('--line');g.beginPath();g.moveTo(D.MID,0);g.lineTo(D.MID,D.H);g.stroke();g.setLineDash([]);}
+  g.fillStyle=D.mol==='o2'?css('--o2'):css('--glu');const r=D.mol==='o2'?3:5;
+  for(const q of D.parts){g.beginPath();g.arc(q.x,q.y,r,0,7);g.fill();}
+  g.fillStyle=css('--muted');g.font='14px system-ui';g.textAlign='left';g.fillText('LEFT',10,20);g.textAlign='right';g.fillText('RIGHT',D.W-10,20);
+}
+function dReadout(){
+  const pct=dPct();$('#dT').textContent=D.t.toFixed(1)+' s';$('#dPct').textContent=pct.toFixed(0)+'%';
+  $('#d30').textContent=D.t30===null?'—':D.t30.toFixed(1)+' s';
+  lineGraph(D.gr,[{color:D.mol==='o2'?css('--o2'):css('--glu'),pts:D.hist}],{xmin:0,xmax:60,ymin:0,ymax:60,xticks:[0,10,20,30,40,50,60],yticks:[0,10,20,30,40,50,60],yunit:'%',xlabel:'model time (s)',dashed:[30,50]});
+}
+function dLog(){
+  if(D.logged)return;D.logged=true;D.runs++;
+  const memName={none:'None',bilayer:'Lipid bilayer',carriers:'Bilayer + carriers'}[D.mem];
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${D.runs}</td><td>${D.mol==='o2'?'O₂':'Glucose'}</td><td>${memName}</td><td>${D.temp} °C</td><td>${D.t30===null?'not reached':D.t30.toFixed(1)}</td><td>${dPct().toFixed(0)}%</td>`;
+  $('#dLog tbody').appendChild(tr);
+}
+function dLoop(){
+  if(!D.running)return;
+  for(let i=0;i<D.speed*2;i++){dStep(1/120);if(D.t>=60)break;}
+  dDraw();dReadout();
+  if(D.t>=60){D.running=false;$('#dGo').textContent='Start';dLog();return;}
+  D.raf=requestAnimationFrame(dLoop);
+}
+$('#dGo').addEventListener('click',()=>{
+  if(D.t>=60)dReset();
+  D.running=!D.running;$('#dGo').textContent=D.running?'Pause':'Resume';
+  if(D.running)D.raf=requestAnimationFrame(dLoop);
+});
+$('#dReset').addEventListener('click',()=>{if(D.t>0&&D.t<60&&D.t30!==null)dLog();dReset();});
+seg('#dMol',v=>{D.mol=v;dReset();});
+seg('#dMem',v=>{D.mem=v;dReset();});
+seg('#dTemp',v=>{D.temp=+v;dReset();});
+seg('#dSpeed',v=>{D.speed=+v;});
+
+/* =========================================================
+   TAB 2  OSMOSIS (water-permeable, sugar-impermeable membrane)
+   dVL/dt = k (CL - CR); volumes in mL, n in mmol, C in mol/L
+   ========================================================= */
+const O={cv:$('#ocv'),W:900,H:360,VL:100,VR:100,nL:40,nR:10,running:false,raf:0,last:0,t:0,sugarL:[],sugarR:[],flow:[],cL0:.4,cR0:.1,done:false};
+const OK=40, VMIN=3;
+function oReset(){
+  O.running=false;cancelAnimationFrame(O.raf);$('#oGo').textContent='Start';
+  O.cL0=+$('#oL').value;O.cR0=+$('#oR').value;O.VL=100;O.VR=100;O.nL=O.cL0*100;O.nR=O.cR0*100;O.t=0;O.done=false;
+  O.sugarL=[];O.sugarR=[];O.flow=[];
+  for(let i=0;i<Math.round(O.nL*1.2);i++)O.sugarL.push({u:R(),v:R(),a:R()*6.28});
+  for(let i=0;i<Math.round(O.nR*1.2);i++)O.sugarR.push({u:R(),v:R(),a:R()*6.28});
+  $('#oMsg').hidden=true;oDraw();oReadout();
+}
+function oStep(dt){
+  const CL=O.nL/O.VL,CR=O.nR/O.VR;let dV=OK*(CL-CR)*dt;
+  if(O.VR-dV<VMIN)dV=O.VR-VMIN;if(O.VL+dV<VMIN)dV=VMIN-O.VL;
+  O.VL+=dV;O.VR-=dV;O.t+=dt;
+  // flow particles
+  const rate=Math.min(12,Math.abs(OK*(CL-CR))*0.6);
+  if(R()<rate*dt*8)O.flow.push({p:0,y:30+R()*(O.H-60),dir:Math.sign(CL-CR)||1});
+  O.flow.forEach(f=>f.p+=dt*1.6);O.flow=O.flow.filter(f=>f.p<1);
+  return Math.abs(dV/dt);
+}
+function oDraw(){
+  const g=O.cv.getContext('2d'),W=O.W,H=O.H;g.clearRect(0,0,W,H);
+  const x0=40,x1=W-40,top=30,bot=H-30,span=x1-x0;
+  const mx=x0+span*O.VL/(O.VL+O.VR);
+  g.fillStyle=css('--water');g.globalAlpha=.16;g.fillRect(x0,top,span,bot-top);g.globalAlpha=1;
+  g.strokeStyle=css('--ink');g.lineWidth=2;g.strokeRect(x0,top,span,bot-top);
+  // sugar
+  g.fillStyle=css('--sugar');
+  const drawS=(arr,a,b)=>{for(const s of arr){s.a+=0.05;const fr=Math.min(0.98,Math.max(0.02,s.u+0.015*Math.sin(s.a)));const px=a+8+(b-a-16)*fr,py=top+8+(bot-top-16)*s.v;g.beginPath();g.arc(px,py,5,0,7);g.fill();}};
+  drawS(O.sugarL,x0,mx);drawS(O.sugarR,mx,x1);
+  // water flow
+  g.fillStyle=css('--water');
+  for(const f of O.flow){const px=mx-f.dir*50+f.dir*100*f.p;g.beginPath();g.arc(px,f.y,3,0,7);g.fill();}
+  // membrane
+  g.setLineDash([8,6]);g.strokeStyle=css('--mem');g.lineWidth=5;g.beginPath();g.moveTo(mx,top);g.lineTo(mx,bot);g.stroke();g.setLineDash([]);g.lineWidth=1;
+  g.fillStyle=css('--ink');g.font='bold 15px system-ui';g.textAlign='center';
+  g.fillText('LEFT',(x0+mx)/2,top-10);g.fillText('RIGHT',(mx+x1)/2,top-10);
+  g.font='13px system-ui';g.fillStyle=css('--muted');g.fillText('membrane: water passes, sugar does not',mx,bot+20);
+  g.textAlign='left';g.fillStyle=css('--sugar');g.beginPath();g.arc(x0+6,H-12,5,0,7);g.fill();g.fillStyle=css('--muted');g.fillText('sugar',x0+16,H-8);
+  g.fillStyle=css('--water');g.beginPath();g.arc(x0+76,H-12,3,0,7);g.fill();g.fillStyle=css('--muted');g.fillText('water crossing',x0+84,H-8);
+}
+function oReadout(){
+  $('#oVL').textContent=O.VL.toFixed(0)+' mL';$('#oVR').textContent=O.VR.toFixed(0)+' mL';
+  $('#oCL').textContent=(O.nL/O.VL).toFixed(2)+' M';$('#oCR').textContent=(O.nR/O.VR).toFixed(2)+' M';
+  const net=O.VL-100;$('#oNet').textContent=Math.abs(net)<0.5?'0 mL':Math.abs(net).toFixed(0)+' mL '+(net>0?'to the left':'to the right');
+}
+function oFinish(){
+  O.done=true;O.running=false;$('#oGo').textContent='Start';
+  const net=O.VL-100,dir=Math.abs(net)<0.5?'neither side':(net>0?'left':'right');
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${O.cL0.toFixed(1)} M</td><td>${O.cR0.toFixed(1)} M</td><td>${dir}</td><td>${O.VL.toFixed(0)} mL</td><td>${O.VR.toFixed(0)} mL</td><td>${(O.nL/O.VL).toFixed(2)} M | ${(O.nR/O.VR).toFixed(2)} M</td>`;
+  $('#oLog tbody').appendChild(tr);
+  const m=$('#oMsg');
+  if((O.cL0===0)!==(O.cR0===0)){m.hidden=false;m.textContent='One side had no sugar, so the sugar side kept pulling water until the pure-water side was almost empty. A real cell does not get that far: an animal cell bursts first, and a plant cell wall pushes back and stops the water.';}
+  else if(dir==='neither side'){m.hidden=false;m.textContent='Same concentration on both sides: water still crosses the membrane, but equally in both directions, so there is no net change.';}
+  else{m.hidden=false;m.textContent='Water stopped moving (net) when the two sugar concentrations became equal.';}
+}
+function oLoop(ts){
+  if(!O.running)return;
+  let rate=0;for(let i=0;i<4;i++)rate=oStep(1/240);
+  oDraw();oReadout();
+  if(rate<0.05||O.VR<=VMIN+0.01||O.VL<=VMIN+0.01||O.t>60){oDraw();oReadout();oFinish();return;}
+  O.raf=requestAnimationFrame(oLoop);
+}
+$('#oGo').addEventListener('click',()=>{if(O.done||O.t>0&&!O.running&&O.done)oReset();if(O.done)oReset();O.running=!O.running;$('#oGo').textContent=O.running?'Pause':'Resume';if(O.running)O.raf=requestAnimationFrame(oLoop);});
+$('#oReset').addEventListener('click',oReset);
+$('#oL').addEventListener('change',oReset);$('#oR').addEventListener('change',oReset);
+
+/* =========================================================
+   TAB 3  POTATO LAB
+   Equilibrium % change (model): isotonic point 0.28 M sucrose.
+   c < 0.28: +64 (0.28 - c);  c > 0.28: -27 (1 - e^{-(c-0.28)/0.30})
+   approach: 1 - e^{-t/2h}; biological noise sd 0.9 %; balance 0.01 g
+   ========================================================= */
+const P={cv:$('#pcv'),conc:[0,0.2,0.4,0.6,0.8,1.0],stage:0,data:[],anim:0,raf:0,ciso:0.28};
+function pEq(c){return c<P.ciso?64*(P.ciso-c):-27*(1-Math.exp(-(c-P.ciso)/0.30));}
+function pMake(){
+  const st=station();P.data=[];
+  P.conc.forEach((c,i)=>{
+    for(let k=0;k<3;k++){
+      const r=mulberry32(st*7919+i*131+k*17+3);
+      const m0=Math.round((2.50+0.12*gauss(r))*100)/100;
+      const pct=pEq(c)*(1-Math.exp(-24/2))+0.9*gauss(r);
+      const m1=Math.round((m0*(1+pct/100)+0.006*gauss(r))*100)/100;
+      P.data.push({i,c,k:k+1,m0,m1});
+    }
+  });
+}
+function pAvg(i){const rows=P.data.filter(d=>d.i===i);return rows.reduce((s,d)=>s+(d.m1-d.m0)/d.m0*100,0)/rows.length;}
+function pTable(){
+  const tb=$('#pTable tbody');tb.innerHTML='';
+  if(P.stage===0){tb.innerHTML='<tr><td colspan="4" class="muted">Press step 1 to cut and weigh the cores.</td></tr>';return;}
+  for(const d of P.data){
+    const tr=document.createElement('tr');
+    tr.innerHTML=(d.k===1?`<td rowspan="3"><b>${d.c.toFixed(1)} M</b></td>`:'')+`<td>${d.k}</td><td>${d.m0.toFixed(2)}</td><td>${P.stage>=3?d.m1.toFixed(2):'—'}</td>`;
+    tb.appendChild(tr);
+  }
+}
+function pCheckTable(){
+  const tb=$('#pCheck tbody');tb.innerHTML='';
+  P.conc.forEach((c,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${c.toFixed(1)} M</td><td><input type="number" step="0.1" aria-label="Average for ${c.toFixed(1)} M" style="width:110px" ${P.stage>=3?'':'disabled'}></td><td class="res">—</td>`;
+    const inp=tr.querySelector('input'),res=tr.querySelector('.res');
+    inp.addEventListener('change',()=>{
+      if(inp.value===''){res.textContent='—';res.className='res';return;}
+      const ok=Math.abs(+inp.value-pAvg(i))<=0.3;
+      res.textContent=ok?'Correct':'Check your math';res.className='res '+(ok?'ok':'bad');
+    });
+    tb.appendChild(tr);
+  });
+}
+function pDraw(){
+  const g=P.cv.getContext('2d'),W=900,H=250;g.clearRect(0,0,W,H);
+  const bw=120,gap=(W-6*bw)/7;
+  P.conc.forEach((c,i)=>{
+    const x=gap+i*(bw+gap),y=40,h=170;
+    g.fillStyle=css('--water');g.globalAlpha=.12+c*.25;g.fillRect(x+4,y+30,bw-8,h-34);g.globalAlpha=1;
+    g.strokeStyle=css('--ink');g.lineWidth=2;g.beginPath();g.moveTo(x,y);g.lineTo(x,y+h);g.lineTo(x+bw,y+h);g.lineTo(x+bw,y);g.stroke();
+    g.fillStyle=css('--ink');g.font='bold 15px system-ui';g.textAlign='center';g.fillText(c.toFixed(1)+' M',x+bw/2,y-10);
+    if(P.stage>=1){
+      for(let k=0;k<3;k++){
+        let scale=1;
+        if(P.stage>=2){const d=P.data.find(d=>d.i===i&&d.k===k+1);const f=P.stage===2?P.anim:1;scale=1+((d.m1-d.m0)/d.m0)*f*0.9;}
+        const cw=18*Math.sqrt(scale),ch=58*Math.sqrt(scale),cx=x+22+k*36,cy=y+h-ch-10;
+        g.fillStyle='#e9d8a6';g.strokeStyle='#8a6d2b';g.lineWidth=1.5;g.beginPath();g.rect(cx,cy,cw,ch);g.fill();g.stroke();
+      }
+    }
+  });
+  if(P.stage===2){g.fillStyle=css('--ink');g.font='bold 16px system-ui';g.textAlign='center';g.fillText('Soaking… '+Math.round(P.anim*24)+' h',W/2,H-8);}
+  if(P.stage===3){g.fillStyle=css('--muted');g.font='14px system-ui';g.textAlign='center';g.fillText('Cores blotted dry and weighed after 24 hours',W/2,H-8);}
+}
+function pSet(stage){
+  P.stage=stage;
+  $('#pSoak').disabled=stage!==1;$('#pWeigh').disabled=stage!==2||P.anim<1;$('#pCut').disabled=stage!==0;$('#pPlot').disabled=stage<3;
+  pTable();pCheckTable();pDraw();
+}
+$('#pCut').addEventListener('click',()=>{pMake();pSet(1);});
+$('#pSoak').addEventListener('click',()=>{P.anim=0;pSet(2);const t0=performance.now();
+  const step=ts=>{P.anim=Math.min(1,(ts-t0)/2500);pDraw();if(P.anim<1)P.raf=requestAnimationFrame(step);else $('#pWeigh').disabled=false;};P.raf=requestAnimationFrame(step);});
+$('#pWeigh').addEventListener('click',()=>pSet(3));
+$('#pRedo').addEventListener('click',()=>{cancelAnimationFrame(P.raf);P.anim=0;$('#pgr').hidden=true;pSet(0);});
+$('#pPlot').addEventListener('click',()=>{
+  const cv=$('#pgr');cv.hidden=false;const g=cv.getContext('2d'),W=cv.width,H=cv.height,L=60,B=45,T=15,Rt=20;
+  g.clearRect(0,0,W,H);g.fillStyle=css('--fluid');g.fillRect(0,0,W,H);
+  const X=x=>L+x/1.0*(W-L-Rt),Y=y=>T+(25-y)/55*(H-T-B);
+  g.strokeStyle=css('--line');g.fillStyle=css('--muted');g.font='13px system-ui';
+  for(let y=-30;y<=25;y+=5){g.beginPath();g.moveTo(L,Y(y));g.lineTo(W-Rt,Y(y));g.stroke();g.textAlign='right';g.fillText(y,L-6,Y(y)+4);}
+  for(let x=0;x<=1.0001;x+=0.2){g.beginPath();g.moveTo(X(x),T);g.lineTo(X(x),H-B);g.stroke();g.textAlign='center';g.fillText(x.toFixed(1),X(x),H-B+18);}
+  g.strokeStyle=css('--ink');g.lineWidth=2;g.beginPath();g.moveTo(L,Y(0));g.lineTo(W-Rt,Y(0));g.stroke();g.lineWidth=1;
+  g.fillStyle=css('--ink');g.textAlign='center';g.fillText('Sucrose concentration (M)',L+(W-L-Rt)/2,H-6);
+  g.save();g.translate(16,T+(H-T-B)/2);g.rotate(-Math.PI/2);g.fillText('Average % change in mass',0,0);g.restore();
+  g.fillStyle=css('--accent');P.conc.forEach((c,i)=>{g.beginPath();g.arc(X(c),Y(pAvg(i)),6,0,7);g.fill();});
+});
+$('#station').addEventListener('change',()=>{cancelAnimationFrame(P.raf);P.anim=0;$('#pgr').hidden=true;pSet(0);});
+
+/* =========================================================
+   TAB 4  RED BLOOD CELLS (Boyle–van't Hoff osmometer model)
+   V/V0 = b + (1-b)(290/π), b = 0.43; π = effective osmolality
+   of NaCl ≈ 2 × 0.93 × molarity × 1000 mOsm/L.
+   Each cell bursts above its own critical volume (mean 1.75×, sd 0.10).
+   ========================================================= */
+const BAGS=[
+  {id:'A',label:'0.9% Sodium Chloride Injection',pct:0.9},
+  {id:'B',label:'0.45% Sodium Chloride Injection',pct:0.45},
+  {id:'C',label:'Sterile Water for Injection',pct:0},
+  {id:'D',label:'3% Sodium Chloride Injection',pct:3.0},
+  {id:'X',label:'Custom (extension)',pct:null}
+];
+const RB={cv:$('#rcv'),gr:$('#rgr'),W:900,H:420,bag:'A',cells:[],t:0,running:false,raf:0,hist:[],logged:false,lysedFrac:0};
+function rPct(){const b=BAGS.find(b=>b.id===RB.bag);return b.pct===null?+$('#rCustom').value:b.pct;}
+function rTarget(pct){const pi=2*0.93*(pct*10/58.44)*1000;if(pi<1)return 4;return 0.43+0.57*(290/pi);}
+function rReset(){
+  RB.running=false;cancelAnimationFrame(RB.raf);RB.t=0;RB.hist=[[0,100]];RB.logged=false;$('#rGo').textContent='Add blood and watch';
+  const r=mulberry32(station()*31+7);RB.cells=[];
+  const cols=8,rows=5;
+  for(let i=0;i<rows;i++)for(let j=0;j<cols;j++){
+    RB.cells.push({x:90+j*103+18*gauss(r)*.5,y:60+i*76+12*gauss(r)*.5,v:1,crit:1.75+0.10*gauss(r),tau:1.6+0.25*r(),burst:false,rot:r()*6.28});
+  }
+  rDraw();rReadout();
+}
+function rStep(dt){
+  const tgt=rTarget(rPct());
+  for(const c of RB.cells){if(c.burst)continue;c.v+=(tgt-c.v)*dt/c.tau;if(c.v>c.crit){c.burst=true;}}
+  RB.t+=dt;
+  const live=RB.cells.filter(c=>!c.burst);
+  const mv=live.length?live.reduce((s,c)=>s+c.v,0)/live.length*100:null;
+  if(RB.t-RB.hist[RB.hist.length-1][0]>=0.2&&mv!==null)RB.hist.push([RB.t,mv]);
+}
+function rDraw(){
+  const g=RB.cv.getContext('2d'),W=RB.W,H=RB.H;g.clearRect(0,0,W,H);
+  const lys=RB.cells.filter(c=>c.burst).length/RB.cells.length;
+  g.fillStyle=css('--fluid');g.fillRect(0,0,W,H);
+  g.fillStyle='rgba(190,20,40,'+(0.45*lys)+')';g.fillRect(0,0,W,H);
+  for(const c of RB.cells){
+    const r0=24;
+    if(c.burst){g.strokeStyle='rgba(200,60,80,.55)';g.setLineDash([3,4]);g.lineWidth=1.5;g.beginPath();g.arc(c.x,c.y,r0*1.18,0,7);g.stroke();g.setLineDash([]);continue;}
+    const rr=r0*Math.pow(c.v,0.5)*(c.v>1?0.92:1);
+    g.fillStyle=css('--cell');
+    if(c.v<0.85){ // crenated
+      const n=12,amp=2+(0.85-c.v)*9;g.beginPath();
+      for(let k=0;k<=n*2;k++){const a=c.rot+k*Math.PI/n,rad=k%2?rr:rr+amp;const px=c.x+rad*Math.cos(a),py=c.y+rad*Math.sin(a);k?g.lineTo(px,py):g.moveTo(px,py);}g.fill();
+    }else{g.beginPath();g.arc(c.x,c.y,rr,0,7);g.fill();}
+    // central pallor of a disc: fades as the cell rounds up
+    const pal=Math.max(0,Math.min(1,(1.45-c.v)/0.45));
+    if(pal>0){g.fillStyle=css('--cellc');g.globalAlpha=0.85*pal;g.beginPath();g.arc(c.x,c.y,rr*0.42,0,7);g.fill();g.globalAlpha=1;}
+  }
+  g.fillStyle=css('--ink');g.font='bold 14px system-ui';g.textAlign='left';
+  const b=BAGS.find(b=>b.id===RB.bag);g.fillText('Bag '+b.id+': '+(b.pct===null?rPct().toFixed(2)+'% NaCl':b.label),12,H-12);
+}
+function rReadout(){
+  const live=RB.cells.filter(c=>!c.burst);const lys=(RB.cells.length-live.length)/RB.cells.length*100;
+  const mv=live.length?live.reduce((s,c)=>s+c.v,0)/live.length*100:null;
+  $('#rT').textContent=RB.t.toFixed(1)+' s';$('#rV').textContent=mv===null?'all burst':mv.toFixed(0)+'%';$('#rL').textContent=lys.toFixed(0)+'%';
+  lineGraph(RB.gr,[{color:css('--cell'),pts:RB.hist}],{xmin:0,xmax:15,ymin:40,ymax:200,xticks:[0,5,10,15],yticks:[40,60,80,100,120,140,160,180,200],yunit:'%',xlabel:'model time (s)',dashed:[100]});
+}
+function rLog(){
+  if(RB.logged)return;RB.logged=true;
+  const b=BAGS.find(b=>b.id===RB.bag);const live=RB.cells.filter(c=>!c.burst);
+  const mv=live.length?(live.reduce((s,c)=>s+c.v,0)/live.length*100).toFixed(0)+'%':'all burst';
+  const lys=((RB.cells.length-live.length)/RB.cells.length*100).toFixed(0)+'%';
+  const p=rPct();const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${b.id}</td><td>${b.pct===null?'Custom '+p.toFixed(2)+'% NaCl':b.label}</td><td>${(p*10).toFixed(1)}</td><td>${mv}</td><td>${lys}</td>`;
+  $('#rLog tbody').appendChild(tr);
+}
+function rLoop(){
+  if(!RB.running)return;
+  for(let i=0;i<4;i++)rStep(1/120);
+  rDraw();rReadout();
+  if(RB.t>=15){RB.running=false;$('#rGo').textContent='Add blood and watch';rLog();return;}
+  RB.raf=requestAnimationFrame(rLoop);
+}
+const bagsEl=$('#bags');
+BAGS.forEach(b=>{const el=document.createElement('button');el.className='bag'+(b.id==='A'?' on':'');el.dataset.id=b.id;
+  el.innerHTML=b.pct===null?`<b>Extension</b><span class="small">Choose any NaCl %</span>`:`<b>Bag ${b.id}</b><span class="small">${b.label}</span>`;
+  el.addEventListener('click',()=>{bagsEl.querySelectorAll('.bag').forEach(x=>x.classList.toggle('on',x===el));RB.bag=b.id;$('#customWrap').hidden=b.id!=='X';rReset();});
+  bagsEl.appendChild(el);});
+$('#rCustom').addEventListener('input',()=>{$('#rCustomV').textContent=(+$('#rCustom').value).toFixed(2)+'%';rReset();});
+$('#rGo').addEventListener('click',()=>{if(RB.t>=15)rReset();RB.running=!RB.running;$('#rGo').textContent=RB.running?'Pause':'Resume';if(RB.running)RB.raf=requestAnimationFrame(rLoop);});
+$('#rReset').addEventListener('click',rReset);
+
+/* ---------- init ---------- */
+function redrawAll(){dDraw();dReadout();oDraw();oReadout();pDraw();rDraw();rReadout();}
+$('#station').addEventListener('change',rReset);
+dReset();oReset();pSet(0);rReset();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redrawAll);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+# Friday Oct 23: Block 2.4 (activity version) and Cell Research Project launch
+
+## Tonight
+1. Download **Block 2.4 Molecule Caller.html** from "Unit 2 - Cell Bio" to the teacher computer. Double-click it, press Next round a few times, then Reset run. It runs offline in any browser.
+2. Share **Block 2.4 Passive Transport Lab (interactive module).html** with students. The virtual potato lab (Tab 3) is weekend homework, due Tue Oct 27, because Thursday's Block 2.6 builds on it.
+3. Print:
+   - Student handout: 15 copies, double-sided (9 pages).
+   - Project student packet: 15 copies (6 pages).
+   - Gallery walk cards: 1 set from the **PDF** (7 pages, landscape). Tape them on the walls before class.
+4. Room: make a line across the room (chairs or a gap between desks) and leave one gap about 1 m wide for Part 2. That gap is the water pore.
+5. TV: open **Block 2.4 Activity Slides.pdf** (9 slides) and the Molecule Caller.
+
+There is no opening reading Friday. Tuesday and Thursday both had one, which meets the two-of-three rule.
+
+## Google Docs in "Unit 2 - Cell Bio"
+| Doc | Pages |
+|---|---|
+| [Block 2.4 (activity version) - Student Handout](https://docs.google.com/document/d/1NgVl0nv4fFezW5SmuDhRiTim4etiCqnnmhO1px5MS-U/edit) | 9 |
+| [Block 2.4 (activity version) - Pacing Guide and Answer Key](https://docs.google.com/document/d/13RYtfGK89H16QnEVmq_mVUfI5fjMCg_PsVNHYNk5vTQ/edit) | 8 |
+| [Cell Research Project - Student Packet](https://docs.google.com/document/d/1Ll-6xDlduylJkLlcbrnYeUSEFzvuZtKrpx9JkXinL_o/edit) | 6 |
+| [Cell Research Project - Teacher Guide and Key](https://docs.google.com/document/d/1hipdXEdbSKZKhm0PnameeXI_i_fL4CSC9ls9B1eXcWw/edit) | 7 |
+
+The teacher guide Doc lists the answer-key numbers. The 4 answer-key graphs are in the guide PDF and in `project-cell-research/answer-key-graphs/`.
+
+The Molecule Caller is in the same Drive folder as an .html file (26,901 bytes, the same size as the tested copy).
+
+## How the lesson runs (85 min)
+| Time | Segment |
+|---|---|
+| 0:00–0:05 | Setup, prediction |
+| 0:05–0:15 | Human diffusion: warm run, cold run |
+| 0:15–0:25 | Copy the data, graph it, Q1–Q4 |
+| 0:25–0:39 | Human osmosis: Run A, Run B |
+| 0:39–0:48 | Q5–Q8 |
+| 0:48–0:56 | Tonicity body vote |
+| 0:56–0:58 | Homework |
+| 0:58–1:20 | Project launch: gallery walk of 7 real-data graphs, teams pick a question |
+| 1:20–1:25 | Exit ticket |
+
+## Project dates
+| Date | Step |
+|---|---|
+| Fri Oct 23 | Launch |
+| Tue Oct 27 | Approve questions (5 min) |
+| Fri Nov 6 | Work session 1 |
+| Fri Nov 20 | Work session 2 |
+| Tue Nov 24 | Research symposium (alternative: Fri Dec 4) |
+
+## What is checked and what is not
+- **Set for the model, not measured rates:**
+  - the move chances (30% warm, 5% cold)
+  - the osmosis pore rule (2 particles per side per round)
+- **Checked by simulation:** the answer-key "what to expect" numbers come from 20,000 simulated class runs.
+- **Computed from the downloaded data file:** the project graph numbers. The source is the Allen Institute hiPSC Single-Cell Image Dataset (Viana et al., Nature 2023), 215,081 cells.
+  - Example: the median interphase cell volume is 1,782 µm³.
+  - Surface areas may run high, because the file's surface-area method is not confirmed.
+- **Written from memory:**
+  - the tonicity terms (turgor, plasmolysis, crenation, hemolysis)
+  - the Google Sheets menu steps
+  - the peroxisome gene name on Card 4
+- **Not tested:** cfe.allencell.org was blocked from here. Open it on one student laptop before Nov 6. The class data CSVs are the fallback.
+
+## Files in this folder
+| File | What it is |
+|---|---|
+| `Block 2.4 (activity) - Student Handout.pdf` | Student handout |
+| `Block 2.4 (activity) - Pacing Guide and Answer Key.pdf` | Pacing guide and answer key |
+| `Block 2.4 Activity Slides.pdf` | 9-slide TV deck |
+| `Block 2.4 Molecule Caller.html` | TV Molecule Caller |
+| `slides/` | Slide images |
+| `src/` | Generators and `expected.json` |
+
+The project files (PDFs, card images, data CSVs) are in `/mnt/project-files/project-cell-research/`.

@@ -1,0 +1,576 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Fin Heat Sink Build</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a shop work-instruction sheet — operation list on the left, one operation at a time on the right, self-check always below. */
+:root{
+  --paper:#eceff3; --panel:#f9fafb; --ink:#16202a; --muted:#566370; --rule:#c8d0d8;
+  --layout:#1d4db3; --layout-tint:rgba(29,77,179,.10);
+  --warn:#b4470d; --warn-tint:rgba(180,71,13,.10); --ok:#22744a; --ok-tint:rgba(34,116,74,.11);
+  --face-top:#e9eef3; --face-side:#a6b4c2; --face-front:#c9d3dd; --hole:#25303b; --edge:#283340;
+  --sk-free:#2a6fd6; --sk-proj:#8a3fbf; --grid:#dde3e9;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f1418; --panel:#161d24; --ink:#e5eaef; --muted:#93a1ae; --rule:#2c3742;
+  --layout:#7aa2ff; --layout-tint:rgba(122,162,255,.14);
+  --warn:#f08a4b; --warn-tint:rgba(240,138,75,.13); --ok:#5cc489; --ok-tint:rgba(92,196,137,.13);
+  --face-top:#647281; --face-side:#2e3843; --face-front:#46525f; --hole:#090c0f; --edge:#cfd8e0;
+  --sk-free:#5b9bff; --sk-proj:#c38cf0; --grid:#212a33; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f1418; --panel:#161d24; --ink:#e5eaef; --muted:#93a1ae; --rule:#2c3742;
+  --layout:#7aa2ff; --layout-tint:rgba(122,162,255,.14);
+  --warn:#f08a4b; --warn-tint:rgba(240,138,75,.13); --ok:#5cc489; --ok-tint:rgba(92,196,137,.13);
+  --face-top:#647281; --face-side:#2e3843; --face-front:#46525f; --hole:#090c0f; --edge:#cfd8e0;
+  --sk-free:#5b9bff; --sk-proj:#c38cf0; --grid:#212a33; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:20px}
+header{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:12px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,6vw,52px);line-height:1;margin:4px 0 0;letter-spacing:.01em;text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:500}
+.tiers{display:flex;gap:6px;flex-wrap:wrap}
+.tier{font-family:var(--f-mono);font-size:12px;border:1px solid var(--rule);border-radius:3px;padding:2px 8px;color:var(--muted)}
+.tier.adv{border-color:var(--layout);color:var(--layout)}
+.tier.exp{border-color:var(--ink);color:var(--ink)}
+
+.main{display:grid;grid-template-columns:250px minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.main{grid-template-columns:minmax(0,1fr)}}
+nav.ops{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);display:grid;gap:2px;background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:8px}
+@media (max-width:820px){nav.ops{position:static;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}}
+nav.ops button{all:unset;cursor:pointer;display:grid;grid-template-columns:58px 1fr;gap:4px;align-items:baseline;padding:7px 8px;border-radius:4px;font-size:14px;line-height:1.25}
+nav.ops button .n{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+nav.ops button:hover{background:var(--layout-tint)}
+nav.ops button:focus-visible{outline:2px solid var(--layout);outline-offset:1px}
+nav.ops button[aria-current="step"]{background:var(--layout);color:var(--panel)}
+nav.ops button[aria-current="step"] .n{color:var(--panel)}
+nav.ops button.done .n::after{content:" ✓";color:var(--ok)}
+nav.ops button[aria-current="step"].done .n::after{color:var(--panel)}
+nav.ops .sep{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 8px 2px}
+
+.op{background:var(--panel);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.op-head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;padding:16px 20px;border-bottom:1px solid var(--rule)}
+.op-num{font-family:var(--f-mono);font-size:14px;color:var(--layout);font-weight:500}
+.op-title{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.05;margin:0;text-wrap:balance}
+.op-tier{margin-left:auto}
+.op-body{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:0}
+@media (max-width:1000px){.op-body{grid-template-columns:minmax(0,1fr)}}
+figure{margin:0;padding:16px;border-right:1px solid var(--rule);display:grid;gap:8px;align-content:start;background:
+  linear-gradient(var(--grid) 1px,transparent 1px) 0 0/24px 24px, linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/24px 24px, var(--panel)}
+@media (max-width:1000px){figure{border-right:0;border-bottom:1px solid var(--rule)}}
+figure svg{width:100%;height:auto;display:block;max-height:440px}
+figcaption{font-size:13px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
+.text{padding:16px 20px;display:grid;gap:16px;align-content:start;min-width:0}
+.path{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-family:var(--f-mono);font-size:13px}
+.path span{background:var(--paper);border:1px solid var(--rule);border-radius:3px;padding:1px 7px}
+.path .arr{border:0;background:none;padding:0 1px;color:var(--muted)}
+kbd{font-family:var(--f-mono);font-size:13px;border:1px solid var(--ink);border-bottom-width:2px;border-radius:3px;padding:0 6px;background:var(--panel)}
+ol.do{margin:0;padding-left:22px;display:grid;gap:8px}
+ol.do li{padding-left:2px}
+ol.do li::marker{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.val{font-family:var(--f-mono);font-size:.92em;background:var(--layout-tint);color:var(--ink);padding:0 4px;border-radius:2px;white-space:nowrap}
+.note{border-left:3px solid;padding:8px 12px;border-radius:0 4px 4px 0;font-size:15px}
+.note h3{margin:0 0 2px;font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.note p{margin:0}
+.note.watch{border-color:var(--warn);background:var(--warn-tint)} .note.watch h3{color:var(--warn)}
+.note.check{border-color:var(--ok);background:var(--ok-tint)} .note.check h3{color:var(--ok)}
+.note.why{border-color:var(--layout);background:var(--layout-tint)} .note.why h3{color:var(--layout)}
+.quiz{border:1px solid var(--rule);border-radius:4px;padding:12px}
+.quiz p{margin:0 0 8px;font-weight:600}
+.quiz .opts{display:grid;gap:6px}
+.quiz button{font:inherit;font-size:15px;text-align:left;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:4px;padding:7px 10px;cursor:pointer}
+.quiz button:hover{border-color:var(--layout)}
+.quiz button:focus-visible{outline:2px solid var(--layout)}
+.quiz button.right{border-color:var(--ok);background:var(--ok-tint)}
+.quiz button.wrong{border-color:var(--warn);background:var(--warn-tint)}
+.quiz .fb{margin-top:8px;font-size:14px;color:var(--muted)}
+.op-foot{display:flex;justify-content:space-between;gap:12px;padding:12px 20px;border-top:1px solid var(--rule)}
+.btn{font:inherit;font-weight:600;font-size:15px;border-radius:4px;padding:8px 16px;cursor:pointer;border:1px solid var(--ink);background:var(--panel);color:var(--ink)}
+.btn.primary{background:var(--layout);border-color:var(--layout);color:var(--panel)}
+.btn:disabled{opacity:.35;cursor:default}
+.btn:focus-visible{outline:2px solid var(--layout);outline-offset:2px}
+
+.check-card{background:var(--panel);border:1px solid var(--rule);border-top:3px solid var(--ink);border-radius:6px;padding:16px 20px;display:grid;gap:12px}
+.check-card h2{font-family:var(--f-display);font-size:26px;margin:0;line-height:1.1}
+.check-card .sub{margin:0;color:var(--muted);font-size:15px;max-width:65ch}
+.form{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+.field{display:grid;gap:4px}
+.field label{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+select,input{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:4px;padding:7px 10px}
+input{font-family:var(--f-mono);width:170px;font-variant-numeric:tabular-nums}
+select:focus-visible,input:focus-visible{outline:2px solid var(--layout);outline-offset:1px}
+.result{border-radius:4px;padding:10px 14px;font-size:15px}
+.result.pass{background:var(--ok-tint);border-left:3px solid var(--ok)}
+.result.fail{background:var(--warn-tint);border-left:3px solid var(--warn)}
+.result b{font-family:var(--f-mono);font-weight:500}
+svg text{font-family:var(--f-mono)}
+.lbl{fill:var(--ink);font-size:13px}
+.lbl-m{fill:var(--muted);font-size:12px}
+.lbl-a{fill:var(--layout);font-size:13px;font-weight:500}
+.lbl-w{fill:var(--warn);font-size:13px;font-weight:500}
+svg.big .lbl,svg.big .lbl-m,svg.big .lbl-a{font-size:17px}
+.op-body.wide{grid-template-columns:minmax(0,1fr)}
+.op-body.wide figure{border-right:0;border-bottom:1px solid var(--rule)}
+.op-body.wide figure svg{max-height:560px}
+@media (prefers-reduced-motion:no-preference){.op{animation:in .18s ease-out}@keyframes in{from{opacity:.6;transform:translateY(3px)}to{opacity:1;transform:none}}}
+</style>
+
+<style>
+.figstack{display:grid;gap:12px}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Week 5 · Autodesk Fusion work instructions</div>
+      <h1>Fin Heat Sink</h1>
+    </div>
+    <div class="meta">
+      <span>MATL <b>PLA</b> (proto)</span><span>UNITS <b>mm</b></span><span>TOL <b>±0.2</b></span><span>DWG <b>HS-05</b></span>
+    </div>
+  </header>
+
+  <div class="main">
+    <nav class="ops" id="opsNav" aria-label="Operations"></nav>
+    <div style="display:grid;gap:20px;min-width:0">
+      <article class="op" id="opPanel" aria-live="polite"></article>
+      <section class="check-card" id="selfCheck" aria-labelledby="scTitle">
+        <h2 id="scTitle">Self-check: is my model right?</h2>
+        <p class="sub">In Fusion, right-click your body in the Browser and choose <b>Properties</b>. Type the <b>Volume</b> here. A wrong number of fins, a missing hole or a wrong height all change this number. This part is checked to within 0.1%, because one small screw hole is only 0.2% of the part.</p>
+        <form class="form" id="scForm">
+          <div class="field">
+            <label for="scTier">Which version</label>
+            <select id="scTier">
+              <option value="core">Core (9 fins, rev A)</option>
+              <option value="adv">Advanced (11 fins, rev B)</option>
+              <option value="exp">Expert (round, 12 fins)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="scVol">Volume from Fusion</label>
+            <input id="scVol" inputmode="decimal" autocomplete="off" placeholder="e.g. 12345.678">
+          </div>
+          <button class="btn primary" type="submit">Check</button>
+        </form>
+        <div id="scOut" hidden></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+const k = 5;
+const C30 = Math.cos(Math.PI/6);
+const iso = ([x,y,z]) => [(x - z)*C30*k, ((x + z)*0.5 - y)*k];
+const f = n => +n.toFixed(2);
+
+// Part numbers (mm)
+const HOLE = Math.PI*1.7*1.7*4;             // one Ø3.4 hole through the 4 mm base
+const FIN = 2*16*40;                          // one straight fin
+const BASE = 42*56*4;
+const vol = n => BASE + n*FIN - 4*HOLE;       // Core n=9, Advanced n=11
+const RFIN = 2*14*15, DISC = Math.PI*20*20*4;
+const volRound = n => DISC + n*RFIN - HOLE;   // Expert n=12
+
+const poly = (pts, style) => `<polygon points="${pts.map(p=>iso(p).map(f).join(',')).join(' ')}" style="${style}"/>`;
+const defs = () => `<defs><marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--layout)"/></marker><marker id="arwi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--ink)"/></marker></defs>`;
+
+// Isometric view: base plate plus straight fins
+function isoFig(o){
+  const n = o.fins ?? 9, p = o.pitch || 5, all = [];
+  const edge = 'stroke:var(--edge);stroke-width:1;stroke-linejoin:round';
+  const boxFaces = (b, hl) => {
+    const {x0,x1,y0,y1,z0,z1} = b;
+    const faces = [
+      [[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]],
+      [[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1]],
+      [[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]]
+    ];
+    const fills = ['var(--face-top)','var(--face-side)','var(--face-front)'];
+    let s = '';
+    faces.forEach((fc,i)=>{ s += poly(fc,`fill:${fills[i]};${edge}`); if (hl) s += poly(fc,'fill:var(--layout);fill-opacity:.28;stroke:var(--layout);stroke-width:1.6'); fc.forEach(q=>all.push(iso(q))); });
+    return s;
+  };
+  let s = boxFaces({x0:-21,x1:21,y0:0,y1:4,z0:-28,z1:28}, o.hlBase);
+  if (o.holes) for (const [cx,cz] of [[-16,-24],[16,-24],[-16,24],[16,24]])
+    s += poly(Array.from({length:28},(_,i)=>{const t=2*Math.PI*i/28; return [cx+1.7*Math.cos(t),4,cz+1.7*Math.sin(t)];}),'fill:var(--hole)');
+  for (let i=0;i<n;i++){ const x0 = -21 + i*p; s += boxFaces({x0,x1:x0+2,y0:4,y1:20,z0:-20,z1:20}, o.hlFin===i || o.hlFin==='all'); }
+  const t = [];
+  for (const L of (o.labels||[])){
+    const q = iso(L.at);
+    t.push(`<line x1="${f(q[0])}" y1="${f(q[1])}" x2="${f(q[0]+L.dx)}" y2="${f(q[1]+L.dy)}" style="stroke:var(--muted);stroke-width:1"/>`);
+    t.push(`<text x="${f(q[0]+L.dx+(L.dx<0?-4:4))}" y="${f(q[1]+L.dy+4)}" text-anchor="${L.dx<0?'end':'start'}" class="${L.cls||'lbl'}">${L.text}</text>`);
+    all.push([q[0]+L.dx+(L.dx<0?-L.text.length*10-8:L.text.length*10+8), q[1]+L.dy+10],[q[0]+L.dx, q[1]+L.dy-12]);
+  }
+  const xs = all.map(q=>q[0]), ys = all.map(q=>q[1]), pad = 14;
+  const x0 = Math.min(...xs)-pad, y0 = Math.min(...ys)-pad, w = Math.max(...xs)-x0+pad, h = Math.max(...ys)-y0+pad;
+  return `<svg class="big" viewBox="${f(x0)} ${f(y0)} ${f(w)} ${f(h)}" role="img" aria-label="${o.aria||'Isometric view of the heat sink'}">${s}${t.join('')}</svg>`;
+}
+
+// 2D dimension helpers (paper coords)
+function dimH(x1,x2,yLine,yFrom,label,cls='lbl',col='var(--ink)',mk='arwi'){
+  return `<g style="stroke:${col};stroke-width:1"><line x1="${x1}" y1="${yFrom}" x2="${x1}" y2="${yLine+(yLine>yFrom?4:-4)}"/><line x1="${x2}" y1="${yFrom}" x2="${x2}" y2="${yLine+(yLine>yFrom?4:-4)}"/><line x1="${x1}" y1="${yLine}" x2="${x2}" y2="${yLine}" marker-start="url(#${mk})" marker-end="url(#${mk})"/></g><text x="${(x1+x2)/2}" y="${yLine-6}" text-anchor="middle" class="${cls}">${label}</text>`;
+}
+function dimV(y1,y2,xLine,xFrom,label,cls='lbl',col='var(--ink)',mk='arwi',side){
+  const tx = side==='r' ? xLine+8 : xLine-8;
+  return `<g style="stroke:${col};stroke-width:1"><line x1="${xFrom}" y1="${y1}" x2="${xLine+(xLine>xFrom?4:-4)}" y2="${y1}"/><line x1="${xFrom}" y1="${y2}" x2="${xLine+(xLine>xFrom?4:-4)}" y2="${y2}"/><line x1="${xLine}" y1="${y1}" x2="${xLine}" y2="${y2}" marker-start="url(#${mk})" marker-end="url(#${mk})"/></g><text x="${tx}" y="${(y1+y2)/2+4}" text-anchor="${side==='r'?'start':'end'}" class="${cls}">${label}</text>`;
+}
+const ink = 'stroke:var(--ink);stroke-width:1.6;fill:none';
+const hid = 'stroke:var(--ink);stroke-width:1;stroke-dasharray:5 3;fill:none';
+const cen = 'stroke:var(--muted);stroke-width:.8;stroke-dasharray:12 3 2 3;fill:none';
+
+// Engineering drawing HS-05
+function drawingFig(){
+  const s = 5, ox = 150, X = x=>ox+(x+21)*s, tz = 60, Z = z=>tz+(z+28)*s, oy = 500, Y = y=>oy-y*s;
+  let g = '';
+  // top view
+  g += `<rect x="${X(-21)}" y="${Z(-28)}" width="${42*s}" height="${56*s}" style="${ink}"/>`;
+  for (let i=0;i<9;i++){ const x0 = -21+5*i; g += `<rect x="${X(x0)}" y="${Z(-20)}" width="${2*s}" height="${40*s}" style="stroke:var(--ink);stroke-width:1.1;fill:var(--layout-tint)"/>`; }
+  for (const [x,z] of [[-16,-24],[16,-24],[-16,24],[16,24]]){
+    g += `<circle cx="${X(x)}" cy="${Z(z)}" r="${1.7*s}" style="${ink}"/><line x1="${X(x)-14}" y1="${Z(z)}" x2="${X(x)+14}" y2="${Z(z)}" style="${cen}"/><line x1="${X(x)}" y1="${Z(z)-14}" x2="${X(x)}" y2="${Z(z)+14}" style="${cen}"/>`;
+  }
+  g += dimH(X(-16),X(16),Z(-28)-20,Z(-24)-12,'32');
+  g += dimV(Z(-24),Z(24),X(21)+22,X(16)+12,'48','lbl','var(--ink)','arwi','r');
+  g += dimV(Z(-28),Z(28),X(21)+64,X(21)+6,'56','lbl','var(--ink)','arwi','r');
+  g += dimV(Z(-20),Z(20),X(-21)-22,X(-21)-6,'40');
+  g += dimV(Z(20),Z(28),X(-21)-22,X(-21)-6,'8');
+  g += dimH(X(-21),X(-16),Z(-28)-20,Z(-28)-4,'5');
+  g += `<line x1="${X(-16)-6}" y1="${Z(-24)+4}" x2="${X(-21)-36}" y2="${Z(-28)+14}" style="stroke:var(--ink);stroke-width:1"/><text x="${X(-21)-40}" y="${Z(-28)+18}" text-anchor="end" class="lbl">4× Ø3.4 THRU</text>`;
+  g += `<text x="${X(0)}" y="${Z(-28)-44}" text-anchor="middle" class="lbl-m">TOP</text>`;
+  // front view
+  g += `<rect x="${X(-21)}" y="${Y(4)}" width="${42*s}" height="${4*s}" style="${ink}"/>`;
+  for (let i=0;i<9;i++){ const x0 = -21+5*i; g += `<rect x="${X(x0)}" y="${Y(20)}" width="${2*s}" height="${16*s}" style="${ink}"/>`; }
+  for (const x of [-16,16]) for (const d of [-1.7,1.7]) g += `<line x1="${X(x+d)}" y1="${Y(0)}" x2="${X(x+d)}" y2="${Y(4)}" style="${hid}"/>`;
+  g += dimH(X(-21),X(21),Y(0)+30,Y(0)+6,'42');
+  g += dimV(Y(0),Y(20),X(-21)-40,X(-21)-6,'20');
+  g += dimV(Y(0),Y(4),X(-21)-14,X(-21)-6,'4');
+  g += dimH(X(-21),X(-16),Y(20)-18,Y(20)-6,'5 TYP');
+  g += `<line x1="${X(20)}" y1="${Y(16)}" x2="${X(21)+30}" y2="${Y(24)}" style="stroke:var(--ink);stroke-width:1"/><text x="${X(21)+34}" y="${Y(24)+4}" class="lbl">9× FINS, 2 THK</text>`;
+  g += `<text x="${X(0)}" y="${Y(0)+56}" text-anchor="middle" class="lbl-m">FRONT</text>`;
+  // title block
+  const tb = (y,a,b) => `<line x1="460" y1="${y}" x2="700" y2="${y}" style="stroke:var(--ink);stroke-width:1"/><text x="468" y="${y+17}" class="lbl-m">${a}</text><text x="530" y="${y+17}" class="lbl">${b}</text>`;
+  g += `<rect x="460" y="400" width="240" height="150" style="stroke:var(--ink);stroke-width:1.6;fill:none"/>`;
+  g += `<text x="468" y="420" class="lbl" style="font-weight:500">HEAT SINK, 9-FIN</text>`;
+  g += tb(430,'DWG','HS-05 REV A') + tb(455,'MATL','PLA (PROTO)') + tb(480,'PROD','AL 6063, EXTRUDED') + tb(505,'UNITS','mm  TOL ±0.2') + tb(530,'VIEWS','3RD ANGLE');
+  g += `<line x1="522" y1="430" x2="522" y2="550" style="stroke:var(--ink);stroke-width:1"/>`;
+  return `<svg viewBox="0 0 710 570" role="img" aria-label="Engineering drawing HS-05: top and front views of a 42 by 56 mm base with nine 2 mm fins 16 mm tall at 5 mm spacing and four 3.4 mm holes">${defs()}${g}</svg>`;
+}
+
+// Units mockup
+function unitsFig(){
+  const row = (y,ind,txt,cls='lbl',hl) => `${hl?`<rect x="10" y="${y-16}" width="300" height="24" rx="3" style="fill:var(--layout-tint);stroke:var(--layout)"/>`:''}<text x="${20+ind*18}" y="${y}" class="${cls}">${txt}</text>`;
+  let g = `<rect x="0.5" y="0.5" width="320" height="200" rx="4" style="fill:var(--panel);stroke:var(--rule)"/><text x="16" y="24" class="lbl-m">BROWSER</text><line x1="0" y1="34" x2="320" y2="34" style="stroke:var(--rule)"/>`;
+  g += row(58,0,'▾ Turski_HeatSink v1') + row(84,1,'▾ Document Settings') + row(110,2,'Units: Millimeter  ✎','lbl-a',true) + row(136,1,'▸ Named Views') + row(162,1,'▸ Origin') + row(188,1,'▸ Bodies','lbl-m');
+  return `<svg viewBox="0 0 330 205" role="img" aria-label="Fusion Browser panel with Document Settings expanded and Units set to Millimeter">${g}</svg>`;
+}
+
+// Fusion dialog mockup
+function dialogFig(title, rows){
+  let y = 46, g = `<rect x="0.5" y="0.5" width="339" height="${rows.length*30+54}" rx="4" style="fill:var(--panel);stroke:var(--rule)"/><text x="14" y="24" class="lbl" style="font-weight:500">${title.toUpperCase()}</text><line x1="0" y1="34" x2="340" y2="34" style="stroke:var(--rule)"/>`;
+  for (const [a,b,hl] of rows){
+    if (hl) g += `<rect x="8" y="${y-6}" width="324" height="28" rx="3" style="fill:var(--layout-tint);stroke:var(--layout)"/>`;
+    g += `<text x="16" y="${y+13}" class="lbl-m">${a}</text><rect x="170" y="${y-2}" width="156" height="22" rx="3" style="fill:var(--paper);stroke:var(--rule)"/><text x="178" y="${y+13}" class="${hl?'lbl-a':'lbl'}">${b}</text>`;
+    y += 30;
+  }
+  return `<svg viewBox="0 0 340 ${rows.length*30+56}" style="max-height:320px" role="img" aria-label="${title} dialog settings">${g}</svg>`;
+}
+
+// Top view of the base: helpers
+function topBase(inner, aria, opts={}){
+  const s = 5, ox = 80, X = x=>ox+(x+21)*s, tz = 40, Z = z=>tz+(z+28)*s;
+  const col = opts.proj ? 'var(--sk-proj)' : (opts.free ? 'var(--sk-free)' : 'var(--ink)');
+  let g = `<rect x="${X(-21)}" y="${Z(-28)}" width="${42*s}" height="${56*s}" style="fill:var(--layout-tint);stroke:${col};stroke-width:2.2"/>`;
+  g += inner(X,Z,s);
+  g += `<text x="${X(0)}" y="${Z(28)+50}" text-anchor="middle" class="lbl-m">front edge (nearest you)</text>`;
+  return `<svg viewBox="0 0 440 400" role="img" aria-label="${aria}">${defs()}${g}</svg>`;
+}
+
+function baseSketch(){
+  return topBase((X,Z)=>{
+    let g = `<circle cx="${X(0)}" cy="${Z(0)}" r="5" style="fill:var(--panel);stroke:var(--ink);stroke-width:1.5"/><text x="${X(0)+10}" y="${Z(0)-8}" class="lbl-m">origin = center</text>`;
+    g += dimH(X(-21),X(21),Z(-28)-22,Z(-28)-6,'42');
+    g += dimV(Z(-28),Z(28),X(21)+30,X(21)+6,'56','lbl','var(--ink)','arwi','r');
+    return g;
+  }, 'Center rectangle 42 by 56 mm centered on the origin', {});
+}
+
+function finSketch(){
+  return topBase((X,Z,s)=>{
+    let g = `<rect x="${X(-21)}" y="${Z(-20)}" width="${2*s}" height="${40*s}" style="fill:var(--layout);fill-opacity:.25;stroke:var(--ink);stroke-width:2.2"/>`;
+    g += dimH(X(-21),X(-19),Z(-28)-22,Z(-20)-6,'2');
+    g += dimV(Z(-20),Z(20),X(-21)-26,X(-21)-6,'40');
+    g += dimV(Z(20),Z(28),X(-21)-26,X(-21)-6,'8');
+    g += `<text x="${X(-19)+10}" y="${Z(0)}" class="lbl-a">first fin</text><text x="${X(-19)+10}" y="${Z(0)+18}" class="lbl-m">left side on the</text><text x="${X(-19)+10}" y="${Z(0)+34}" class="lbl-m">projected edge</text>`;
+    g += `<text x="${X(8)}" y="${Z(-28)-30}" text-anchor="middle" class="lbl" style="fill:var(--sk-proj)">projected edges (purple)</text>`;
+    return g;
+  }, 'Top face of the base with one 2 by 40 mm rectangle on the left edge, 8 mm in from the front and back', {proj:true});
+}
+
+function holeSketch(){
+  return topBase((X,Z,s)=>{
+    let g = '';
+    for (let i=0;i<9;i++){ const x0 = -21+5*i; g += `<rect x="${X(x0)}" y="${Z(-20)}" width="${2*s}" height="${40*s}" style="fill:var(--grid);stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3"/>`; }
+    g += `<circle cx="${X(-16)}" cy="${Z(24)}" r="4.5" style="fill:var(--ink)"/>`;
+    g += dimH(X(-21),X(-16),Z(28)+24,Z(24)+8,'5');
+    g += dimV(Z(24),Z(28),X(-21)-24,X(-16)-8,'4');
+    g += `<text x="${X(-16)+12}" y="${Z(24)+4}" class="lbl-a">one point, front-left flange</text>`;
+    g += `<text x="${X(0)}" y="${Z(0)+4}" text-anchor="middle" class="lbl-m">fins (seen from above)</text>`;
+    return g;
+  }, 'Top face of the base with one hole point 5 mm from the left edge and 4 mm from the front edge', {proj:true});
+}
+
+function mirrorFig(){
+  return topBase((X,Z,s)=>{
+    let g = '';
+    for (let i=0;i<9;i++){ const x0 = -21+5*i; g += `<rect x="${X(x0)}" y="${Z(-20)}" width="${2*s}" height="${40*s}" style="fill:var(--grid);stroke:var(--muted);stroke-width:1"/>`; }
+    g += `<line x1="${X(0)}" y1="${Z(-28)-16}" x2="${X(0)}" y2="${Z(28)+16}" style="stroke:var(--layout);stroke-width:1.6;stroke-dasharray:12 3 2 3"/><text x="${X(0)}" y="${Z(-28)-22}" text-anchor="middle" class="lbl-a">YZ plane (mirror 1)</text>`;
+    g += `<line x1="${X(-21)-16}" y1="${Z(0)}" x2="${X(21)+16}" y2="${Z(0)}" style="stroke:var(--warn);stroke-width:1.6;stroke-dasharray:12 3 2 3"/><text x="${X(21)+20}" y="${Z(0)-6}" class="lbl-w">XY plane</text><text x="${X(21)+20}" y="${Z(0)+12}" class="lbl-w">(mirror 2)</text>`;
+    const hole = (x,z,fill,label) => `<circle cx="${X(x)}" cy="${Z(z)}" r="${1.7*s+1}" style="fill:${fill};stroke:var(--ink);stroke-width:1.2"/><text x="${X(x)}" y="${Z(z)+(z>0?-14:22)}" text-anchor="middle" class="lbl">${label}</text>`;
+    g += hole(-16,24,'var(--ink)','1') + hole(16,24,'var(--layout)','2') + hole(-16,-24,'var(--warn)','3') + hole(16,-24,'var(--warn)','4');
+    g += `<path d="M${X(-12)} ${Z(24)} Q ${X(0)} ${Z(24)+18} ${X(12)} ${Z(24)}" style="fill:none;stroke:var(--layout);stroke-width:1.4" marker-end="url(#arw)"/>`;
+    return g;
+  }, 'Mirror the first hole across the YZ plane to make two, then mirror both across the XY plane to make four', {});
+}
+
+// Print orientation: front views
+function orientFig(){
+  const front = (ox, oy, s, rot) => {
+    let pts = [];
+    const R = rot ? ([x,y]) => [ox + y*s, oy - (x+21)*s] : ([x,y]) => [ox + (x+21)*s, oy - y*s];
+    const rect = (x0,y0,w,h,st) => { const a = R([x0,y0]), b = R([x0+w,y0+h]); return `<rect x="${Math.min(a[0],b[0])}" y="${Math.min(a[1],b[1])}" width="${Math.abs(b[0]-a[0])}" height="${Math.abs(b[1]-a[1])}" style="${st}"/>`; };
+    return {rect};
+  };
+  let g = '';
+  const A = front(30, 220, 4.2, false);
+  g += A.rect(-21,0,42,4,'fill:var(--ok-tint);stroke:var(--ok);stroke-width:2');
+  for (let i=0;i<9;i++) g += A.rect(-21+5*i,4,2,16,'fill:var(--ok-tint);stroke:var(--ok);stroke-width:2');
+  g += `<line x1="10" y1="221" x2="230" y2="221" style="stroke:var(--ink);stroke-width:3"/><text x="120" y="244" text-anchor="middle" class="lbl-m">build plate</text>`;
+  g += `<text x="10" y="40" class="lbl" style="fill:var(--ok);font-weight:500">YES: base down, fins up</text><text x="10" y="58" class="lbl-m">every fin grows straight up</text>`;
+  const B = front(300, 221, 3.6, true);
+  g += B.rect(-21,0,42,4,'fill:var(--warn-tint);stroke:var(--warn);stroke-width:2');
+  for (let i=0;i<9;i++) g += B.rect(-21+5*i,4,2,16,'fill:var(--warn-tint);stroke:var(--warn);stroke-width:2');
+  g += `<line x1="290" y1="222" x2="560" y2="222" style="stroke:var(--ink);stroke-width:3"/>`;
+  g += `<text x="300" y="40" class="lbl" style="fill:var(--warn);font-weight:500">NO: on its side</text><text x="300" y="58" class="lbl-m">each fin is a 16 mm shelf in mid-air</text>`;
+  return `<svg class="big" viewBox="0 0 580 260" role="img" aria-label="Print orientation: base on the plate with fins pointing up; on its side every fin becomes an unsupported overhang">${g}</svg>`;
+}
+
+// Expert: round LED heat sink, top view
+function roundFig(n){
+  const s = 6, cx = 200, cy = 180, P = (r,a) => [cx + r*s*Math.cos(a), cy - r*s*Math.sin(a)];
+  let g = `<circle cx="${cx}" cy="${cy}" r="${20*s}" style="fill:var(--layout-tint);stroke:var(--ink);stroke-width:1.8"/>`;
+  for (let i=0;i<n;i++){
+    const a = 2*Math.PI*i/12, ca = Math.cos(a), sa = Math.sin(a);
+    const pts = [[6,-1],[20,-1],[20,1],[6,1]].map(([r,w]) => [cx + (r*ca - w*sa)*s, cy - (r*sa + w*ca)*s]);
+    g += `<polygon points="${pts.map(q=>q.map(f).join(',')).join(' ')}" style="fill:${i===0?'var(--layout)':'var(--face-side)'};fill-opacity:${i===0?.45:1};stroke:var(--ink);stroke-width:1.1"/>`;
+  }
+  g += `<circle cx="${cx}" cy="${cy}" r="${1.7*s}" style="fill:var(--hole)"/>`;
+  g += `<line x1="${cx-20*s-14}" y1="${cy}" x2="${cx+20*s+14}" y2="${cy}" style="${cen}"/><line x1="${cx}" y1="${cy-20*s-14}" x2="${cx}" y2="${cy+20*s+14}" style="${cen}"/>`;
+  g += dimH(cx+6*s, cx+20*s, cy-20*s-6, cy-10, '14');
+  g += dimH(cx, cx+6*s, cy+20*s+26, cy+12, '6');
+  g += `<line x1="${P(20,Math.PI*0.75)[0]}" y1="${P(20,Math.PI*0.75)[1]}" x2="40" y2="30" style="stroke:var(--ink);stroke-width:1"/><text x="36" y="24" class="lbl">Ø40 × 4 BASE</text>`;
+  g += `<text x="${cx+20*s+20}" y="${cy-30}" class="lbl-a">fin 1: 2 × 14,</text><text x="${cx+20*s+20}" y="${cy-12}" class="lbl-a">15 tall</text>`;
+  g += `<text x="${cx-6}" y="${cy+20*s+60}" text-anchor="middle" class="lbl-m">Ø3.4 center hole · overall height 19</text>`;
+  return `<svg viewBox="0 0 440 400" role="img" aria-label="Top view of a round 40 mm heat sink with ${n} radial fins">${defs()}${g}</svg>`;
+}
+
+// ---------------- operations ----------------
+const pathHtml = a => `<div class="path">${a.map((s,i)=>(i?'<span class="arr">›</span>':'')+`<span>${s}</span>`).join('')}</div>`;
+const OPS = [
+ {num:'OP 00', title:'Read the print', tier:'core', wide:true, fig:drawingFig, cap:'Drawing HS-05. Top view above, front view below. Dashed lines are hidden edges (the holes). All dimensions in mm.',
+  do:['This drawing is the whole job. Every number you type today comes from it.','Count the fins and find their spacing. 5 TYP means each fin starts 5 mm after the one before it, every time.','Find the four holes. They sit on the flat strips at each end, where there are no fins.'],
+  why:'Heat sinks pull heat away from chips. Every laptop, game console, LED light and EV charger has one. The real part is aluminum pushed through a shaped die, like Play-Doh, which is why heat sink fins are straight and evenly spaced. Ours is a PLA prototype to check size, screw holes and airflow gaps before paying for metal.',
+  quiz:{q:'Heat leaves through the surface. The flat top of the base is 42 × 56 = 2,352 mm². Each fin adds two side faces of 16 × 40 mm. How much area do the 9 fins add, counting only those sides?',
+   o:['640 mm²','1,280 mm²','11,520 mm²','23,040 mm²'],a:2,
+   e:'9 fins × 2 sides × (16 × 40) = 11,520 mm². That is about 5× the flat plate, which is the whole reason fins exist.'}},
+ {num:'OP 10', title:'Set up the file', tier:'core', fig:unitsFig, cap:'Check units before you draw a single line.',
+  path:['Browser','Document Settings','Units'],
+  do:['Start a new design.','In the Browser, expand <b>Document Settings</b>. Hover over <b>Units</b>, click the pencil, choose <span class="val">Millimeter</span>.','Save right away as <span class="val">Last_HeatSink</span> in the class project.'],
+  watch:'Left in inches, this part comes out 25 times too big and Fusion will not warn you.',
+  check:'The Browser reads Units: Millimeter, and the file has your name, not "Untitled".'},
+ {num:'OP 20', title:'Sketch the base', tier:'core', fig:baseSketch, cap:'A center rectangle puts the origin in the middle of the part. That pays off in OP 80.',
+  path:['Sketch','Create','Rectangle','Center Rectangle'],
+  do:['Click <b>Create Sketch</b> and pick the flat plane, the one parallel to the <b>TOP</b> of the ViewCube.','<b>Sketch › Create › Rectangle › Center Rectangle</b>. Click the origin first, then drag out a corner.','Press <kbd>D</kbd>. Width <span class="val">42</span>, length <span class="val">56</span>.'],
+  why:'Centering the base on the origin means the origin planes cut the part exactly in half. Symmetric parts are easier to mirror and easier to change later.',
+  watch:'A plain 2-point rectangle started at the origin puts the origin in a corner. The mirror step will then put holes off the part.',
+  check:'All four lines are black and the sketch shows a lock icon.'},
+ {num:'OP 30', title:'Extrude the base 4 mm', tier:'core', fig:()=>isoFig({fins:0,hlBase:true,labels:[{at:[21,2,28],dx:40,dy:30,text:'4 mm',cls:'lbl-a'}],aria:'The base plate extruded 4 mm'}), cap:'A flat plate, 42 × 56 × 4.',
+  path:['Solid','Create','Extrude'], key:'E',
+  do:['Finish Sketch. Press <kbd>E</kbd> and click inside the rectangle.','Distance <span class="val">4 mm</span>, upward, Operation <b>New Body</b>. OK.'],
+  check:'The Browser shows Bodies › Body1, and the plate sits on top of the grid, not below it.'},
+ {num:'OP 40', title:'Sketch the first fin', tier:'core', fig:finSketch, cap:'One fin only. The pattern makes the other eight.', legend:false,
+  path:['Create Sketch','top face of base'], key:'R',
+  do:['<b>Create Sketch</b> and click the top face of the plate. Press <kbd>P</kbd> and click the same face, so its edges turn purple.','Press <kbd>R</kbd> (2-Point Rectangle). Start on the left purple edge and draw a thin rectangle.','Press <kbd>D</kbd>. Width <span class="val">2</span>, length <span class="val">40</span>, and <span class="val">8</span> from the front edge.'],
+  watch:'The rectangle\'s left side must sit on the projected left edge. If it floats even a little, the last fin will hang off the far side.',
+  check:'The rectangle is black (locked) and touches the left edge.'},
+ {num:'OP 50', title:'Extrude the fin 16 mm', tier:'core', fig:()=>isoFig({fins:1,hlFin:0,labels:[{at:[-19,20,0],dx:50,dy:-30,text:'16 mm, Join',cls:'lbl-a'}],aria:'One fin standing on the base'}), cap:'One fin, joined to the base.',
+  path:['Solid','Create','Extrude'], key:'E',
+  do:['Finish Sketch. Press <kbd>E</kbd> and click the thin rectangle.','Distance <span class="val">16 mm</span>, upward, Operation <b>Join</b>. OK.','Right-click the new Extrude in the timeline › <b>Rename</b> it <span class="val">Fin</span>. You will pick it by name in the next step.'],
+  watch:'20 is the overall height on the drawing, base included. The fin itself is 20 − 4 = 16.',
+  check:'Still one body in the Browser, with one fin standing on it.'},
+ {num:'OP 60', title:'Pattern the fins', tier:'core', fig:()=>`<div class="figstack">${isoFig({fins:9,hlFin:'all',aria:'Nine fins after the rectangular pattern'})}${dialogFig('Rectangular Pattern',[['Pattern Type','Features'],['Objects','Fin (from timeline)'],['Directions','bottom front edge'],['Distance Type','Spacing',true],['Quantity','9',true],['Distance','5 mm',true]])}</div>`, cap:'One fin in, nine fins out. Quantity counts the original.',
+  path:['Solid','Create','Pattern','Rectangular Pattern'],
+  do:['Open <b>Rectangular Pattern</b>. Pattern Type <b>Features</b>, then click <b>Fin</b> in the timeline.','Directions: click the front bottom edge of the plate, the one running left to right.','Set Distance Type to <span class="val">Spacing</span>, Quantity <span class="val">9</span>, Distance <span class="val">5 mm</span>. If the preview fins run off the left side, type <span class="val">-5</span>.','Click OK.'],
+  why:'Engineers do not model nine fins by hand. When the customer asks for eleven, they change one number. That is OP 110.',
+  watch:'Distance Type starts on Extent, which squeezes all nine fins into 5 mm and melts them into one block. Switch it to Spacing.',
+  check:'Nine separate fins with 3 mm gaps, and the last one ends flush with the right edge.',
+  quiz:{q:'You set Quantity 9 and Distance 5, but left Distance Type on Extent. What do you get?',o:['Nine fins 5 mm apart, same as Spacing.','Nine fins crammed into 5 mm that merge into one thick block.','Five fins.','An error message.'],a:1,e:'Extent means "fit all of them inside this distance." Spacing means "this far apart." The self-check catches it as a big missing volume.'}},
+ {num:'OP 70', title:'Place the first mounting hole', tier:'core', fig:holeSketch, cap:'Looking straight down at the top face. Holes go on the flat strip in front of the fins.',
+  path:['Solid','Create','Hole'], key:'H',
+  do:['<b>Create Sketch</b> on the top face of the plate, press <kbd>P</kbd> and project it.','<b>Sketch › Create › Point</b>. One point on the front-left strip. Dimension it <span class="val">5</span> from the left edge and <span class="val">4</span> from the front edge. Finish Sketch.','Press <kbd>H</kbd>. From Sketch, click the point. Simple, <span class="val">3.4 mm</span>, Extents <b>All</b>. OK.'],
+  why:'Heat sinks bolt down with M3 screws, which are 3 mm across. A screw needs a slightly bigger hole to slide through, and 3.4 mm is the standard clearance hole for M3.',
+  watch:'Extents left on Distance makes a blind hole. A screw cannot go through it.',
+  check:'One hole you can see through when you orbit underneath.'},
+ {num:'OP 80', title:'Mirror the hole twice', tier:'core', fig:mirrorFig, cap:'Mirror 1 copies hole 1 to the right. Mirror 2 copies both to the back.',
+  path:['Solid','Create','Mirror'],
+  do:['Open <b>Mirror</b>. Pattern Type <b>Features</b>. Objects: click the <b>Hole</b> in the timeline.','Mirror Plane: in the Browser open <b>Origin</b> and click <b>YZ</b> (the plane standing up through the middle, side to side). OK. You now have 2 holes.','Open Mirror again. Objects: both hole features (the Hole and Mirror1). Mirror Plane: <b>XY</b>. OK. You now have 4.'],
+  why:'Mirrored holes stay matched. If the drawing changes the first hole, the copies follow it, so the screw pattern can never come out lopsided.',
+  watch:'The origin planes are hidden inside the part. Pick them in the Browser under Origin, not by clicking in the model.',
+  check:'Four holes, one in each corner strip, 32 mm apart side to side and 48 mm front to back.',
+  quiz:{q:'Why mirror one hole instead of sketching four points?',o:['Mirror makes the holes bigger.','The copies are tied to the first hole, so a change to it updates all four and they stay symmetric.','Fusion only allows one hole per sketch.','It uses less filament.'],a:1,e:'This is design intent: the model knows the holes are a matched set, not four numbers that happen to agree.'}},
+ {num:'OP 90', title:'Verify the volume', tier:'core', fig:()=>isoFig({fins:9,holes:true,aria:'Finished nine-fin heat sink with four mounting holes'}), cap:'Finished Core part.',
+  path:['Browser','Bodies','right-click Body1','Properties'],
+  do:['Right-click the body › <b>Properties</b>. Find <b>Volume</b>.','Type it into the self-check below. If it fails, the message names the most likely mistake.'],
+  why:'Inspectors do not eyeball parts. They measure against the drawing. One number that proves every feature is right is the same idea.',
+  check:'Self-check shows PASS for Core.'},
+ {num:'OP 100', title:'Export and print', tier:'core', fig:orientFig, cap:'Print it the way it sits on the drawing: base on the plate, fins up.',
+  path:['Browser','right-click body','Save As Mesh','3MF'],
+  do:['Right-click the body › <b>Save As Mesh</b>. Format <span class="val">3MF</span>. Name it <span class="val">Period_Last_HeatSink_v1</span>.','In Bambu Studio, import it. It should already sit base-down. If not, use <b>Lay on face</b> and click the bottom of the base.','PLA, supports <b>off</b>. Slice and write down the print time. It has to be under 2 hours.','Export the plate as 3MF and submit it to the class folder.'],
+  watch:'On its side, each fin is a 16 mm shelf with nothing under it. The slicer will want supports, and they are almost impossible to pull out of 3 mm gaps.',
+  check:'Base down, no supports, under 2 hours, file named correctly.',
+  quiz:{q:'Why print with the fins pointing straight up?',o:['It prints in a different color.','Each fin grows straight up from the base, so nothing hangs in mid-air and no supports are needed.','The printer cannot print wide parts.','It makes the fins thicker.'],a:1,e:'The design rule is 45° or less of overhang without supports. Vertical fins have zero overhang.'}},
+ {num:'OP 110', title:'Rev B: the customer wants 11 fins', tier:'adv', fig:()=>`<div class="figstack">${isoFig({fins:11,pitch:4,holes:true,hlFin:'all',aria:'Rev B heat sink with eleven fins at 4 mm spacing'})}${dialogFig('Edit Rectangular Pattern',[['Distance Type','Spacing'],['Quantity','11',true],['Distance','4 mm',true]])}</div>`, cap:'Same file, two numbers changed.',
+  path:['Timeline','double-click the pattern'],
+  do:['Save a version first (<kbd>Ctrl</kbd> + <kbd>S</kbd>) and type <span class="val">rev A, 9 fins</span> in the description.','Double-click the Rectangular Pattern in the timeline. Quantity <span class="val">11</span>, Distance <span class="val">4 mm</span>. OK.','Check that the last fin still ends flush with the right edge: 2 + 10 × 4 = 42.','Save a new version: <span class="val">rev B, 11 fins</span>. Run the self-check on Advanced.'],
+  why:'Real engineering changes come in like this: an email that says "more cooling, same footprint." Because you used a pattern, the change takes a minute instead of a rebuild.',
+  watch:'More fins is not always better. The gaps are now 2 mm. Much tighter and air cannot flow through, so the heat sink gets worse, not better.',
+  check:'Eleven fins, 2 mm gaps, holes untouched. Self-check passes for Advanced.',
+  quiz:{q:'Why not go to 21 fins at 2 mm spacing for even more area?',o:['Fusion cannot pattern 21 features.','The gaps would be 0 mm. The fins would merge into one solid block and no air could pass.','It would print too fast.','The screw holes would move.'],a:1,e:'2 mm fins at 2 mm spacing leave no gap at all. Area only helps if air can reach it.'}},
+ {num:'OP 120', title:'Expert: round LED heat sink', tier:'exp', fig:()=>`<div class="figstack">${roundFig(12)}${dialogFig('Circular Pattern',[['Pattern Type','Features'],['Objects','Fin'],['Axis','Y (origin)',true],['Type','Full'],['Quantity','12',true]])}</div>`, cap:'LED downlights and grow lights use round heat sinks like this. One fin, patterned around the center.',
+  path:['Solid','Create','Pattern','Circular Pattern'],
+  do:['New design, millimeters. Name it <span class="val">Last_RoundHeatSink</span>.','On the top plane, sketch a circle at the origin, <span class="val">Ø40</span>. Extrude <span class="val">4 mm</span>, New Body.','Sketch on the top face: one fin, a rectangle <span class="val">2</span> wide and <span class="val">14</span> long, starting <span class="val">6</span> from the center and centered on the red X axis (1 mm each side). Extrude <span class="val">15 mm</span>, Join. Rename it Fin.','<b>Circular Pattern</b>: Features, Fin, Axis <b>Y</b> from the Browser Origin, Type <b>Full</b>, Quantity <span class="val">12</span>.','Hole at the center: sketch a point on the origin, Hole <span class="val">3.4 mm</span>, Extents All.'],
+  why:'Round parts show up wherever something spins or shines: LED heat sinks, fan hubs, bolt circles on wheels. A circular pattern handles all of them.',
+  watch:'Overall height on the round part is 19 (4 + 15). Extrude the fin 15, not 19.',
+  check:'Twelve fins evenly spaced 30° apart, a hole in the middle, timeline with no warnings. Self-check passes for Expert.'}
+];
+
+const tierTag = t => t==='adv'?'<span class="tier adv">Advanced</span>':t==='exp'?'<span class="tier exp">Expert</span>':'<span class="tier">Core</span>';
+let cur = 0, done = new Set();
+try{ const s = JSON.parse(localStorage.getItem('hs05')||'{}'); if (Number.isInteger(s.cur) && s.cur < OPS.length) cur = s.cur; if (Array.isArray(s.done)) done = new Set(s.done); }catch(e){}
+const save = () => { try{ localStorage.setItem('hs05', JSON.stringify({cur, done:[...done]})); }catch(e){} };
+
+const nav = document.getElementById('opsNav');
+function renderNav(){
+  let h = '', last = '';
+  OPS.forEach((o,i)=>{
+    if (o.tier!==last && o.tier!=='core') h += `<div class="sep">${o.tier==='adv'?'Advanced tier':'Expert tier'}</div>`;
+    last = o.tier;
+    h += `<button type="button" data-i="${i}" ${i===cur?'aria-current="step"':''} class="${done.has(i)?'done':''}"><span class="n">${o.num}</span><span>${o.title}</span></button>`;
+  });
+  nav.innerHTML = h;
+}
+nav.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) go(+b.dataset.i); });
+
+const panel = document.getElementById('opPanel');
+function renderOp(){
+  const o = OPS[cur];
+  const legend = o.legend ? `<div class="legend"><span><i style="background:var(--sk-free)"></i>free to move</span><span><i style="background:var(--ink)"></i>locked</span></div>` : '';
+  const quiz = o.quiz ? `<div class="quiz" id="quiz"><p>${o.quiz.q}</p><div class="opts">${o.quiz.o.map((t,i)=>`<button type="button" data-q="${i}">${t}</button>`).join('')}</div><div class="fb" id="fb" hidden></div></div>` : '';
+  panel.innerHTML = `
+   <div class="op-head"><span class="op-num">${o.num}</span><h2 class="op-title">${o.title}</h2><span class="op-tier">${tierTag(o.tier)}</span></div>
+   <div class="op-body${o.wide?' wide':''}">
+     <figure>${o.fig()}${legend}<figcaption>${o.cap}</figcaption></figure>
+     <div class="text">
+       ${o.path ? pathHtml(o.path) + (o.key?`<div style="font-size:14px;color:var(--muted)">Shortcut <kbd>${o.key}</kbd></div>`:'') : ''}
+       <ol class="do">${o.do.map(d=>`<li>${d}</li>`).join('')}</ol>
+       ${o.why?`<div class="note why"><h3>Why it matters</h3><p>${o.why}</p></div>`:''}
+       ${o.watch?`<div class="note watch"><h3>Watch out</h3><p>${o.watch}</p></div>`:''}
+       ${o.check?`<div class="note check"><h3>Check before moving on</h3><p>${o.check}</p></div>`:''}
+       ${quiz}
+     </div>
+   </div>
+   <div class="op-foot">
+     <button class="btn" type="button" id="prev" ${cur===0?'disabled':''}>← Previous</button>
+     <button class="btn primary" type="button" id="next">${cur===OPS.length-1?'Mark done':'Done, next →'}</button>
+   </div>`;
+  document.getElementById('prev').onclick = () => go(cur-1);
+  document.getElementById('next').onclick = () => { done.add(cur); save(); if (cur < OPS.length-1) go(cur+1); else renderNav(); };
+  const q = document.getElementById('quiz');
+  if (q) q.addEventListener('click', e => {
+    const b = e.target.closest('button[data-q]'); if (!b) return;
+    const i = +b.dataset.q, fb = document.getElementById('fb');
+    q.querySelectorAll('button').forEach(x=>x.classList.remove('right','wrong'));
+    b.classList.add(i===o.quiz.a?'right':'wrong');
+    fb.hidden = false;
+    fb.textContent = i===o.quiz.a ? 'Correct. ' + o.quiz.e : 'Not quite. Try again.';
+  });
+}
+function go(i){ if (i<0||i>=OPS.length) return; cur = i; save(); renderNav(); renderOp(); }
+document.addEventListener('keydown', e => {
+  if (['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName)) return;
+  if (e.key==='ArrowRight') go(cur+1); if (e.key==='ArrowLeft') go(cur-1);
+});
+renderNav(); renderOp();
+
+// ---------------- self-check ----------------
+const TIERS = {
+  core:{name:'Core', exp:vol(9)},
+  adv:{name:'Advanced', exp:vol(11)},
+  exp:{name:'Expert', exp:volRound(12)}
+};
+function diagnose(diff, key){
+  // d = your volume minus the correct volume for that mistake
+  let c;
+  if (key==='exp') c = [
+    {d:-RFIN, m:'One fin short. Check the Circular Pattern quantity is 12 and Type is Full.'},
+    {d:RFIN, m:'One fin too many. Quantity should be 12.'},
+    {d:12*2*14*4, m:'The fins are 4 mm too tall. 19 is the overall height; extrude the fin 15.'},
+    {d:HOLE, m:'The center hole is missing or blind. Check Extents: All.'},
+    {d:-11*RFIN, m:'Only one fin. The Circular Pattern is missing or suppressed.'},
+  ];
+  else {
+    const n = key==='adv' ? 11 : 9, p = key==='adv' ? 4 : 5;
+    c = [
+      {d:-FIN, m:'One fin short. Check the pattern Quantity.'},
+      {d:-2*FIN, m: key==='adv' ? 'That is the rev A volume (9 fins). Edit the pattern: Quantity 11, Distance 4.' : 'Two fins short. Check the pattern Quantity is 9.'},
+      {d:FIN, m:'One fin too many. Check the pattern Quantity, and that no fin hangs off the edge.'},
+      {d:(p+2)*16*40 - n*FIN, m:'The fins merged into one block. Set Distance Type to Spacing in the Rectangular Pattern.'},
+      {d:n*2*4*40, m:'The fins are 4 mm too tall. 20 is the overall height; extrude the fin 16.'},
+      {d:n*2*16*16, m:'The fins run the full length of the base. They should be 40 long, stopping 8 mm from each end.'},
+      {d:HOLE, m:'One hole is missing or does not go all the way through. Check Extents: All.'},
+      {d:2*HOLE, m:'Two holes are missing. Did you do the second mirror across the XY plane?'},
+      {d:3*HOLE, m:'Only one hole. The mirror steps (OP 80) are missing.'},
+      {d:4*HOLE, m:'No holes cut through. Check OP 70 and OP 80.'},
+      {d:4*Math.PI*(2.89-2.25)*4, m:'The holes look like Ø3 instead of Ø3.4. An M3 screw needs the 3.4 clearance hole.'},
+    ];
+    if (key==='core') c.push({d:2*FIN, m:'That is the rev B volume (11 fins). For Core, the pattern is 9 fins at 5 mm.'});
+  }
+  let best = null;
+  for (const x of c){ const e = Math.abs(diff - x.d); if (e < Math.max(3, Math.abs(x.d)*0.03) && (!best || e < best.e)) best = {...x, e}; }
+  return best ? best.m : 'The difference does not match a common mistake. Recheck each feature against the drawing, one at a time in the timeline.';
+}
+document.getElementById('scForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const out = document.getElementById('scOut'), key = document.getElementById('scTier').value, t = TIERS[key];
+  let raw = document.getElementById('scVol').value.replace(/[,\s]/g,'').replace(/mm\^?3|mm³|cm\^?3|cm³/ig,'');
+  let v = parseFloat(raw);
+  out.hidden = false;
+  if (!isFinite(v) || v <= 0){ out.className = 'result fail'; out.innerHTML = 'Type the volume as a number, for example <b>12345.678</b>.'; return; }
+  let note = '';
+  if (v < 1000){ v *= 1000; note = ' (read as cm³ and converted to mm³)'; }
+  const diff = v - t.exp, pct = Math.abs(diff)/t.exp*100;
+  if (pct <= 0.1){ out.className = 'result pass'; out.innerHTML = `<b>PASS</b> · ${t.name}. Your model is within 0.1% of the drawing${note}.`; }
+  else { out.className = 'result fail'; out.innerHTML = `<b>NOT YET</b> · ${t.name}. Off by ${pct.toFixed(2)}% (${diff>0?'too much':'too little'} material)${note}.<br>${diagnose(diff,key)}`; }
+});
+})();
+</script>
+
+</body></html>

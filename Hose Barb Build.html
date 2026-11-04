@@ -1,0 +1,548 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Hose Barb Build</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a shop work-instruction sheet — operation list on the left, one operation at a time on the right, self-check always below. */
+:root{
+  --paper:#eceff3; --panel:#f9fafb; --ink:#16202a; --muted:#566370; --rule:#c8d0d8;
+  --layout:#1d4db3; --layout-tint:rgba(29,77,179,.10);
+  --warn:#b4470d; --warn-tint:rgba(180,71,13,.10); --ok:#22744a; --ok-tint:rgba(34,116,74,.11);
+  --face-top:#e9eef3; --face-side:#a6b4c2; --face-front:#c9d3dd; --hole:#25303b; --edge:#283340;
+  --sk-free:#2a6fd6; --sk-proj:#8a3fbf; --grid:#dde3e9;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f1418; --panel:#161d24; --ink:#e5eaef; --muted:#93a1ae; --rule:#2c3742;
+  --layout:#7aa2ff; --layout-tint:rgba(122,162,255,.14);
+  --warn:#f08a4b; --warn-tint:rgba(240,138,75,.13); --ok:#5cc489; --ok-tint:rgba(92,196,137,.13);
+  --face-top:#647281; --face-side:#2e3843; --face-front:#46525f; --hole:#090c0f; --edge:#cfd8e0;
+  --sk-free:#5b9bff; --sk-proj:#c38cf0; --grid:#212a33; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f1418; --panel:#161d24; --ink:#e5eaef; --muted:#93a1ae; --rule:#2c3742;
+  --layout:#7aa2ff; --layout-tint:rgba(122,162,255,.14);
+  --warn:#f08a4b; --warn-tint:rgba(240,138,75,.13); --ok:#5cc489; --ok-tint:rgba(92,196,137,.13);
+  --face-top:#647281; --face-side:#2e3843; --face-front:#46525f; --hole:#090c0f; --edge:#cfd8e0;
+  --sk-free:#5b9bff; --sk-proj:#c38cf0; --grid:#212a33; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:20px}
+header{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:12px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,6vw,52px);line-height:1;margin:4px 0 0;letter-spacing:.01em;text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:500}
+.tiers{display:flex;gap:6px;flex-wrap:wrap}
+.tier{font-family:var(--f-mono);font-size:12px;border:1px solid var(--rule);border-radius:3px;padding:2px 8px;color:var(--muted)}
+.tier.adv{border-color:var(--layout);color:var(--layout)}
+.tier.exp{border-color:var(--ink);color:var(--ink)}
+
+.main{display:grid;grid-template-columns:250px minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.main{grid-template-columns:minmax(0,1fr)}}
+nav.ops{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);display:grid;gap:2px;background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:8px}
+@media (max-width:820px){nav.ops{position:static;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}}
+nav.ops button{all:unset;cursor:pointer;display:grid;grid-template-columns:58px 1fr;gap:4px;align-items:baseline;padding:7px 8px;border-radius:4px;font-size:14px;line-height:1.25}
+nav.ops button .n{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+nav.ops button:hover{background:var(--layout-tint)}
+nav.ops button:focus-visible{outline:2px solid var(--layout);outline-offset:1px}
+nav.ops button[aria-current="step"]{background:var(--layout);color:var(--panel)}
+nav.ops button[aria-current="step"] .n{color:var(--panel)}
+nav.ops button.done .n::after{content:" ✓";color:var(--ok)}
+nav.ops button[aria-current="step"].done .n::after{color:var(--panel)}
+nav.ops .sep{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 8px 2px}
+
+.op{background:var(--panel);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.op-head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;padding:16px 20px;border-bottom:1px solid var(--rule)}
+.op-num{font-family:var(--f-mono);font-size:14px;color:var(--layout);font-weight:500}
+.op-title{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.05;margin:0;text-wrap:balance}
+.op-tier{margin-left:auto}
+.op-body{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:0}
+@media (max-width:1000px){.op-body{grid-template-columns:minmax(0,1fr)}}
+figure{margin:0;padding:16px;border-right:1px solid var(--rule);display:grid;gap:8px;align-content:start;background:
+  linear-gradient(var(--grid) 1px,transparent 1px) 0 0/24px 24px, linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/24px 24px, var(--panel)}
+@media (max-width:1000px){figure{border-right:0;border-bottom:1px solid var(--rule)}}
+figure svg{width:100%;height:auto;display:block;max-height:440px}
+figcaption{font-size:13px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
+.text{padding:16px 20px;display:grid;gap:16px;align-content:start;min-width:0}
+.path{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-family:var(--f-mono);font-size:13px}
+.path span{background:var(--paper);border:1px solid var(--rule);border-radius:3px;padding:1px 7px}
+.path .arr{border:0;background:none;padding:0 1px;color:var(--muted)}
+kbd{font-family:var(--f-mono);font-size:13px;border:1px solid var(--ink);border-bottom-width:2px;border-radius:3px;padding:0 6px;background:var(--panel)}
+ol.do{margin:0;padding-left:22px;display:grid;gap:8px}
+ol.do li{padding-left:2px}
+ol.do li::marker{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.val{font-family:var(--f-mono);font-size:.92em;background:var(--layout-tint);color:var(--ink);padding:0 4px;border-radius:2px;white-space:nowrap}
+.note{border-left:3px solid;padding:8px 12px;border-radius:0 4px 4px 0;font-size:15px}
+.note h3{margin:0 0 2px;font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.note p{margin:0}
+.note.watch{border-color:var(--warn);background:var(--warn-tint)} .note.watch h3{color:var(--warn)}
+.note.check{border-color:var(--ok);background:var(--ok-tint)} .note.check h3{color:var(--ok)}
+.note.why{border-color:var(--layout);background:var(--layout-tint)} .note.why h3{color:var(--layout)}
+.quiz{border:1px solid var(--rule);border-radius:4px;padding:12px}
+.quiz p{margin:0 0 8px;font-weight:600}
+.quiz .opts{display:grid;gap:6px}
+.quiz button{font:inherit;font-size:15px;text-align:left;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:4px;padding:7px 10px;cursor:pointer}
+.quiz button:hover{border-color:var(--layout)}
+.quiz button:focus-visible{outline:2px solid var(--layout)}
+.quiz button.right{border-color:var(--ok);background:var(--ok-tint)}
+.quiz button.wrong{border-color:var(--warn);background:var(--warn-tint)}
+.quiz .fb{margin-top:8px;font-size:14px;color:var(--muted)}
+.op-foot{display:flex;justify-content:space-between;gap:12px;padding:12px 20px;border-top:1px solid var(--rule)}
+.btn{font:inherit;font-weight:600;font-size:15px;border-radius:4px;padding:8px 16px;cursor:pointer;border:1px solid var(--ink);background:var(--panel);color:var(--ink)}
+.btn.primary{background:var(--layout);border-color:var(--layout);color:var(--panel)}
+.btn:disabled{opacity:.35;cursor:default}
+.btn:focus-visible{outline:2px solid var(--layout);outline-offset:2px}
+
+.check-card{background:var(--panel);border:1px solid var(--rule);border-top:3px solid var(--ink);border-radius:6px;padding:16px 20px;display:grid;gap:12px}
+.check-card h2{font-family:var(--f-display);font-size:26px;margin:0;line-height:1.1}
+.check-card .sub{margin:0;color:var(--muted);font-size:15px;max-width:65ch}
+.form{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+.field{display:grid;gap:4px}
+.field label{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+select,input{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:4px;padding:7px 10px}
+input{font-family:var(--f-mono);width:170px;font-variant-numeric:tabular-nums}
+select:focus-visible,input:focus-visible{outline:2px solid var(--layout);outline-offset:1px}
+.result{border-radius:4px;padding:10px 14px;font-size:15px}
+.result.pass{background:var(--ok-tint);border-left:3px solid var(--ok)}
+.result.fail{background:var(--warn-tint);border-left:3px solid var(--warn)}
+.result b{font-family:var(--f-mono);font-weight:500}
+svg text{font-family:var(--f-mono)}
+.lbl{fill:var(--ink);font-size:13px}
+.lbl-m{fill:var(--muted);font-size:12px}
+.lbl-a{fill:var(--layout);font-size:13px;font-weight:500}
+.lbl-w{fill:var(--warn);font-size:13px;font-weight:500}
+svg.big .lbl,svg.big .lbl-m,svg.big .lbl-a{font-size:17px}
+.op-body.wide{grid-template-columns:minmax(0,1fr)}
+.op-body.wide figure{border-right:0;border-bottom:1px solid var(--rule)}
+.op-body.wide figure svg{max-height:560px}
+@media (prefers-reduced-motion:no-preference){.op{animation:in .18s ease-out}@keyframes in{from{opacity:.6;transform:translateY(3px)}to{opacity:1;transform:none}}}
+</style>
+<style>
+.figstack{display:grid;gap:12px}
+table.pts{border-collapse:collapse;font-family:var(--f-mono);font-size:13px;width:100%;max-width:340px}
+table.pts th,table.pts td{border-bottom:1px solid var(--rule);padding:3px 8px;text-align:right}
+table.pts th{font-weight:500;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+table.pts td:first-child,table.pts th:first-child{text-align:left}
+table.pts tr.hl td{background:var(--layout-tint)}
+.tblwrap{overflow-x:auto}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Week 6 · Autodesk Fusion work instructions</div>
+      <h1>Hose Barb Coupler</h1>
+    </div>
+    <div class="meta">
+      <span>MATL <b>PLA</b> (proto)</span><span>UNITS <b>mm</b></span><span>TOL <b>±0.2</b></span><span>DWG <b>HB-06</b></span>
+    </div>
+  </header>
+
+  <div class="main">
+    <nav class="ops" id="opsNav" aria-label="Operations"></nav>
+    <div style="display:grid;gap:20px;min-width:0">
+      <article class="op" id="opPanel" aria-live="polite"></article>
+      <section class="check-card" id="selfCheck" aria-labelledby="scTitle">
+        <h2 id="scTitle">Self-check: is my model right?</h2>
+        <p class="sub">In Fusion, right-click your body in the Browser and choose <b>Properties</b>. Type the <b>Volume</b> here. A missing bore, a radius typed as a diameter or a half-turn revolve all change this number. Checked to within 0.1%.</p>
+        <form class="form" id="scForm">
+          <div class="field">
+            <label for="scTier">Which version</label>
+            <select id="scTier">
+              <option value="core">Core (straight coupler)</option>
+              <option value="adv">Advanced (tee)</option>
+              <option value="exp">Expert (3-way manifold)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="scVol">Volume from Fusion</label>
+            <input id="scVol" inputmode="decimal" autocomplete="off" placeholder="e.g. 1234.567">
+          </div>
+          <button class="btn primary" type="submit">Check</button>
+        </form>
+        <div id="scOut" hidden></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+const f = n => +n.toFixed(2);
+// Half profile of the coupler, (radius from axis, height) in mm
+const CORE = [[1.5,0],[3,0],[3.75,4],[3,4],[3.75,8],[3,8],[3,10],[6,13],[6,17],[3,20],[3,22],[3.75,22],[3,26],[3.75,26],[3,30],[1.5,30]];
+const OUTER = CORE.slice(1,-1);
+// Branch profile (distance along branch, radius from Axis1)
+const BR = [[4,1.5],[4,3],[8,3],[8,3.75],[12,3],[12,3.75],[16,3],[16,1.5]];
+
+const defs = () => `<defs><marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--layout)"/></marker><marker id="arwi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--ink)"/></marker>
+<pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" style="stroke:var(--ink);stroke-width:1"/></pattern>
+<linearGradient id="cylH" x1="0" x2="1" y1="0" y2="0"><stop offset="0" style="stop-color:var(--face-side)"/><stop offset=".38" style="stop-color:var(--face-top)"/><stop offset="1" style="stop-color:var(--face-side)"/></linearGradient>
+<linearGradient id="cylV" x1="0" x2="0" y1="0" y2="1"><stop offset="0" style="stop-color:var(--face-side)"/><stop offset=".38" style="stop-color:var(--face-top)"/><stop offset="1" style="stop-color:var(--face-side)"/></linearGradient>
+<radialGradient id="disc"><stop offset=".3" style="stop-color:var(--face-top)"/><stop offset="1" style="stop-color:var(--face-side)"/></radialGradient></defs>`;
+
+function dimH(x1,x2,yLine,yFrom,label,cls='lbl',col='var(--ink)',mk='arwi'){
+  return `<g style="stroke:${col};stroke-width:1"><line x1="${x1}" y1="${yFrom}" x2="${x1}" y2="${yLine+(yLine>yFrom?4:-4)}"/><line x1="${x2}" y1="${yFrom}" x2="${x2}" y2="${yLine+(yLine>yFrom?4:-4)}"/><line x1="${x1}" y1="${yLine}" x2="${x2}" y2="${yLine}" marker-start="url(#${mk})" marker-end="url(#${mk})"/></g><text x="${(x1+x2)/2}" y="${yLine-6}" text-anchor="middle" class="${cls}">${label}</text>`;
+}
+function dimV(y1,y2,xLine,xFrom,label,cls='lbl',col='var(--ink)',mk='arwi',side){
+  const tx = side==='r' ? xLine+8 : xLine-8;
+  return `<g style="stroke:${col};stroke-width:1"><line x1="${xFrom}" y1="${y1}" x2="${xLine+(xLine>xFrom?4:-4)}" y2="${y1}"/><line x1="${xFrom}" y1="${y2}" x2="${xLine+(xLine>xFrom?4:-4)}" y2="${y2}"/><line x1="${xLine}" y1="${y1}" x2="${xLine}" y2="${y2}" marker-start="url(#${mk})" marker-end="url(#${mk})"/></g><text x="${tx}" y="${(y1+y2)/2+4}" text-anchor="${side==='r'?'start':'end'}" class="${cls}">${label}</text>`;
+}
+const leader = (x1,y1,x2,y2,text,cls='lbl') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="stroke:var(--ink);stroke-width:1"/><text x="${x2+(x2>x1?4:-4)}" y="${y2+4}" text-anchor="${x2>x1?'start':'end'}" class="${cls}">${text}</text>`;
+const ink = 'stroke:var(--ink);stroke-width:1.6;fill:none';
+const cen = 'stroke:var(--muted);stroke-width:.8;stroke-dasharray:12 3 2 3;fill:none';
+const ptsStr = a => a.map(p=>p.map(f).join(',')).join(' ');
+// radius of the outer surface just above / below height y (max at a step)
+const edgeYs = [...new Set(OUTER.map(p=>p[1]))].filter(y=>y>0&&y<30);
+const rAt = y => Math.max(...OUTER.filter(p=>p[1]===y).map(p=>p[0]));
+
+// Side view of the coupler. mode: 'shade' (looks 3D), 'half' (left outside, right cut in half)
+function coupler(X, Y, mode, opts={}){
+  const right = OUTER.map(([r,y])=>[X(r),Y(y)]), left = OUTER.slice().reverse().map(([r,y])=>[X(-r),Y(y)]);
+  let g = '';
+  if (mode==='shade'){
+    g += `<polygon points="${ptsStr([...right,...left])}" style="fill:url(#cylH);stroke:var(--edge);stroke-width:1.2;stroke-linejoin:round"/>`;
+    for (const y of edgeYs){ const r = rAt(y); g += `<line x1="${X(-r)}" y1="${Y(y)}" x2="${X(r)}" y2="${Y(y)}" style="stroke:var(--edge);stroke-width:.9"/>`; }
+  } else {
+    const lh = OUTER.slice().reverse().map(([r,y])=>[X(-r),Y(y)]);
+    g += `<polygon points="${ptsStr([[X(0),Y(30)],...lh,[X(0),Y(0)]])}" style="${ink};fill:var(--panel)"/>`;
+    for (const y of edgeYs){ const r = rAt(y); g += `<line x1="${X(-r)}" y1="${Y(y)}" x2="${X(0)}" y2="${Y(y)}" style="stroke:var(--ink);stroke-width:1"/>`; }
+    g += `<polygon points="${ptsStr(CORE.map(([r,y])=>[X(r),Y(y)]))}" style="${ink};fill:url(#hatch)"/>`;
+    g += `<line x1="${X(-1.5)}" y1="${Y(0)}" x2="${X(-1.5)}" y2="${Y(30)}" style="stroke:var(--ink);stroke-width:1;stroke-dasharray:5 3"/>`;
+  }
+  g += `<line x1="${X(0)}" y1="${Y(0)+14}" x2="${X(0)}" y2="${Y(30)-14}" style="${cen}"/>`;
+  return g;
+}
+// Branch, seen from the front, pointing right along +X at height yc
+function branchSide(X, Y, yc, hl){
+  const top = BR.map(([x,r])=>[X(x),Y(yc+r)]).filter((_,i)=>i>0&&i<BR.length-1);
+  const bot = top.slice().reverse().map(([x,y])=>[x, Y(yc) + (Y(yc) - y)]);
+  let g = `<polygon points="${ptsStr([...top,...bot])}" style="fill:url(#cylV);stroke:var(--edge);stroke-width:1.2;stroke-linejoin:round"/>`;
+  for (const x of [8,12]) g += `<line x1="${X(x)}" y1="${Y(yc+3.75)}" x2="${X(x)}" y2="${Y(yc-3.75)}" style="stroke:var(--edge);stroke-width:.9"/>`;
+  if (hl) g += `<polygon points="${ptsStr([...top,...bot])}" style="fill:var(--layout);fill-opacity:.22;stroke:var(--layout);stroke-width:1.6"/>`;
+  return g;
+}
+
+// Engineering drawing HB-06
+function drawingFig(){
+  const s = 9, cx = 250, X = r=>cx+r*s, oy = 380, Y = y=>oy-y*s;
+  let g = coupler(X, Y, 'half');
+  g += dimV(Y(0),Y(30),X(-6)-110,X(-3)-6,'30');
+  g += dimV(Y(0),Y(4),X(-6)-40,X(-3)-6,'4');
+  g += dimV(Y(4),Y(8),X(-6)-40,X(-3.75)-6,'4');
+  g += dimV(Y(8),Y(10),X(-6)-40,X(-3)-6,'2');
+  g += dimV(Y(10),Y(20),X(-6)-66,X(-3)-6,'10');
+  g += dimV(Y(13),Y(17),X(-6)-14,X(-6)-4,'4');
+  g += leader(X(3.75),Y(4),X(6)+70,Y(4)+6,'Ø7.5 BARB, 4 PL');
+  g += leader(X(3),Y(9),X(6)+70,Y(9)+2,'Ø6');
+  g += leader(X(6),Y(15),X(6)+70,Y(15),'Ø12 COLLAR');
+  g += leader(X(4.5),Y(18.5),X(6)+70,Y(19)-4,'45° × 3, 2 PL');
+  g += leader(X(1.5),Y(28),X(6)+70,Y(28),'Ø3 THRU');
+  g += `<text x="${X(-3)-8}" y="${Y(30)-22}" text-anchor="end" class="lbl-m">OUTSIDE</text><text x="${X(3)+8}" y="${Y(30)-22}" class="lbl-m">SECTION</text>`;
+  g += `<text x="${X(0)}" y="${Y(0)+30}" text-anchor="middle" class="lbl-m">FRONT, HALF SECTION</text>`;
+  g += `<text x="${X(0)}" y="${Y(0)+46}" text-anchor="middle" class="lbl-m">barbs are symmetric top and bottom</text>`;
+  const tb = (y,a,b) => `<line x1="520" y1="${y}" x2="760" y2="${y}" style="stroke:var(--ink);stroke-width:1"/><text x="528" y="${y+17}" class="lbl-m">${a}</text><text x="590" y="${y+17}" class="lbl">${b}</text>`;
+  g += `<rect x="520" y="330" width="240" height="150" style="stroke:var(--ink);stroke-width:1.6;fill:none"/>`;
+  g += `<text x="528" y="350" class="lbl" style="font-weight:500">HOSE BARB COUPLER</text>`;
+  g += tb(360,'DWG','HB-06 REV A') + tb(385,'FITS','1/4" (6.35) ID TUBE') + tb(410,'MATL','PLA (PROTO)') + tb(435,'PROD','BRASS, LATHE-TURNED') + tb(460,'UNITS','mm  TOL ±0.2');
+  g += `<line x1="582" y1="360" x2="582" y2="480" style="stroke:var(--ink);stroke-width:1"/>`;
+  return `<svg viewBox="0 0 770 490" role="img" aria-label="Drawing HB-06: a 30 mm long hose barb coupler, Ø12 collar in the middle, two Ø7.5 barbs on each end over a Ø6 shank, Ø3 bore through">${defs()}${g}</svg>`;
+}
+
+function unitsFig(){
+  const row = (y,ind,txt,cls='lbl',hl) => `${hl?`<rect x="10" y="${y-16}" width="300" height="24" rx="3" style="fill:var(--layout-tint);stroke:var(--layout)"/>`:''}<text x="${20+ind*18}" y="${y}" class="${cls}">${txt}</text>`;
+  let g = `<rect x="0.5" y="0.5" width="320" height="200" rx="4" style="fill:var(--panel);stroke:var(--rule)"/><text x="16" y="24" class="lbl-m">BROWSER</text><line x1="0" y1="34" x2="320" y2="34" style="stroke:var(--rule)"/>`;
+  g += row(58,0,'▾ Last_HoseBarb v1') + row(84,1,'▾ Document Settings') + row(110,2,'Units: Millimeter  ✎','lbl-a',true) + row(136,1,'▸ Named Views') + row(162,1,'▸ Origin') + row(188,1,'▸ Bodies','lbl-m');
+  return `<svg viewBox="0 0 330 205" role="img" aria-label="Fusion Browser panel with Document Settings expanded and Units set to Millimeter">${g}</svg>`;
+}
+
+function dialogFig(title, rows){
+  let y = 46, g = `<rect x="0.5" y="0.5" width="339" height="${rows.length*30+54}" rx="4" style="fill:var(--panel);stroke:var(--rule)"/><text x="14" y="24" class="lbl" style="font-weight:500">${title.toUpperCase()}</text><line x1="0" y1="34" x2="340" y2="34" style="stroke:var(--rule)"/>`;
+  for (const [a,b,hl] of rows){
+    if (hl) g += `<rect x="8" y="${y-6}" width="324" height="28" rx="3" style="fill:var(--layout-tint);stroke:var(--layout)"/>`;
+    g += `<text x="16" y="${y+13}" class="lbl-m">${a}</text><rect x="170" y="${y-2}" width="156" height="22" rx="3" style="fill:var(--paper);stroke:var(--rule)"/><text x="178" y="${y+13}" class="${hl?'lbl-a':'lbl'}">${b}</text>`;
+    y += 30;
+  }
+  return `<svg viewBox="0 0 340 ${rows.length*30+56}" style="max-height:320px" role="img" aria-label="${title} dialog settings">${g}</svg>`;
+}
+
+// OP 20: the half profile on the XY plane
+function profileSketch(){
+  const s = 11, ox = 170, X = r=>ox+r*s, oy = 384, Y = y=>oy-y*s;
+  let g = `<line x1="${X(0)}" y1="${Y(0)+20}" x2="${X(0)}" y2="${Y(30)-20}" style="stroke:var(--ok);stroke-width:1.6;stroke-dasharray:10 4"/><text x="${X(0)-8}" y="${Y(28)}" text-anchor="end" class="lbl" style="fill:var(--ok)">Y axis</text><text x="${X(0)-8}" y="${Y(28)+16}" text-anchor="end" class="lbl-m">(spin axis)</text>`;
+  g += `<line x1="${X(0)-30}" y1="${Y(0)}" x2="${X(8)+10}" y2="${Y(0)}" style="stroke:var(--warn);stroke-width:1.2;stroke-dasharray:10 4"/><text x="${X(8)+14}" y="${Y(0)+4}" class="lbl-w">X</text>`;
+  g += `<polygon points="${ptsStr(CORE.map(([r,y])=>[X(r),Y(y)]))}" style="fill:var(--layout);fill-opacity:.16;stroke:var(--ink);stroke-width:2;stroke-linejoin:round"/>`;
+  CORE.forEach(([r,y],i)=>{ g += `<circle cx="${X(r)}" cy="${Y(y)}" r="2.6" style="fill:var(--ink)"/>`; });
+  const lab = (i,dx,dy) => { const [r,y] = CORE[i]; return `<text x="${X(r)+dx}" y="${Y(y)+dy}" class="lbl-a" text-anchor="${dx<0?'end':'start'}" style="font-size:12px">${i+1}</text>`; };
+  g += lab(0,-6,14)+lab(1,4,14)+lab(2,6,4)+lab(3,-6,4)+lab(4,6,4)+lab(5,-6,4)+lab(6,-6,4)+lab(7,6,4)+lab(8,6,4)+lab(9,-6,4)+lab(10,-6,4)+lab(11,6,4)+lab(12,-6,4)+lab(13,6,4)+lab(14,4,-6)+lab(15,-6,-6);
+  g += dimH(X(0),X(1.5),Y(30)-28,Y(30)-4,'1.5');
+    g += leader(X(0.75),Y(15),X(0)-40,Y(15)+20,'gap = bore','lbl-a');
+  g += `<text x="${X(6)+30}" y="${Y(15)-6}" class="lbl-m">sideways numbers</text><text x="${X(6)+30}" y="${Y(15)+10}" class="lbl-m">are radii: half</text><text x="${X(6)+30}" y="${Y(15)+26}" class="lbl-m">the drawing's Ø</text>`;
+  return `<svg viewBox="0 0 400 410" role="img" aria-label="Closed half profile of the coupler drawn to the right of the Y axis, with a 1.5 mm gap between the profile and the axis">${defs()}${g}</svg>`;
+}
+
+function shadeFig(opts={}){
+  const s = opts.s || 8, cx = opts.cx || 200, X = r=>cx+r*s, oy = opts.oy || 290, Y = y=>oy-y*s;
+  let g = '';
+  if (opts.branch) g += branchSide(X, Y, 15, opts.hlBranch);
+  g += coupler(X, Y, 'shade');
+  if (opts.axis){
+    g += `<line x1="${X(-9)}" y1="${Y(15)}" x2="${X(15)}" y2="${Y(15)}" style="stroke:var(--sk-proj);stroke-width:1.8;stroke-dasharray:10 4"/><text x="${X(15)+6}" y="${Y(15)+16}" class="lbl" style="fill:var(--sk-proj)">Axis1</text>`;
+  }
+  if (opts.plane){
+    const p = [[X(-12),Y(15)+10],[X(9),Y(15)+10],[X(14),Y(15)-10],[X(-7),Y(15)-10]];
+    g = `<polygon points="${ptsStr(p)}" style="fill:var(--warn);fill-opacity:.16;stroke:var(--warn);stroke-width:1.2"/>` + g + `<text x="${X(14)+6}" y="${Y(15)-14}" class="lbl-w">Plane1</text>`;
+    g += dimV(Y(0),Y(15),X(-12)-16,X(-3)-6,'15','lbl-a','var(--layout)','arw');
+  }
+  if (opts.labels) for (const L of opts.labels) g += leader(X(L.r),Y(L.y),X(L.r)+L.dx,Y(L.y)+L.dy,L.text,L.cls||'lbl');
+  const w = opts.w || 400, h = opts.h || 320;
+  return `<svg class="big" viewBox="0 0 ${w} ${h}" role="img" aria-label="${opts.aria||'Hose barb coupler, side view'}">${defs()}${g}</svg>`;
+}
+
+// Advanced: branch sketch around Axis1
+function branchSketch(){
+  const s = 11, X = x=>70+x*s, Y = y=>400-y*s;
+  let g = coupler(X, Y, 'half').replace(/fill:url\(#hatch\)/,'fill:var(--grid)');
+  g += `<line x1="${X(-4)}" y1="${Y(15)}" x2="${X(20)}" y2="${Y(15)}" style="stroke:var(--sk-proj);stroke-width:1.8;stroke-dasharray:10 4"/><text x="${X(20)+4}" y="${Y(15)+18}" text-anchor="end" class="lbl" style="fill:var(--sk-proj)">Axis1</text>`;
+  const P = BR.map(([x,r])=>[X(x),Y(15+r)]);
+  g += `<polygon points="${ptsStr(P)}" style="fill:var(--layout);fill-opacity:.2;stroke:var(--ink);stroke-width:2;stroke-linejoin:round"/>`;
+  P.forEach(([x,y])=>{ g += `<circle cx="${x}" cy="${y}" r="2.6" style="fill:var(--ink)"/>`; });
+  g += dimH(X(0),X(4),Y(15)+40,Y(15)+6,'4');
+  g += dimH(X(0),X(16),Y(15)+66,Y(15)+6,'16');
+  g += dimV(Y(15),Y(16.5),X(16)+22,X(16)+6,'1.5','lbl','var(--ink)','arwi','r');
+  g += dimV(Y(15),Y(18.75),X(16)+60,X(12)+6,'3.75','lbl','var(--ink)','arwi','r');
+  g += `<text x="${X(10)}" y="${Y(19)-26}" text-anchor="middle" class="lbl-a">branch half profile</text>`;
+  return `<svg viewBox="0 0 440 430" role="img" aria-label="Branch half profile drawn above Axis1, from 4 to 16 mm out from the main axis, with barbs pointing right">${defs()}${g}</svg>`;
+}
+
+function cutSketch(){
+  const s = 11, X = x=>70+x*s, Y = y=>400-y*s;
+  let g = coupler(X, Y, 'half').replace(/fill:url\(#hatch\)/,'fill:var(--grid)');
+  const P = BR.map(([x,r])=>[X(x),Y(15+r)]), Pm = BR.map(([x,r])=>[X(x),Y(15-r)]);
+  g += `<polygon points="${ptsStr(P)}" style="fill:var(--grid);stroke:var(--muted);stroke-width:1.2"/><polygon points="${ptsStr(Pm)}" style="fill:var(--grid);stroke:var(--muted);stroke-width:1.2"/>`;
+  g += `<rect x="${X(0)}" y="${Y(16.5)}" width="${8*s}" height="${1.5*s}" style="fill:var(--warn);fill-opacity:.3;stroke:var(--warn);stroke-width:2"/>`;
+  g += `<line x1="${X(-4)}" y1="${Y(15)}" x2="${X(20)}" y2="${Y(15)}" style="stroke:var(--sk-proj);stroke-width:1.8;stroke-dasharray:10 4"/>`;
+  g += dimH(X(0),X(8),Y(16.5)-34,Y(16.5)-4,'8','lbl-w','var(--warn)');
+  g += dimV(Y(15),Y(16.5),X(8)+70,X(8)+6,'1.5','lbl-w','var(--warn)','arwi','r');
+  g += leader(X(5),Y(15.8),X(9),Y(8),'this wall','lbl-w') + `<text x="${X(9)+4}" y="${Y(8)+20}" class="lbl-w">blocks the bore</text>`;
+  return `<svg viewBox="0 0 440 430" role="img" aria-label="A thin rectangle from the main axis out 8 mm, 1.5 mm tall, sitting on Axis1. Revolved as a cut it opens the branch bore into the main bore">${defs()}${g}</svg>`;
+}
+
+function orientFig(){
+  const s = 5;
+  let g = '';
+  const Xa = r=>110+r*s, Ya = y=>220-y*s;
+  g += coupler(Xa, Ya, 'shade').replace(/url\(#cylH\)/,'var(--ok-tint)');
+  g += `<line x1="20" y1="221" x2="200" y2="221" style="stroke:var(--ink);stroke-width:3"/><text x="110" y="244" text-anchor="middle" class="lbl-m">build plate</text>`;
+  g += `<text x="10" y="24" class="lbl" style="fill:var(--ok);font-weight:500">YES: standing up</text><text x="10" y="46" class="lbl-m">no supports</text>`;
+  // lying down
+  const Xb = y=>330+y*s, Yb = r=>220-6*s-r*s;
+  const top = OUTER.map(([r,y])=>[Xb(y),Yb(r)]), bot = OUTER.slice().reverse().map(([r,y])=>[Xb(y),Yb(-r)]);
+  g += `<polygon points="${ptsStr([...top,...bot])}" style="fill:var(--warn-tint);stroke:var(--warn);stroke-width:2;stroke-linejoin:round"/>`;
+  for (let i=0;i<6;i++){ const x = Xb(1+i*5.6); g += `<line x1="${x}" y1="${Yb(-3)}" x2="${x}" y2="220" style="stroke:var(--warn);stroke-width:1;stroke-dasharray:3 2"/>`; }
+  g += `<line x1="310" y1="221" x2="500" y2="221" style="stroke:var(--ink);stroke-width:3"/>`;
+  g += `<text x="310" y="24" class="lbl" style="fill:var(--warn);font-weight:500">NO: on its side</text><text x="310" y="46" class="lbl-m">needs supports</text>`;
+  return `<svg class="big" viewBox="0 0 520 256" role="img" aria-label="Print orientation: standing up on one end needs no supports; lying on its side, the round underside needs supports">${g}</svg>`;
+}
+
+// Expert: top view of the 3-way manifold
+function manifoldTop(n){
+  const s = 9, cx = 210, cy = 200;
+  let g = '';
+  for (let k=0;k<n;k++){
+    const a = -Math.PI/2 + 2*Math.PI*k/n, ca = Math.cos(a), sa = Math.sin(a);
+    const top = BR.filter((_,i)=>i>0&&i<BR.length-1).map(([x,r])=>[x,r]), pts = [...top, ...top.slice().reverse().map(([x,r])=>[x,-r])];
+    const P = pts.map(([x,r])=>[cx + (x*ca - r*sa)*s, cy + (x*sa + r*ca)*s]);
+    g += `<polygon points="${ptsStr(P)}" style="fill:${k===0?'var(--layout)':'var(--face-side)'};fill-opacity:${k===0?.4:1};stroke:var(--edge);stroke-width:1.2"/>`;
+  }
+  g += `<circle cx="${cx}" cy="${cy}" r="${6*s}" style="fill:url(#disc);stroke:var(--edge);stroke-width:1.4"/><circle cx="${cx}" cy="${cy}" r="${3*s}" style="fill:none;stroke:var(--edge);stroke-width:1"/><circle cx="${cx}" cy="${cy}" r="${1.5*s}" style="fill:var(--hole)"/>`;
+  g += `<path d="M ${cx+70} ${cy-40} A 80 80 0 0 1 ${cx+40} ${cy+70}" style="fill:none;stroke:var(--layout);stroke-width:1.5" marker-end="url(#arw)"/><text x="${cx+96}" y="${cy+20}" class="lbl-a">120°</text>`;
+  g += `<text x="${cx}" y="${cy-16*s-12}" text-anchor="middle" class="lbl-a">branch 1 (from Advanced)</text>`;
+  g += `<text x="${cx}" y="390" text-anchor="middle" class="lbl-m">looking down the Y axis</text>`;
+  return `<svg viewBox="0 0 420 400" role="img" aria-label="Top view of the manifold: the round collar with ${n} barbed branches spaced 120 degrees apart">${defs()}${g}</svg>`;
+}
+
+const ptTable = () => `<div class="tblwrap"><table class="pts"><thead><tr><th>Pt</th><th>From axis</th><th>Height</th></tr></thead><tbody>${CORE.map(([r,y],i)=>`<tr class="${[6,7,8,9].includes(i)?'hl':''}"><td>${i+1}</td><td>${r}</td><td>${y}</td></tr>`).join('')}</tbody></table></div>`;
+
+// ---------------- operations ----------------
+const pathHtml = a => `<div class="path">${a.map((s,i)=>(i?'<span class="arr">›</span>':'')+`<span>${s}</span>`).join('')}</div>`;
+const OPS = [
+ {num:'OP 00', title:'Read the print', tier:'core', wide:true, fig:drawingFig, cap:'Drawing HB-06. The left half shows the outside. The right half is cut open (hatched) so you can see the bore. All dimensions in mm.',
+  do:['This part is round, so the drawing only needs one view. The Ø symbol means diameter: all the way across.','Find the four barbs (two on each end), the collar in the middle, and the Ø3 hole that runs all the way through.','The hatched half is the exact shape you will sketch today. Fusion spins it around the center line to make the part.'],
+  why:'Hose barbs connect soft tubing to pumps, faucets and tanks. You find them in drip irrigation, aquarium pumps, hospital IV and oxygen lines, car coolant lines, and liquid-cooled gaming PCs, where water carries heat from the chip to a radiator (a heat sink with a fan). Real ones are brass, turned on a lathe that spins the metal while a cutter traces the profile. That is exactly what the Revolve tool does.',
+  quiz:{q:'The drawing says the barb is Ø7.5. In the sketch, every sideways number is measured from the center line. What do you type?',
+   o:['7.5','3.75','15','6'],a:1,
+   e:'The sketch is half the part, so you type the radius: 7.5 ÷ 2 = 3.75. Every Ø on the drawing gets cut in half in the sketch.'}},
+ {num:'OP 10', title:'Set up the file', tier:'core', fig:unitsFig, cap:'Check units before you draw a single line.',
+  path:['Browser','Document Settings','Units'],
+  do:['Start a new design.','In the Browser, expand <b>Document Settings</b>. Hover over <b>Units</b>, click the pencil, choose <span class="val">Millimeter</span>.','Save right away as <span class="val">Last_HoseBarb</span> in the class project.'],
+  watch:'Left in inches, this part comes out 25 times too big and Fusion will not warn you.',
+  check:'The Browser reads Units: Millimeter, and the file has your name, not "Untitled".'},
+ {num:'OP 20', title:'Sketch the half profile', tier:'core', fig:()=>`<div class="figstack">${profileSketch()}</div>`, cap:'One closed shape, to the right of the Y axis, not touching it. The highlighted rows are the collar.',
+  path:['Sketch','Create Sketch','XY plane'], key:'L',
+  do:['<b>Create Sketch</b> and pick the plane that stands up facing you, the one parallel to <b>FRONT</b> on the ViewCube (XY).','Press <kbd>L</kbd> (Line). Start at point 1, just right of the origin on the red X axis, and click your way around points 1 to 16 roughly in shape. Finish by clicking point 1 again to close it.','Press <kbd>D</kbd> and lock each point to the table: click the green Y axis, then the point, to set its distance from the axis. Click the X axis, then the point, to set its height.'],
+  extra: ptTable,
+  why:'You only draw half the outline. A round part is the same all the way around, so Fusion only needs the half and the line it spins around.',
+  watch:'Do not draw on the Y axis. The 1.5 mm gap between the profile and the axis becomes the Ø3 hole. Touch the axis and the part comes out solid.',
+  check:'The shape is shaded (closed), every line is black, and nothing touches the green axis.'},
+ {num:'OP 30', title:'Revolve it', tier:'core', fig:()=>`<div class="figstack">${shadeFig({aria:'The revolved coupler',h:310})}${dialogFig('Revolve',[['Profile','1 selected'],['Axis','Y (origin)',true],['Type','Full',true],['Operation','New Body']])}</div>`, cap:'One sketch, one spin, a finished part.',
+  path:['Solid','Create','Revolve'],
+  do:['Finish Sketch. <b>Solid › Create › Revolve</b>.','Profile: click the shaded shape.','Axis: click the green <b>Y axis</b> (or pick it in the Browser under <b>Origin</b>).','Type <span class="val">Full</span> (360°), Operation <b>New Body</b>. OK.'],
+  why:'Anything a lathe can make, Revolve can model: bolts, knobs, wheels, bottles, pipe fittings. Engineers pick the tool that matches how the real part is made.',
+  watch:'If your ViewCube shows Z pointing up, the spin axis is Z instead of Y. Pick the axis that runs along the length of your profile.',
+  check:'One round body in the Browser that looks like the drawing from every side.',
+  quiz:{q:'What happens if the inside edge of your profile sits right on the axis?',o:['Fusion gives an error.','The part comes out solid, with no hole through it.','The part comes out hollow anyway.','The barbs disappear.'],a:1,e:'The gap between the profile and the axis is what becomes the hole. No gap, no hole, and no water gets through.'}},
+ {num:'OP 40', title:'Look inside with a section', tier:'core', fig:()=>`<svg class="big" viewBox="0 0 420 330" role="img" aria-label="Section view: the left half shows the outside, the right half is cut open showing the hatched wall and the bore">${defs()}${coupler(r=>210+r*8.5,y=>295-y*8.5,'half')}</svg>`, cap:'What Section Analysis shows: the cut face is your sketch.',
+  path:['Inspect','Section Analysis'],
+  do:['<b>Inspect › Section Analysis</b>. Pick the <b>XY</b> plane. Fusion slices the part in half.','Orbit around. The cut face should be the same shape you sketched, and the hole should run all the way through.','Hide the analysis when you are done (eye icon under <b>Analysis</b> in the Browser).'],
+  why:'Inspectors cut real parts in half to check walls and holes they cannot see. Section Analysis does it without wrecking the part.',
+  check:'A clear Ø3 channel from end to end, and walls 1.5 mm thick at the shank.',
+  quiz:{q:'1/4 inch tubing is 6.35 mm across the inside. The barb is Ø7.5. How much does the tube have to stretch to get over the barb?',o:['0.15 mm','1.15 mm','3.75 mm','7.5 mm'],a:1,e:'7.5 − 6.35 = 1.15 mm. The stretched tube squeezes back on the barb, and the sharp back edge of each barb bites in if you pull. That is why barbs work without glue.'}},
+ {num:'OP 50', title:'Verify the volume', tier:'core', fig:()=>shadeFig({aria:'Finished Core coupler',h:310,cx:150,labels:[{r:3.75,y:4,dx:70,dy:10,text:'barb, 4×'},{r:6,y:15,dx:60,dy:0,text:'collar'},{r:3,y:9,dx:80,dy:30,text:'shank'}]}), cap:'Finished Core part.',
+  path:['Browser','Bodies','right-click Body1','Properties'],
+  do:['Right-click the body › <b>Properties</b>. Find <b>Volume</b>.','Type it into the self-check below. If it fails, the message names the most likely mistake.'],
+  why:'Inspectors measure against the drawing. One number that proves every feature is right is the same idea.',
+  check:'Self-check shows PASS for Core.'},
+ {num:'OP 60', title:'Export and print', tier:'core', fig:orientFig, cap:'Print it standing on one end. Small, fast, no supports.',
+  path:['Browser','right-click body','Save As Mesh','3MF'],
+  do:['Right-click the body › <b>Save As Mesh</b>. Format <span class="val">3MF</span>. Name it <span class="val">Period_Last_HoseBarb_v1</span>.','In Bambu Studio, import it and stand it on one end (<b>Lay on face</b>, click an end).','PLA, supports <b>off</b>. Slice and write down the time. It should be well under 30 minutes.','Export the plate as 3MF and submit it to the class folder.'],
+  why:'The 45° chamfers on the collar are a design-for-printing choice. A flat ledge would hang in mid-air; a 45° slope builds on the layer below it.',
+  watch:'Lying on its side, the round bottom touches the plate on one thin line, needs supports, and the barbs come out rough.',
+  check:'Standing up, no supports, file named correctly.',
+  quiz:{q:'Why does the collar have 45° chamfers instead of flat sides?',o:['They look cooler.','So it prints standing up without supports: each layer sits mostly on the one below.','To make it lighter.','Fusion requires it.'],a:1,e:'45° is the usual limit for printing an overhang with no supports. The real brass part would not need them; this is a change for our process.'}},
+ {num:'OP 70', title:'Tee: build a plane and an axis', tier:'adv', fig:()=>`<div class="figstack">${shadeFig({plane:true,axis:true,aria:'Offset plane 15 mm up through the collar and Axis1 along it',w:420,h:310,cx:190})}${dialogFig('Offset Plane',[['Plane','XZ (origin)'],['Distance','15 mm',true]])}</div>`, cap:'Construction geometry: invisible helpers that give you a place to sketch or spin around.',
+  path:['Construct','Offset Plane','then','Axis Through Two Planes'],
+  do:['Save a version first: <span class="val">rev A, straight</span>.','<b>Construct › Offset Plane</b>. Pick the <b>XZ</b> plane in the Browser (the flat one). Distance <span class="val">15 mm</span>. That puts Plane1 through the middle of the collar.','<b>Construct › Axis Through Two Planes</b>. Pick <b>Plane1</b>, then the <b>XY</b> plane. Axis1 appears, lying sideways through the collar.'],
+  why:'Real parts are not always built on the three origin planes. When you need to work at a spot in the middle of a part, you build your own plane or axis there.',
+  check:'Plane1 and Axis1 in the Browser under Construction. Axis1 passes through the center of the collar, sideways.'},
+ {num:'OP 80', title:'Tee: revolve the branch', tier:'adv', fig:()=>`<div class="figstack">${branchSketch()}${dialogFig('Revolve',[['Profile','branch profile'],['Axis','Axis1',true],['Type','Full'],['Operation','Join',true]])}</div>`, cap:'Same barb shape as before, now pointing sideways.',
+  path:['Sketch','XY plane','Revolve'],
+  do:['Create Sketch on the <b>XY</b> plane. Press <kbd>P</kbd> and click Axis1 so it shows in the sketch.','Draw the branch half profile above Axis1: inner line <span class="val">1.5</span> above the axis from <span class="val">4</span> to <span class="val">16</span> out from the main axis; shank at <span class="val">3</span> from 4 to 8; barbs ramp to <span class="val">3.75</span> at 8 and at 12; tip at 16.','Finish Sketch. Revolve: the new profile, Axis <b>Axis1</b>, Type Full, Operation <b>Join</b>.'],
+  watch:'The barbs must point toward the tip, like arrows. The steep side faces the collar so the tube is easy to push on and hard to pull off.',
+  check:'Still one body, with a third barb sticking straight out of the collar.'},
+ {num:'OP 90', title:'Tee: open the branch bore', tier:'adv', fig:()=>`<div class="figstack">${cutSketch()}${dialogFig('Revolve',[['Profile','thin rectangle'],['Axis','Axis1'],['Type','Full'],['Operation','Cut',true]])}</div>`, cap:'The branch has a hole, but solid collar still walls it off from the main bore.',
+  path:['Sketch','XY plane','Revolve','Cut'],
+  do:['Turn on Section Analysis and look: the branch bore stops at the collar. Water cannot get through.','Create Sketch on <b>XY</b>, project Axis1. Draw a rectangle from the Y axis out <span class="val">8</span>, from Axis1 up <span class="val">1.5</span>.','Revolve it around <b>Axis1</b>, Type Full, Operation <b>Cut</b>.','Section Analysis again: all three channels meet in the middle. Run the self-check on Advanced.'],
+  why:'Revolve can remove material as well as add it. A lathe drills a hole the same way: spin, and push a cutter in along the center.',
+  watch:'A part can look perfect from outside and be useless. Always section a fluid part to prove the channels connect.',
+  check:'Three open channels that meet. Self-check passes for Advanced. Print upright with tree supports under the branch only.'},
+ {num:'OP 100', title:'Expert: 3-way manifold', tier:'exp', fig:()=>`<div class="figstack">${manifoldTop(3)}${dialogFig('Circular Pattern',[['Pattern Type','Features'],['Objects','branch + cut (2)',true],['Axis','Y (origin)',true],['Type','Full'],['Quantity','3',true]])}</div>`, cap:'Drip irrigation and aquarium manifolds split one line into several like this.',
+  path:['Solid','Create','Pattern','Circular Pattern'],
+  do:['<b>File › Save As</b> <span class="val">Last_Manifold</span>, so your tee file stays untouched.','<b>Circular Pattern</b>, Pattern Type <b>Features</b>. In the timeline, pick <b>both</b> the branch revolve and the bore cut.','Axis <b>Y</b> from the Browser Origin, Type <b>Full</b>, Quantity <span class="val">3</span>. OK.','Section Analysis through each branch, then the self-check on Expert.'],
+  why:'You patterned fins around a circle on the round heat sink. Same tool, different job: now the copies are flow paths, and each one needs its own hole.',
+  watch:'Pattern only the branch and you get three barbs but only one working channel. The cut has to be in the pattern too.',
+  check:'Three branches 120° apart, all open to the center. Self-check passes for Expert.'}
+];
+
+const tierTag = t => t==='adv'?'<span class="tier adv">Advanced</span>':t==='exp'?'<span class="tier exp">Expert</span>':'<span class="tier">Core</span>';
+let cur = 0, done = new Set();
+try{ const s = JSON.parse(localStorage.getItem('hb06')||'{}'); if (Number.isInteger(s.cur) && s.cur < OPS.length) cur = s.cur; if (Array.isArray(s.done)) done = new Set(s.done); }catch(e){}
+const save = () => { try{ localStorage.setItem('hb06', JSON.stringify({cur, done:[...done]})); }catch(e){} };
+
+const nav = document.getElementById('opsNav');
+function renderNav(){
+  let h = '', last = '';
+  OPS.forEach((o,i)=>{
+    if (o.tier!==last && o.tier!=='core') h += `<div class="sep">${o.tier==='adv'?'Advanced tier':'Expert tier'}</div>`;
+    last = o.tier;
+    h += `<button type="button" data-i="${i}" ${i===cur?'aria-current="step"':''} class="${done.has(i)?'done':''}"><span class="n">${o.num}</span><span>${o.title}</span></button>`;
+  });
+  nav.innerHTML = h;
+}
+nav.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) go(+b.dataset.i); });
+
+const panel = document.getElementById('opPanel');
+function renderOp(){
+  const o = OPS[cur];
+  const quiz = o.quiz ? `<div class="quiz" id="quiz"><p>${o.quiz.q}</p><div class="opts">${o.quiz.o.map((t,i)=>`<button type="button" data-q="${i}">${t}</button>`).join('')}</div><div class="fb" id="fb" hidden></div></div>` : '';
+  panel.innerHTML = `
+   <div class="op-head"><span class="op-num">${o.num}</span><h2 class="op-title">${o.title}</h2><span class="op-tier">${tierTag(o.tier)}</span></div>
+   <div class="op-body${o.wide?' wide':''}">
+     <figure>${o.fig()}<figcaption>${o.cap}</figcaption></figure>
+     <div class="text">
+       ${o.path ? pathHtml(o.path) + (o.key?`<div style="font-size:14px;color:var(--muted)">Shortcut <kbd>${o.key}</kbd></div>`:'') : ''}
+       <ol class="do">${o.do.map(d=>`<li>${d}</li>`).join('')}</ol>
+       ${o.extra ? o.extra() : ''}
+       ${o.why?`<div class="note why"><h3>Why it matters</h3><p>${o.why}</p></div>`:''}
+       ${o.watch?`<div class="note watch"><h3>Watch out</h3><p>${o.watch}</p></div>`:''}
+       ${o.check?`<div class="note check"><h3>Check before moving on</h3><p>${o.check}</p></div>`:''}
+       ${quiz}
+     </div>
+   </div>
+   <div class="op-foot">
+     <button class="btn" type="button" id="prev" ${cur===0?'disabled':''}>← Previous</button>
+     <button class="btn primary" type="button" id="next">${cur===OPS.length-1?'Mark done':'Done, next →'}</button>
+   </div>`;
+  document.getElementById('prev').onclick = () => go(cur-1);
+  document.getElementById('next').onclick = () => { done.add(cur); save(); if (cur < OPS.length-1) go(cur+1); else renderNav(); };
+  const q = document.getElementById('quiz');
+  if (q) q.addEventListener('click', e => {
+    const b = e.target.closest('button[data-q]'); if (!b) return;
+    const i = +b.dataset.q, fb = document.getElementById('fb');
+    q.querySelectorAll('button').forEach(x=>x.classList.remove('right','wrong'));
+    b.classList.add(i===o.quiz.a?'right':'wrong');
+    fb.hidden = false;
+    fb.textContent = i===o.quiz.a ? 'Correct. ' + o.quiz.e : 'Not quite. Try again.';
+  });
+}
+function go(i){ if (i<0||i>=OPS.length) return; cur = i; save(); renderNav(); renderOp(); }
+document.addEventListener('keydown', e => {
+  if (['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName)) return;
+  if (e.key==='ArrowRight') go(cur+1); if (e.key==='ArrowLeft') go(cur-1);
+});
+renderNav(); renderOp();
+
+// ---------------- self-check ----------------
+// Volumes from the drawing (mm³), computed from the exact profiles
+const TIERS = {
+  core:{name:'Core', exp:1324.18},
+  adv:{name:'Advanced', exp:1572.12},
+  exp:{name:'Expert', exp:2068.27}
+};
+function diagnose(v, key){
+  const C = {
+    core:[
+      {v:1536.24, m:'There is no hole through it. The inside line of your profile must sit 1.5 from the axis, not on it.'},
+      {v:662.09, m:'Exactly half. Set the Revolve Type to Full (360°).'},
+      {v:5296.73, m:'About 4× too big. You typed diameters where the sketch needs radii. Halve every sideways number.'},
+      {v:1572.12, m:'That is the Advanced tee. For Core, check the straight coupler.'},
+    ],
+    adv:[
+      {v:1324.18, m:'That is the Core volume. The branch is missing: OP 70 to OP 90.'},
+      {v:1605.19, m:'The branch bore is blocked at the collar. Do the Revolve Cut in OP 90.'},
+      {v:1775.18, m:'The main part has no bore. Fix the Core profile: inside line 1.5 from the axis.'},
+    ],
+    exp:[
+      {v:1572.12, m:'That is the tee. The Circular Pattern is missing.'},
+      {v:2134.14, m:'Three branches, but only one is open. Put the bore cut in the Circular Pattern too.'},
+      {v:2167.22, m:'None of the branch bores are open. Pattern the cut, and check OP 90 was done first.'},
+      {v:2318.10, m:'Four branches. Quantity should be 3.'},
+      {v:1820.05, m:'Only two branches. Quantity 3, Type Full.'},
+    ]
+  }[key];
+  let best = null;
+  for (const c of C){ const e = Math.abs(v - c.v)/c.v; if (e < 0.004 && (!best || e < best.e)) best = {...c, e}; }
+  return best ? best.m : 'The difference does not match a common mistake. Use Section Analysis and compare the cut face to the drawing, one feature at a time.';
+}
+document.getElementById('scForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const out = document.getElementById('scOut'), key = document.getElementById('scTier').value, t = TIERS[key];
+  let raw = document.getElementById('scVol').value.replace(/[,\s]/g,'').replace(/mm\^?3|mm³|cm\^?3|cm³/ig,'');
+  let v = parseFloat(raw);
+  out.hidden = false;
+  if (!isFinite(v) || v <= 0){ out.className = 'result fail'; out.innerHTML = 'Type the volume as a number, for example <b>1234.567</b>.'; return; }
+  let note = '';
+  if (v < 30){ v *= 1000; note = ' (read as cm³ and converted to mm³)'; }
+  const diff = v - t.exp, pct = Math.abs(diff)/t.exp*100;
+  if (pct <= 0.1){ out.className = 'result pass'; out.innerHTML = `<b>PASS</b> · ${t.name}. Your model is within 0.1% of the drawing${note}.`; }
+  else { out.className = 'result fail'; out.innerHTML = `<b>NOT YET</b> · ${t.name}. Off by ${pct.toFixed(2)}% (${diff>0?'too much':'too little'} material)${note}.<br>${diagnose(v,key)}`; }
+});
+})();
+</script>
+
+</body></html>

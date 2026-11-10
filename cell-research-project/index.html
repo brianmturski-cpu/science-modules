@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cell Research Project Manual</title>
+<meta name="description" content="Step-by-step manual for the Cell Research Project: real human cell data from the Allen Institute for Cell Science.">
+<style>
+:root{
+  --ink:#141414; --muted:#5b5b5b; --line:#d9d6cf; --bg:#fbfaf7; --card:#ffffff;
+  --blue:#2878d6; --blue-soft:#e8f1fc; --green:#2e7d4f; --green-soft:#e6f3ea;
+  --yellow:#a77d00; --yellow-soft:#fff6d6; --red:#c2410c; --red-soft:#fdeee6;
+  --grey:#9b9993; --radius:12px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:120px}
+body{margin:0; background:var(--bg); color:var(--ink); font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;}
+a{color:var(--blue)}
+h1,h2,h3{line-height:1.2; margin:0 0 .4em}
+h1{font-size:clamp(28px,5vw,44px); letter-spacing:-.01em}
+h2{font-size:clamp(24px,3.6vw,32px)}
+h3{font-size:20px; margin-top:1.4em}
+p{margin:.5em 0 .9em}
+code,.mono{font-family:ui-monospace,SFMono-Regular,Consolas,Menlo,monospace; font-size:.92em; background:#f0eee8; padding:1px 5px; border-radius:5px}
+.wrap{max-width:980px; margin:0 auto; padding:0 16px}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky; top:0; z-index:20; background:rgba(251,250,247,.96); backdrop-filter:blur(6px); border-bottom:1px solid var(--line)}
+.top .wrap{display:flex; flex-direction:column; gap:6px; padding-top:8px; padding-bottom:8px}
+.topline{display:flex; align-items:center; gap:12px; justify-content:space-between}
+.brand{font-weight:800; font-size:16px; white-space:nowrap}
+.overall{flex:1; display:flex; align-items:center; gap:10px; min-width:0}
+.bar{flex:1; height:12px; background:#ebe8e1; border-radius:99px; overflow:hidden}
+.bar > i{display:block; height:100%; width:0; background:var(--green); transition:width .3s}
+.pct{font-weight:700; font-variant-numeric:tabular-nums; min-width:44px; text-align:right}
+.stepnav{display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; scrollbar-width:thin}
+.stepnav a{flex:0 0 auto; text-decoration:none; color:var(--ink); border:1.5px solid var(--line); background:#fff; border-radius:99px; padding:3px 11px 3px 4px; font-size:14px; display:flex; align-items:center; gap:6px; white-space:nowrap}
+.stepnav a .n{width:24px; height:24px; border-radius:50%; display:grid; place-items:center; background:#ebe8e1; font-weight:700; font-size:13px}
+.stepnav a.done{border-color:var(--green)}
+.stepnav a.done .n{background:var(--green); color:#fff}
+.stepnav a.part .n{background:var(--yellow-soft); color:var(--yellow); box-shadow:inset 0 0 0 2px var(--yellow)}
+
+/* ---------- hero ---------- */
+.hero{padding:36px 0 10px}
+.hero .kicker{font-weight:700; color:var(--blue); letter-spacing:.04em; text-transform:uppercase; font-size:14px}
+.lede{font-size:19px; max-width:760px}
+.factrow{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin:18px 0}
+.fact{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:12px 14px}
+.fact b{display:block; font-size:24px}
+.fact span{font-size:14px; color:var(--muted)}
+
+/* ---------- deadlines timeline ---------- */
+.timeline{display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin:12px 0 6px}
+.tl{position:relative; background:#fff; border:2px solid var(--line); border-radius:var(--radius); padding:10px 12px 12px}
+.tl .d{font-weight:800}
+.tl .w{font-size:14.5px; line-height:1.35; margin-top:4px}
+.tl .who{font-size:12.5px; color:var(--muted); margin-top:6px}
+.tl.past{opacity:.6}
+.tl.past .d::after{content:" · past"; font-weight:600; color:var(--muted)}
+.tl.next{border-color:var(--yellow); background:var(--yellow-soft)}
+.tl.next::before{content:"NEXT DEADLINE"; position:absolute; top:-11px; left:10px; background:var(--yellow); color:#fff; font-size:11px; font-weight:800; padding:2px 7px; border-radius:6px; letter-spacing:.04em}
+.tl.off{border-style:dashed; background:transparent}
+@media (max-width:760px){ .timeline{grid-template-columns:1fr 1fr} }
+@media (max-width:420px){ .timeline{grid-template-columns:1fr} }
+
+/* ---------- sections ---------- */
+section.step{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:26px 24px 22px; margin:26px 0}
+@media (max-width:560px){ section.step{padding:20px 16px} }
+.stephead{display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap}
+.stephead .num{font-size:15px; font-weight:800; color:var(--blue); letter-spacing:.05em; text-transform:uppercase}
+.badges{display:flex; gap:6px; flex-wrap:wrap; align-items:center}
+.badge{font-size:13px; font-weight:700; padding:3px 9px; border-radius:99px; background:#efede7; white-space:nowrap}
+.badge.due{background:var(--yellow-soft); color:#6b5100}
+.badge.cp{background:#141414; color:#fff}
+.badge.prog{background:var(--green-soft); color:var(--green)}
+.badge.prog.full{background:var(--green); color:#fff}
+.done-looks{background:var(--blue-soft); border-left:5px solid var(--blue); padding:10px 14px; border-radius:8px; margin:12px 0 16px}
+.done-looks b:first-child{display:block; font-size:13px; letter-spacing:.05em; text-transform:uppercase; color:var(--blue); margin-bottom:2px}
+.warn{background:var(--red-soft); border-left:5px solid var(--red); padding:10px 14px; border-radius:8px; margin:14px 0}
+.warn b:first-child{color:var(--red)}
+.good{background:var(--green-soft); border-left:5px solid var(--green); padding:10px 14px; border-radius:8px; margin:14px 0}
+.cols{display:grid; grid-template-columns:1fr 1fr; gap:22px}
+@media (max-width:760px){ .cols{grid-template-columns:1fr} }
+figure{margin:14px 0; background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:12px}
+figure svg{display:block; width:100%; height:auto}
+@media (max-width:640px){ figure{overflow-x:auto} figure > svg:not(.fit){min-width:620px} figure > svg[aria-label^="Talk"]{min-width:560px} }
+figcaption{font-size:14px; color:var(--muted); margin-top:6px}
+ol.how{padding-left:1.4em} ol.how li{margin:.35em 0}
+table{border-collapse:collapse; width:100%; font-size:15px}
+th,td{border-bottom:1px solid var(--line); padding:7px 8px; text-align:left; vertical-align:top}
+th{background:#141414; color:#fff; font-weight:700}
+.scroll{overflow-x:auto}
+
+/* ---------- checklist ---------- */
+.checklist{margin:18px 0 4px; border:2px solid var(--ink); border-radius:14px; padding:12px 14px 8px; background:#fff}
+.checklist h4{margin:0 0 6px; font-size:16px; display:flex; justify-content:space-between; gap:10px}
+.checklist h4 .cnt{font-variant-numeric:tabular-nums; color:var(--muted); font-weight:700}
+.checklist label{display:flex; gap:12px; align-items:flex-start; padding:9px 4px; border-top:1px solid #eeebe4; cursor:pointer; border-radius:6px}
+.checklist label:first-of-type{border-top:none}
+.checklist label:hover{background:#faf8f3}
+.checklist input{appearance:none; -webkit-appearance:none; flex:0 0 26px; width:26px; height:26px; margin:0; border:2.5px solid #8a877f; border-radius:7px; background:#fff; display:grid; place-items:center; cursor:pointer; transition:background .15s,border-color .15s}
+.checklist input::after{content:""; width:12px; height:7px; border-left:3.5px solid #fff; border-bottom:3.5px solid #fff; transform:rotate(-45deg) translate(1px,-1px); opacity:0}
+.checklist input:checked{background:var(--green); border-color:var(--green)}
+.checklist input:checked::after{opacity:1}
+.checklist input:focus-visible{outline:3px solid var(--blue); outline-offset:2px}
+.checklist input:checked + span{color:var(--muted); text-decoration:line-through; text-decoration-color:#b9b6ae}
+.checklist .tag{font-size:12px; font-weight:800; background:#141414; color:#fff; border-radius:5px; padding:1px 6px; margin-right:4px; text-decoration:none; display:inline-block}
+.checklist .who{font-size:12px; font-weight:700; color:var(--blue); border:1px solid var(--blue); border-radius:5px; padding:0 5px; margin-left:4px; white-space:nowrap}
+.allset{display:none; margin:8px 2px 4px; color:var(--green); font-weight:700}
+.checklist.complete{border-color:var(--green)}
+.checklist.complete .allset{display:block}
+
+/* ---------- hypothesis anatomy ---------- */
+.anat{font-size:19px; line-height:1.9; background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px}
+.anat .p{padding:2px 5px; border-radius:5px; box-decoration-break:clone; -webkit-box-decoration-break:clone}
+.p-if{background:#e8f1fc} .p-then{background:#fff2c7} .p-bc{background:#e3f2e8}
+.key{display:flex; gap:14px; flex-wrap:wrap; font-size:14px; margin-top:6px}
+.key span::before{content:""; display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:5px; vertical-align:-1px}
+.key .k1::before{background:#cfe2f8} .key .k2::before{background:#f6e3a1} .key .k3::before{background:#c4e5cf}
+
+/* ---------- CER ---------- */
+.cer{display:grid; gap:8px; margin:12px 0}
+.cer > div{display:grid; grid-template-columns:120px 1fr; border-radius:10px; overflow:hidden; border:1px solid var(--line); background:#fff}
+.cer > div > b{display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; padding:8px}
+.cer > div > p{margin:0; padding:10px 12px}
+.cer .c b{background:#2878d6} .cer .e b{background:#a77d00} .cer .r b{background:#2e7d4f} .cer .l b{background:#6b6963}
+@media (max-width:480px){ .cer > div{grid-template-columns:1fr} }
+
+/* ---------- poster mock ---------- */
+.poster{aspect-ratio:16/9; display:grid; grid-template-columns:1.05fr 1fr 1fr; grid-template-rows:auto 1fr 1fr auto; gap:6px; background:#fff; border:2px solid var(--ink); border-radius:8px; padding:8px; font-size:clamp(9px,1.5vw,14px); line-height:1.25}
+.poster > div{border:1.5px solid #c9c6be; border-radius:6px; padding:5px 7px; position:relative; overflow:hidden}
+.poster b{display:block}
+.poster .n{position:absolute; top:4px; right:5px; width:1.7em; height:1.7em; border-radius:50%; background:var(--red); color:#fff; display:grid; place-items:center; font-weight:800; font-size:.9em}
+.pz-title{grid-column:1 / -1; background:#f4f2ec}
+.pz-graph{grid-row:2 / 4; background:var(--blue-soft)}
+.pz-src{grid-column:1 / -1; font-size:.85em; color:var(--muted); border-style:dashed !important}
+
+/* ---------- concept cards ---------- */
+.cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px}
+.ccard{background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:14px}
+.ccard h4{margin:0 0 6px; font-size:17px}
+.ccard .use{font-size:14px; color:var(--muted); border-top:1px dashed var(--line); padding-top:6px; margin-top:8px}
+
+/* ---------- glossary ---------- */
+dl.gloss{display:grid; grid-template-columns:200px 1fr; gap:6px 16px; margin:8px 0}
+dl.gloss dt{font-weight:700}
+dl.gloss dd{margin:0}
+@media (max-width:560px){ dl.gloss{grid-template-columns:1fr} dl.gloss dd{margin-bottom:8px} }
+
+details{border:1px solid var(--line); border-radius:10px; background:#fff; padding:10px 14px; margin:10px 0}
+details summary{cursor:pointer; font-weight:700}
+
+.tools{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:10px 0}
+button{font:inherit; font-size:15px; border:1.5px solid var(--ink); background:#fff; border-radius:9px; padding:7px 13px; cursor:pointer}
+button:hover{background:#f3f1ec}
+button.danger{border-color:var(--red); color:var(--red)}
+footer{padding:30px 0 60px; font-size:14px; color:var(--muted)}
+
+@media print{
+  .top,.tools,button{display:none !important}
+  section.step{break-inside:avoid-page; border:none; padding:0}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<!-- =================== EDIT DATES AND LINKS HERE =================== -->
+<script>
+const CONFIG = {
+  // Deadlines shown in the timeline. Dates are YYYY-MM-DD.
+  deadlines: [
+    {date:"2026-11-10", label:"Tue, Nov 10", what:"Polished research question + hypothesis", who:"Team · turn in at the start of class"},
+    {date:"2026-11-13", label:"Fri, Nov 13", what:"Graph, key numbers and conclusion draft (Checkpoints C to F)", who:"Team · end of work session 3"},
+    {date:"2026-11-17", label:"Tue, Nov 17", what:"No class (conferences)", who:"", off:true},
+    {date:"2026-11-20", label:"Fri, Nov 20", what:"Poster slide finished and shared with the teacher. Talk practiced once.", who:"Team · end of work session 4"},
+    {date:"2026-11-24", label:"Tue, Nov 24", what:"Research symposium: 4-minute talk + 2 minutes of questions. Individual paragraph due.", who:"Team talk · paragraph written alone"}
+  ],
+  // Paste share links here (leave "" to show "ask your teacher").
+  links: {
+    interphaseSheet: "",   // Class data: interphase cells (2,000)
+    mitosisSheet: "",      // Class data: cells in mitosis (510)
+    posterTemplate: ""     // Poster slide template (make a copy)
+  }
+};
+</script>
+<!-- ================================================================= -->
+
+<header class="top">
+  <div class="wrap">
+    <div class="topline">
+      <div class="brand">Cell Research Project</div>
+      <div class="overall" title="Your progress on this device">
+        <div class="bar" aria-hidden="true"><i id="overallBar"></i></div>
+        <div class="pct" id="overallPct">0%</div>
+      </div>
+    </div>
+    <nav class="stepnav" id="stepnav" aria-label="Steps"></nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- =================== HERO =================== -->
+<div class="hero">
+  <div class="kicker">Project manual · 7th and 8th grade science</div>
+  <h1>Measuring real human cells</h1>
+  <p class="lede">Your team asks one question about human cells and answers it with real measurements from 215,081 living cells. This page walks you through every step. Check off each item as your team finishes it. <b>Your checkmarks save on this device and in this browser</b>, so use the same laptop and browser each time.</p>
+  <div class="factrow">
+    <div class="fact"><b>40 points</b><span>Poster slide, talk, and your own paragraph</span></div>
+    <div class="fact"><b>215,081 cells</b><span>Imaged in 3D at the Allen Institute for Cell Science</span></div>
+    <div class="fact"><b>≥ 100 cells</b><span>The least you may use in each group</span></div>
+    <div class="fact"><b>4 minutes</b><span>Your talk at the symposium. Every member speaks.</span></div>
+  </div>
+
+  <h2 style="margin-top:22px">Deadlines</h2>
+  <div class="timeline" id="timeline"></div>
+  <p class="small muted">Every deadline is for your team unless it says “alone”.</p>
+
+  <h3>The whole project, in order</h3>
+  <figure>
+    <svg viewBox="0 0 960 150" role="img" aria-label="Flow: question and hypothesis, get your cells, key numbers, graph, result sentence, conclusion, poster, talk, paragraph">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a877f"/></marker></defs>
+      <g font-family="system-ui,Segoe UI,Arial" text-anchor="middle">
+        <g id="flow"></g>
+      </g>
+    </svg>
+    <figcaption>Science works in this order. You do not make the graph until you know which numbers answer your question.</figcaption>
+  </figure>
+</div>
+
+<!-- =================== STEP 1 =================== -->
+<section class="step" id="s1" data-title="Question + hypothesis">
+  <div class="stephead">
+    <div><div class="num">Step 1</div><h2>Question and hypothesis</h2></div>
+    <div class="badges"><span class="badge due">Due Tue Nov 10</span><span class="badge prog" data-prog></span></div>
+  </div>
+  <div class="done-looks"><b>Done looks like</b>A question this dataset can answer, and a hypothesis that predicts a direction and gives a cell-biology reason after “because”.</div>
+
+  <div class="cols">
+    <div>
+      <h3 style="margin-top:0">A strong question names three things</h3>
+      <ol class="how">
+        <li><b>What you measure</b>, with a unit (µm³, µm², %, or a ratio).</li>
+        <li><b>Which cells</b>: interphase or a mitosis stage, and which tagged structure.</li>
+        <li><b>What you compare</b>: small vs large cells, edge vs inside, stage vs stage, or two measurements of the same cells.</li>
+      </ol>
+      <table>
+        <tr><th>Weak</th><th>Strong</th></tr>
+        <tr><td>How big are cells?<br><span class="small muted">Too broad. Card 5 already shows it.</span></td><td>In interphase cells, is the nucleus a larger share of the cell in small cells than in large cells?</td></tr>
+        <tr><td>What do mitochondria do?<br><span class="small muted">A textbook question. The data cannot answer it.</span></td><td>Do interphase cells with a larger volume have a larger total mitochondria volume, and does the mitochondria share of the cell stay the same?</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3 style="margin-top:0">The parts of a hypothesis</h3>
+      <div class="anat">
+        <span class="p p-if"><b>If</b> a cell is larger,</span>
+        <span class="p p-then"><b>then</b> its nucleolus will be a larger share of its nucleus,</span>
+        <span class="p p-bc"><b>because</b> the nucleolus builds ribosomes, and bigger cells need more protein.</span>
+      </div>
+      <div class="key"><span class="k1">What you change or compare</span><span class="k2">What you predict, with a direction</span><span class="k3">A reason from cell biology</span></div>
+      <div class="warn"><b>Not a reason:</b> “because it is bigger” or “because it has more space”. Your “because” must use a cell-biology idea from the <a href="#concepts">concept cards</a>: the membrane and SA:V, an organelle's job, energy (ATP), or the cell cycle.</div>
+    </div>
+  </div>
+
+  <div class="checklist" data-list>
+    <h4>Step 1 checklist <span class="cnt"></span></h4>
+    <label><input type="checkbox" data-k="s1.q"><span>Our question names <b>what we measure</b> (with a unit), <b>which cells</b>, and <b>what we compare</b>.</span></label>
+    <label><input type="checkbox" data-k="s1.data"><span>We checked that our columns can answer it (see <a href="#data">the data columns</a>).</span></label>
+    <label><input type="checkbox" data-k="s1.dir"><span>Our hypothesis predicts a <b>direction</b>: increase, decrease, or stay the same share.</span></label>
+    <label><input type="checkbox" data-k="s1.bc"><span>Our “because” uses a concept-card idea, not “because it is bigger”.</span></label>
+    <label><input type="checkbox" data-k="s1.vars"><span>We wrote the independent variable (what we compare) and the dependent variable (what we measure), each with a unit.</span></label>
+    <label><input type="checkbox" data-k="s1.pred"><span>We wrote one result that would <b>support</b> our hypothesis and one that would <b>refute</b> (go against) it.</span></label>
+    <label><input type="checkbox" data-k="s1.ok"><span>The teacher approved our question and hypothesis.</span></label>
+    <div class="allset">Step 1 complete. Go to Step 2.</div>
+  </div>
+</section>
+
+<!-- =================== STEP 2 =================== -->
+<section class="step" id="s2" data-title="Get your cells">
+  <div class="stephead">
+    <div><div class="num">Step 2</div><h2>Get only your cells</h2></div>
+    <div class="badges"><span class="badge cp">Checkpoint A</span><span class="badge prog" data-prog></span></div>
+  </div>
+  <div class="done-looks"><b>Done looks like</b>Your team's own copy of the sheet, a tab called <b>Our cells</b> with only the rows your question is about, and two groups with at least 100 cells each.</div>
+
+  <h3 id="data" style="margin-top:0">What the data looks like: one row is one real cell</h3>
+  <div class="scroll">
+  <table style="min-width:760px">
+    <tr><th>A<br>cell_id</th><th style="background:#2878d6">B<br>structure_tagged</th><th>C<br>cell_volume<br>µm³</th><th>D<br>cell_surface<br>_area µm²</th><th>E<br>cell_height<br>µm</th><th>F<br>nucleus<br>_volume µm³</th><th>G<br>nucleus_surface<br>_area µm²</th><th style="background:#2878d6">H<br>structure<br>_volume µm³</th><th>I<br>on_colony<br>_edge</th></tr>
+    <tr><td>683427</td><td style="background:#e8f1fc"><b>Nucleolus</b></td><td>2,221.9</td><td>1,940.1</td><td>12.67</td><td>637.2</td><td>618.4</td><td style="background:#e8f1fc"><b>82.02</b></td><td>no</td></tr>
+    <tr><td>956564</td><td style="background:#e8f1fc">Nucleolus</td><td>1,879.5</td><td>1,656.8</td><td>8.77</td><td>570.7</td><td>593.9</td><td style="background:#e8f1fc">88.02</td><td>no</td></tr>
+    <tr><td>677277</td><td style="background:#e8f1fc">Nucleolus</td><td>1,295.0</td><td>1,180.9</td><td>8.23</td><td>377.1</td><td>429.9</td><td style="background:#e8f1fc">55.84</td><td>no</td></tr>
+    <tr><td colspan="9" class="muted">… 2,000 rows in the interphase file, one per cell</td></tr>
+  </table>
+  </div>
+  <p class="small muted">Four real rows from the class interphase file.</p>
+  <div class="cols">
+    <p><b>Read row 1 out loud:</b> cell 683427 had its nucleolus tagged. The whole cell was 2,221.9 µm³. Its nucleus was 637.2 µm³. All of its nucleolus added up to 82.02 µm³.</p>
+    <div class="warn" style="margin-top:6px"><b>Column H depends on column B.</b> H is the volume of whichever structure glows in that cell. In a mitochondria row, H is mitochondria. In a Golgi row, H is Golgi. Never mix rows from different structures in one group.</div>
+  </div>
+
+  <h3>Why you paste into a new tab</h3>
+  <figure>
+    <svg viewBox="0 0 900 270" role="img" aria-label="A filter only hides rows, and MEDIAN still counts hidden rows. Pasting into a new tab keeps only your rows.">
+      <g font-family="system-ui,Segoe UI,Arial" font-size="15">
+        <text x="20" y="24" font-weight="700" font-size="17">Filter only (wrong)</text>
+        <g transform="translate(20,38)">
+          <rect width="360" height="200" rx="8" fill="#fff" stroke="#bbb"/>
+          <g id="rowsA"></g>
+        </g>
+        <text x="20" y="262" fill="#c2410c" font-weight="700">=MEDIAN still counts the hidden grey rows</text>
+
+        <path d="M410 140 h70" stroke="#8a877f" stroke-width="3" marker-end="url(#ar2)"/>
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a877f"/></marker></defs>
+        <text x="445" y="128" text-anchor="middle" font-size="13" fill="#5b5b5b">copy, paste</text>
+
+        <text x="510" y="24" font-weight="700" font-size="17">New tab “Our cells” (right)</text>
+        <g transform="translate(510,38)">
+          <rect width="360" height="200" rx="8" fill="#fff" stroke="#2e7d4f" stroke-width="2"/>
+          <g id="rowsB"></g>
+        </g>
+        <text x="510" y="262" fill="#2e7d4f" font-weight="700">Only your cells, so every formula is honest</text>
+      </g>
+    </svg>
+  </figure>
+
+  <h3>How to do it in Google Sheets</h3>
+  <ol class="how">
+    <li>Open the class sheet (<span data-link="interphaseSheet">interphase cells</span> or <span data-link="mitosisSheet">cells in mitosis</span>). <b>File → Make a copy.</b> Name it with your station number. Never type in the class file.</li>
+    <li><b>Data → Create a filter.</b> Click the filter button on column B (<code>structure_tagged</code>), or on <code>stage</code> in the mitosis file. Keep only your structure or stage.</li>
+    <li>Select the visible rows, including row 1. Copy. Click <b>+</b> at the bottom to add a tab, name it <b>Our cells</b>, and paste in cell A1.</li>
+    <li>Make your groups. For small vs large: <b>Data → Sort range</b> (data has a header row), sort by <code>cell_volume_um3</code>, A → Z. The smallest cell is now on top. Split the rows at the middle.</li>
+    <li>Write <b>n</b> (the number of cells) for each group. Write every step in your methods log.</li>
+  </ol>
+
+  <figure>
+    <svg viewBox="0 0 900 240" role="img" aria-label="250 cells sorted from smallest to largest, split at the middle into a smaller half of 125 and a larger half of 125">
+      <g font-family="system-ui,Segoe UI,Arial" font-size="15">
+        <g id="sortbars" transform="translate(30,20)"></g>
+        <line x1="450" y1="10" x2="450" y2="190" stroke="#141414" stroke-width="2.5" stroke-dasharray="6 5"/>
+        <text x="240" y="215" text-anchor="middle" font-weight="700" fill="#2878d6">Smaller half: rows 2–126, n = 125</text>
+        <text x="660" y="215" text-anchor="middle" font-weight="700" fill="#a77d00">Larger half: rows 127–251, n = 125</text>
+        <text x="450" y="236" text-anchor="middle" font-size="13" fill="#5b5b5b">Example: 250 nucleolus cells, sorted by cell volume, smallest first</text>
+      </g>
+    </svg>
+  </figure>
+
+  <div class="checklist" data-list>
+    <h4>Checkpoint A checklist <span class="cnt"></span></h4>
+    <label><input type="checkbox" data-k="s2.copy"><span>We made our team's own copy of the sheet (File → Make a copy) and named it with our station.</span></label>
+    <label><input type="checkbox" data-k="s2.filter"><span>We filtered to only our structure or stage.</span></label>
+    <label><input type="checkbox" data-k="s2.tab"><span>We pasted only our rows into a new tab called <b>Our cells</b>.</span></label>
+    <label><input type="checkbox" data-k="s2.groups"><span>We decided our groups (for example smaller half and larger half).</span></label>
+    <label><input type="checkbox" data-k="s2.n"><span>Each group has <b>at least 100 cells</b>, and we wrote n for each group.</span></label>
+    <label><input type="checkbox" data-k="s2.log"><span>Every step so far is in our methods log.</span></label>
+    <label><input type="checkbox" data-k="s2.t"><span><span class="tag">A</span>The teacher initialed Checkpoint A.</span></label>
+    <div class="allset">Checkpoint A complete. Go to Step 3.</div>
+  </div>
+</section>
+
+<!-- =================== STEP 3 =================== -->
+<section class="step" id="s3" data-title="Key numbers">
+  <div class="stephead">
+    <div><div class="num">Step 3</div><h2>Key numbers</h2></div>
+    <div class="badges"><span class="badge cp">Checkpoint B</span><span class="badge prog" data-prog></span></div>
+  </div>
+  <div class="done-looks"><b>Done looks like</b>A ratio column if your question needs one, and the <b>median</b> of each group with its unit.</div>
+
+  <div class="cols">
+    <div>
+      <h3 style="margin-top:0">Share: compare parts fairly</h3>
+      <p>A big cell has more of almost everything. To ask whether a structure takes up <b>the same share</b> of the cell, divide the part by the whole.</p>
+      <p style="font-size:19px; text-align:center; background:#f4f2ec; border-radius:10px; padding:10px"><b>share (%) = part ÷ whole × 100</b></p>
+      <table>
+        <tr><th>You want</th><th>Type in row 2, then drag down</th></tr>
+        <tr><td>Structure share of the cell</td><td><code>=H2/C2*100</code></td></tr>
+        <tr><td>Structure share of the nucleus</td><td><code>=H2/F2*100</code></td></tr>
+        <tr><td>Nucleus share of the cell</td><td><code>=F2/C2*100</code></td></tr>
+        <tr><td>SA:V (surface area ÷ volume)</td><td><code>=D2/C2</code></td></tr>
+      </table>
+      <h3>Median of a group</h3>
+      <p><code>=MEDIAN(J2:J126)</code> gives the middle value of rows 2 to 126. Change the column and rows to match your group.</p>
+      <p class="small muted">Why the median? Half the cells are above it and half below. A few giant or tiny cells do not pull it the way they pull an average.</p>
+    </div>
+    <div>
+      <figure style="margin-top:0">
+        <svg class="fit" viewBox="0 0 440 330" role="img" aria-label="A small cell and a large cell. The large cell has a bigger nucleus, but the nucleus is the same share of each cell.">
+          <g font-family="system-ui,Segoe UI,Arial" font-size="14" text-anchor="middle">
+            <circle cx="110" cy="140" r="70" fill="#e8f1fc" stroke="#2878d6" stroke-width="3"/>
+            <circle cx="110" cy="140" r="38" fill="#2878d6" opacity=".85"/>
+            <circle cx="320" cy="140" r="100" fill="#e8f1fc" stroke="#2878d6" stroke-width="3"/>
+            <circle cx="320" cy="140" r="54" fill="#2878d6" opacity=".85"/>
+            <text x="110" y="250" font-weight="700">Small cell</text>
+            <text x="320" y="270" font-weight="700">Large cell</text>
+            <text x="110" y="145" fill="#fff" font-weight="700">nucleus</text>
+            <text x="320" y="145" fill="#fff" font-weight="700">nucleus</text>
+            <text x="220" y="300" font-size="15">Total nucleus: <tspan font-weight="700">bigger</tspan> in the large cell</text>
+            <text x="220" y="322" font-size="15">Share of the cell: <tspan font-weight="700">about the same</tspan></text>
+          </g>
+        </svg>
+        <figcaption>Drawing, not data. A bigger total does not mean a bigger share.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <h3>The most common mistake: comparing totals instead of shares</h3>
+  <figure>
+    <svg viewBox="0 0 900 330" role="img" aria-label="Left chart: total nucleolus volume 59.4 versus 88.0 cubic micrometers. Right chart: nucleolus share of nucleus 13.7 versus 13.6 percent.">
+      <g font-family="system-ui,Segoe UI,Arial" font-size="14">
+        <!-- left chart -->
+        <text x="225" y="22" text-anchor="middle" font-weight="700" font-size="16">Total nucleolus volume</text>
+        <g transform="translate(70,40)">
+          <line x1="0" y1="0" x2="0" y2="220" stroke="#8a877f"/><line x1="0" y1="220" x2="330" y2="220" stroke="#8a877f"/>
+          <g fill="#5b5b5b" text-anchor="end" font-size="12"><text x="-6" y="224">0</text><text x="-6" y="114">50</text><text x="-6" y="4">100</text></g>
+          <rect x="50" y="89.3" width="90" height="130.7" fill="#9b9993"/>
+          <rect x="190" y="26.4" width="90" height="193.6" fill="#9b9993"/>
+          <text x="95" y="81" text-anchor="middle" font-weight="700" font-size="17">59.4</text>
+          <text x="235" y="18" text-anchor="middle" font-weight="700" font-size="17">88.0</text>
+          <text x="95" y="240" text-anchor="middle">Smaller half</text><text x="235" y="240" text-anchor="middle">Larger half</text>
+          <text transform="translate(-40,110) rotate(-90)" text-anchor="middle" font-size="13">volume (µm³)</text>
+        </g>
+        <!-- right chart -->
+        <text x="675" y="22" text-anchor="middle" font-weight="700" font-size="16">Nucleolus share of the nucleus</text>
+        <g transform="translate(520,40)">
+          <line x1="0" y1="0" x2="0" y2="220" stroke="#8a877f"/><line x1="0" y1="220" x2="330" y2="220" stroke="#8a877f"/>
+          <g fill="#5b5b5b" text-anchor="end" font-size="12"><text x="-6" y="224">0</text><text x="-6" y="114">8</text><text x="-6" y="4">16</text></g>
+          <rect x="50" y="31.6" width="90" height="188.4" fill="#2878d6"/>
+          <rect x="190" y="33" width="90" height="187" fill="#2878d6"/>
+          <text x="95" y="24" text-anchor="middle" font-weight="700" font-size="17">13.7%</text>
+          <text x="235" y="25" text-anchor="middle" font-weight="700" font-size="17">13.6%</text>
+          <text x="95" y="240" text-anchor="middle">Smaller half</text><text x="235" y="240" text-anchor="middle">Larger half</text>
+          <text transform="translate(-34,110) rotate(-90)" text-anchor="middle" font-size="13">share (%)</text>
+        </g>
+        <text x="20" y="306" font-size="15"><tspan fill="#c2410c" font-weight="700">✗ Left:</tspan> larger cells have 48% more nucleolus, but the whole cell is also bigger.</text>
+        <text x="20" y="326" font-size="15"><tspan fill="#2e7d4f" font-weight="700">✓ Right:</tspan> the share answers the question. It barely changes.</text>
+      </g>
+    </svg>
+    <figcaption>Worked example from the class interphase file, nucleolus rows, n = 125 per half. No team chose this question.</figcaption>
+  </figure>
+
+  <div class="checklist" data-list>
+    <h4>Checkpoint B checklist <span class="cnt"></span></h4>
+    <label><input type="checkbox" data-k="s3.ratio"><span>If our question is about a share or SA:V, we made a ratio column and dragged it down every row.</span></label>
+    <label><input type="checkbox" data-k="s3.check"><span>We checked one row by hand with a calculator. The ratio looks right.</span></label>
+    <label><input type="checkbox" data-k="s3.med"><span>We found the <b>median</b> of each group with <code>=MEDIAN( )</code> over the right rows.</span></label>
+    <label><input type="checkbox" data-k="s3.units"><span>Every key number has its unit (µm³, µm², %, or µm⁻¹ for SA:V).</span></label>
+    <label><input type="checkbox" data-k="s3.share"><span>We are comparing <b>shares</b>, not totals, if our question asks about “the same share”.</span></label>
+    <label><input type="checkbox" data-k="s3.log"><span>The formulas and rows we used are in our methods log.</span></label>
+    <label><input type="checkbox" data-k="s3.t"><span><span class="tag">B</span>The teacher initialed Checkpoint B.</span></label>
+    <div class="allset">Checkpoint B complete. Go to Step 4.</div>
+  </div>
+</section>
+
+<!-- =================== STEP 4 =================== -->
+<section class="step" id="s4" data-title="Graph">
+  <div class="stephead">
+    <div><div class="num">Step 4</div><h2>One graph</h2></div>
+    <div class="badges"><span class="badge cp">Checkpoint C</span><span class="badge due">Due Fri Nov 13</span><span class="badge prog" data-prog></span></div>
+  </div>
+  <div class="done-looks"><b>Done looks like</b>The right type of graph, a title, both axes labeled with units, n shown, and a y-axis that starts at 0. Worth 8 of the 40 points.</div>
+
+  <h3 style="margin-top:0">Pick the graph that answers your question</h3>
+  <p>Ask: am I <b>comparing groups</b>, or relating <b>two measurements of the same cells</b>?</p>
+  <figure>
+    <svg viewBox="0 0 900 250" role="img" aria-label="Three graph types: scatter plot, bar graph of medians, histogram">
+      <g font-family="system-ui,Segoe UI,Arial" font-size="15">
+        <g transform="translate(20,10)">
+          <line x1="0" y1="0" x2="0" y2="150" stroke="#8a877f" stroke-width="2"/><line x1="0" y1="150" x2="240" y2="150" stroke="#8a877f" stroke-width="2"/>
+          <g id="scatter" fill="#2878d6" fill-opacity=".55"></g>
+          <text y="180" font-weight="700" font-size="17">Scatter plot</text>
+          <text y="201">Two measurements of the same cells.</text>
+          <text y="221">One dot = one cell. Never join the dots.</text>
+        </g>
+        <g transform="translate(320,10)">
+          <line x1="0" y1="0" x2="0" y2="150" stroke="#8a877f" stroke-width="2"/><line x1="0" y1="150" x2="240" y2="150" stroke="#8a877f" stroke-width="2"/>
+          <rect x="40" y="40" width="65" height="110" fill="#2878d6"/><rect x="135" y="75" width="65" height="75" fill="#2878d6"/>
+          <text y="180" font-weight="700" font-size="17">Bar graph of medians</text>
+          <text y="201">Compare groups. One bar = one</text>
+          <text y="221">group's median. Write n under each bar.</text>
+        </g>
+        <g transform="translate(620,10)">
+          <line x1="0" y1="0" x2="0" y2="150" stroke="#8a877f" stroke-width="2"/><line x1="0" y1="150" x2="240" y2="150" stroke="#8a877f" stroke-width="2"/>
+          <g id="hist" fill="#2878d6" stroke="#fff"></g>
+          <text y="180" font-weight="700" font-size="17">Histogram</text>
+          <text y="201">The spread of one measurement.</text>
+          <text y="221">Rarely enough alone; pair it.</text>
+        </g>
+      </g>
+    </svg>
+  </figure>
+
+  <h3>Full credit vs lost points</h3>
+  <figure>
+    <svg viewBox="0 0 900 360" role="img" aria-label="Left: a full-credit bar graph with title, axis labels with units, n under each bar, and a y-axis from 0. Right: the same numbers with a y-axis starting at 13.55, which makes a tiny difference look huge.">
+      <g font-family="system-ui,Segoe UI,Arial" font-size="13">
+        <!-- good -->
+        <text x="20" y="22" font-weight="700" font-size="16" fill="#2e7d4f">✓ Full credit</text>
+        <text x="235" y="48" text-anchor="middle" font-weight="700" font-size="14">Nucleolus share of nucleus in smaller vs larger cells</text>
+        <g transform="translate(90,65)">
+          <line x1="0" y1="0" x2="0" y2="200" stroke="#555"/><line x1="0" y1="200" x2="300" y2="200" stroke="#555"/>
+          <g fill="#5b5b5b" text-anchor="end"><text x="-6" y="204">0</text><text x="-6" y="154">4</text><text x="-6" y="104">8</text><text x="-6" y="54">12</text><text x="-6" y="4">16</text></g>
+          <rect x="40" y="28.75" width="85" height="171.25" fill="#2878d6"/>
+          <rect x="175" y="30" width="85" height="170" fill="#2878d6"/>
+          <text x="82" y="22" text-anchor="middle" font-weight="700">13.7%</text><text x="217" y="23" text-anchor="middle" font-weight="700">13.6%</text>
+          <text x="82" y="218" text-anchor="middle">Smaller half</text><text x="217" y="218" text-anchor="middle">Larger half</text>
+          <text x="82" y="234" text-anchor="middle" fill="#2e7d4f" font-weight="700">n = 125</text><text x="217" y="234" text-anchor="middle" fill="#2e7d4f" font-weight="700">n = 125</text>
+          <text x="150" y="256" text-anchor="middle" font-weight="700">Cell size group</text>
+          <text transform="translate(-38,100) rotate(-90)" text-anchor="middle" font-weight="700">Share of nucleus (%)</text>
+        </g>
+        <g fill="#2e7d4f" font-weight="700" font-size="13">
+          <text x="20" y="345">Title · axes with units · n · y from 0 · one color</text>
+        </g>
+        <!-- bad -->
+        <text x="480" y="22" font-weight="700" font-size="16" fill="#c2410c">✗ Loses points</text>
+        <g transform="translate(560,65)">
+          <line x1="0" y1="0" x2="0" y2="200" stroke="#555"/><line x1="0" y1="200" x2="300" y2="200" stroke="#555"/>
+          <g fill="#5b5b5b" text-anchor="end"><text x="-6" y="204">13.55</text><text x="-6" y="104">13.65</text><text x="-6" y="4">13.75</text></g>
+          <rect x="40" y="50" width="85" height="150" fill="#d64545"/>
+          <rect x="175" y="150" width="85" height="50" fill="#e9a23b"/>
+          <text x="82" y="218" text-anchor="middle">Series 1</text><text x="217" y="218" text-anchor="middle">Series 2</text>
+        </g>
+        <g fill="#c2410c" font-size="13">
+          <text x="480" y="300">• No title, no axis labels, no units, no n</text>
+          <text x="480" y="318">• y-axis starts at 13.55, so 13.7 vs 13.6 looks 3× bigger</text>
+          <text x="480" y="336">• Default “Series 1” labels and two colors</text>
+        </g>
+      </g>
+    </svg>
+    <figcaption>Same two numbers on both graphs. Only the left one is honest.</figcaption>
+  </figure>
+
+  <h3>Make it in Google Sheets</h3>
+  <ol class="how">
+    <li>Put your group names in one column and their medians in the next column (for a bar graph). For a scatter plot, use your two measurement columns.</li>
+    <li>Select those cells. <b>Insert → Chart.</b></li>
+    <li>In the Chart editor, set <b>Chart type</b> to <b>Column chart</b> (group medians) or <b>Scatter chart</b> (two measurements).</li>
+    <li><b>Customize → Chart and axis titles.</b> Add the chart title, then the horizontal and vertical axis titles, each with a unit.</li>
+    <li><b>Customize → Vertical axis:</b> set <b>Min</b> to 0.</li>
+    <li>Put n in the group names (for example <code>Smaller half (n = 125)</code>) so it shows under each bar.</li>
+  </ol>
+
+  <div class="checklist" data-list>
+    <h4>Checkpoint C checklist <span class="cnt"></span></h4>
+    <label><input type="checkbox" data-k="s4.type"><span>Right type: bar graph of medians for groups, or scatter plot for two measurements.</span></label>
+    <label><input type="checkbox" data-k="s4.title"><span>The title says what was measured and in which cells.</span></label>
+    <label><input type="checkbox" data-k="s4.x"><span>The x-axis is labeled, with a unit.</span></label>
+    <label><input type="checkbox" data-k="s4.y"><span>The y-axis is labeled, with a unit.</span></label>
+    <label><input type="checkbox" data-k="s4.n"><span>n is shown for each group (or for the whole scatter plot).</span></label>
+    <label><input type="checkbox" data-k="s4.zero"><span>The y-axis starts at 0.</span></label>
+    <label><input type="checkbox" data-k="s4.read"><span>Big text, one color, readable from the back of the room.</span></label>
+    <label><input type="checkbox" data-k="s4.t"><span><span class="tag">C</span>The teacher initialed Checkpoint C.</span></label>
+    <div class="allset">Checkpoint C complete. Go to Step 5.</div>
+  </div>
+</section>
+
+<!-- =================== STEP 5 =================== -->
+<section class="step" id="s5" data-title="Result sentence">
+  <div class="stephead">
+    <div><div class="num">Step 5</div><h2>Result sentence</h2></div>
+    <div class="badges"><span class="badge cp">Checkpoint D</span><span class="badge due">Due Fri Nov 13</span><span class="badge prog" data-prog></span></div>
+  </div>
+  <div class="done-looks"><b>Done looks like</b>One sentence with two numbers, their units and n that answers your question.</div>
+  <div class="anat" style="font-size:18px">The median nucleolus share of the nucleus was <span class="p p-then"><b>13.7%</b></span> in the smaller half of cells <span class="p p-if">(n = 125)</span> and <span class="p p-then"><b>13.6%</b></span> in the larger half <span class="p p-if">(n = 125)</span>.</div>
+  <div class="key"><span class="k2">Two numbers with units</span><span class="k1">n for each group</span></div>
+  <div class="warn"><b>Not a result sentence:</b> “Bigger cells had more.” It has no numbers, no units and no n.</div>
+  <div class="checklist" data-list>
+    <h4>Checkpoint D checklist <span class="cnt"></span></h4>
+    <label><input type="checkbox" data-k="s5.two"><span>Our sentence has <b>two numbers</b> that answer the question (one per group, or a trend with numbers).</span></label>
+    <label><input type="checkbox" data-k="s5.units"><span>Each number has its unit.</span></label>
+    <label><input type="checkbox" data-k="s5.n"><span>n is given for each group.</span></label>
+    <label><input type="checkbox" data-k="s5.match"><span>The numbers match our graph exactly.</span></label>
+    <label><input type="checkbox" data-k="s5.t"><span><span class="tag">D</span>The teacher initialed Checkpoint D.</span></label>
+    <div class="allset">Checkpoint D complete. Go to Step 6.</div>
+  </div>
+</section>
+
+<!-- =================== STEP 6 =================== -->
+<section class="step" id="s6" data-title="Conclusion + limit">
+  <div class="stephead">
+    <div><div class="num">Step 6</div><h2>Conclusion, limit and next question</h2></div>
+    <div class="badges"><span class="badge cp">Checkpoints E + F</span><span class="badge due">Draft due Fri Nov 13</span><span class="badge prog" data-prog></span></div>
+  </div>
+  <div class="done-looks"><b>Done looks like</b>Claim, evidence and reasoning (E), plus one real limit of the data and one next question (F).</div>
+
+  <div class="cer">
+    <div class="c"><b>Claim</b><p>Our hypothesis was <b>not supported</b>. The nucleolus takes up about the same share of the nucleus in small and large cells.</p></div>
+    <div class="e"><b>Evidence</b><p>Median share 13.7% in the smaller half (n = 125) and 13.6% in the larger half (n = 125).</p></div>
+    <div class="r"><b>Reasoning</b><p>The nucleolus builds the parts of ribosomes. It seems to grow in step with the nucleus, so the share stays about the same even though larger cells have more nucleolus in total.</p></div>
+    <div class="l"><b>Limit + next</b><p>Limit: stem cells grown on glass, one cell line. Next question: does the share change just before mitosis?</p></div>
+  </div>
+  <div class="good"><b>“Not supported” can earn full credit.</b> You are graded on whether your conclusion matches your numbers and your reasoning uses cell biology, not on whether your guess was right.</div>
+
+  <div class="cols">
+    <div>
+      <h3 style="margin-top:0">Reasoning must use a cell-biology idea</h3>
+      <p>Pick the idea that fits from the <a href="#concepts">concept cards</a>: the membrane and SA:V, an organelle's job, energy (ATP), or the cell cycle. Say <b>why</b> the numbers came out the way they did.</p>
+      <p class="small muted">A trend does not prove a cause. If bigger cells have more mitochondria, that does not show mitochondria make cells grow.</p>
+    </div>
+    <div>
+      <h3 style="margin-top:0">Real limits of these data</h3>
+      <ul>
+        <li>Stem cells grown flat on glass, not cells inside a body.</li>
+        <li>One cell line, from one person.</li>
+        <li>Light-microscope measurements, made by a computer from images.</li>
+        <li>Each cell was measured once, so we cannot watch one cell grow.</li>
+        <li>Small n for some groups (for example colony-edge cells).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="checklist" data-list>
+    <h4>Checkpoints E and F checklist <span class="cnt"></span></h4>
+    <label><input type="checkbox" data-k="s6.claim"><span><span class="tag">E</span>Claim: we said <b>supported</b> or <b>not supported</b>, and answered the question in one sentence.</span></label>
+    <label><input type="checkbox" data-k="s6.ev"><span><span class="tag">E</span>Evidence: two numbers with units and n.</span></label>
+    <label><input type="checkbox" data-k="s6.reas"><span><span class="tag">E</span>Reasoning: we explained <b>why</b> with a cell-biology idea (membrane, an organelle's job, ATP and energy, or the cell cycle).</span></label>
+    <label><input type="checkbox" data-k="s6.limit"><span><span class="tag">F</span>One real limit of these data.</span></label>
+    <label><input type="checkbox" data-k="s6.next"><span><span class="tag">F</span>One next question that this kind of data could test.</span></label>
+    <label><input type="checkbox" data-k="s6.t"><span>The teacher initialed Checkpoints E and F.</span></label>
+    <div class="allset">Checkpoints E and F complete. Go to Step 7.</div>
+  </div>
+</section>
+
+<!-- =================== STEP 7 =================== -->
+<section class="step" id="s7" data-title="Poster slide">
+  <div class="stephead">
+    <div><div class="num">Step 7</div><h2>The poster slide</h2></div>
+    <div class="badges"><span class="badge due">Due Fri Nov 20</span><span class="badge prog" data-prog></span></div>
+  </div>
+  <div class="done-looks"><b>Done looks like</b>One 16:9 Google Slides slide with all 7 required parts, shared with the teacher. Big graph, short sentences. Your talk fills in the details.</div>
+  <p>Start from the <span data-link="posterTemplate">poster slide template</span> (File → Make a copy). The graph gets the biggest box.</p>
+
+  <figure>
+    <div class="poster" aria-label="Poster layout with seven numbered parts">
+      <div class="pz-title"><span class="n">1</span><b>Title: your question</b>Team names and station</div>
+      <div class="pz-graph"><span class="n">4</span><b>Graph</b>The biggest box. Title, axes with units, n.</div>
+      <div><span class="n">2</span><b>Hypothesis</b>If … then … because …</div>
+      <div><span class="n">3</span><b>Methods</b>Data source, which cells, n, units, how you calculated</div>
+      <div><span class="n">5</span><b>Key numbers</b>With units and n</div>
+      <div><span class="n">6</span><b>Conclusion</b>Supported or not, and why</div>
+      <div class="pz-src"><span class="n" style="background:#6b6963">7</span><b style="display:inline">Limit + next question</b> · Source line: Data from the Allen Institute for Cell Science, hiPSC Single-Cell Image Dataset (Viana et al., Nature 2023).</div>
+    </div>
+    <figcaption>Layout map. Your template may place the boxes a little differently.</figcaption>
+  </figure>
+
+  <h3>A finished example</h3>
+  <figure>
+    <a href="img/model-poster.png" target="_blank" rel="noopener"><img src="img/model-poster.png" alt="Model poster slide for the nucleolus example question, with all seven parts numbered" style="width:100%; height:auto; display:block; border-radius:6px"></a>
+    <figcaption>Tap the image to open it full size. This example uses a question no team chose.</figcaption>
+  </figure>
+
+  <div class="checklist" data-list>
+    <h4>Poster slide checklist <span class="cnt"></span></h4>
+    <label><input type="checkbox" data-k="s7.copy"><span>We made our own copy of the poster template and named it with our station.</span></label>
+    <label><input type="checkbox" data-k="s7.p1"><span><span class="tag">1</span>Title (our question) and team names.</span></label>
+    <label><input type="checkbox" data-k="s7.p2"><span><span class="tag">2</span>Hypothesis with “because”.</span></label>
+    <label><input type="checkbox" data-k="s7.p3"><span><span class="tag">3</span>Methods: data source, which cells, n, units, how we calculated.</span></label>
+    <label><input type="checkbox" data-k="s7.p4"><span><span class="tag">4</span>One graph that passes the Checkpoint C list.</span></label>
+    <label><input type="checkbox" data-k="s7.p5"><span><span class="tag">5</span>Key numbers with units.</span></label>
+    <label><input type="checkbox" data-k="s7.p6"><span><span class="tag">6</span>Conclusion: supported or not, and why, using cell biology.</span></label>
+    <label><input type="checkbox" data-k="s7.p7"><span><span class="tag">7</span>One limit and one next question.</span></label>
+    <label><input type="checkbox" data-k="s7.src"><span>The source line is on the slide.</span></label>
+    <label><input type="checkbox" data-k="s7.tv"><span>We checked it on a big screen: every word can be read from the back of the room.</span></label>
+    <label><input type="checkbox" data-k="s7.share"><span>We shared the slide with the teacher (Share → teacher's email).</span></label>
+    <div class="allset">Poster slide complete. Go to Step 8.</div>
+  </div>
+</section>
+
+<!-- =================== STEP 8 =================== -->
+<section class="step" id="s8" data-title="Talk">
+  <div class="stephead">
+    <div><div class="num">Step 8</div><h2>The 4-minute talk</h2></div>
+    <div class="badges"><span class="badge due">Practice by Fri Nov 20</span><span class="badge due">Symposium Tue Nov 24</span><span class="badge prog" data-prog></span></div>
+  </div>
+  <div class="done-looks"><b>Done looks like</b>About 4 minutes, every member speaks, then 2 minutes of questions answered with numbers from your data.</div>
+
+  <figure>
+    <svg viewBox="0 0 900 150" role="img" aria-label="Talk timeline: minute 1 question and hypothesis, minute 2 methods, minute 3 the graph, minute 4 conclusion, then 2 minutes of questions">
+      <g font-family="system-ui,Segoe UI,Arial" font-size="14">
+        <g id="talkbar"></g>
+      </g>
+    </svg>
+    <figcaption>Split the poster, not the work. Pairs and trios: double up the parts.</figcaption>
+  </figure>
+
+  <div class="cols">
+    <div>
+      <h3 style="margin-top:0">Who says what</h3>
+      <table>
+        <tr><th>Speaker</th><th>Says</th></tr>
+        <tr><td>1</td><td>The question, and why it matters for cells. The hypothesis with “because”.</td></tr>
+        <tr><td>2</td><td>Methods: where the data came from, which cells, n, how you calculated.</td></tr>
+        <tr><td>3</td><td>The graph: read the axes first, then point to the key numbers.</td></tr>
+        <tr><td>4 (or 1)</td><td>Conclusion, the cell-biology reason, one limit, the next question.</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3 style="margin-top:0">Be ready for these questions</h3>
+      <ul>
+        <li>How many cells were in each group?</li>
+        <li>Why did you use the median?</li>
+        <li>Could something other than cell size explain your result?</li>
+        <li>Would you expect the same result in a muscle cell or a neuron?</li>
+        <li>What would you do next with more time?</li>
+      </ul>
+      <div class="good" style="margin-top:6px">Answer with a number from your data when you can.</div>
+    </div>
+  </div>
+
+  <div class="checklist" data-list>
+    <h4>Talk checklist <span class="cnt"></span></h4>
+    <label><input type="checkbox" data-k="s8.split"><span>We decided who says each part. Every member has a part.</span></label>
+    <label><input type="checkbox" data-k="s8.mine"><span>I know my part without reading every word off the slide.</span></label>
+    <label><input type="checkbox" data-k="s8.axes"><span>Our graph speaker reads the axes before pointing to the numbers.</span></label>
+    <label><input type="checkbox" data-k="s8.time"><span>We practiced once with a timer. It was close to 4 minutes.</span></label>
+    <label><input type="checkbox" data-k="s8.qs"><span>We practiced answering the five questions above.</span></label>
+    <label><input type="checkbox" data-k="s8.done"><span>We presented at the symposium on Tue Nov 24.</span></label>
+    <div class="allset">Talk complete.</div>
+  </div>
+</section>
+
+<!-- =================== STEP 9 =================== -->
+<section class="step" id="s9" data-title="Your paragraph">
+  <div class="stephead">
+    <div><div class="num">Step 9 · alone</div><h2>Your individual paragraph</h2></div>
+    <div class="badges"><span class="badge due">Due Tue Nov 24</span><span class="badge prog" data-prog></span></div>
+  </div>
+  <div class="done-looks"><b>Done looks like</b>One paragraph, written alone, that covers four things. Worth 3 points.</div>
+  <ol class="how">
+    <li><b>How the data were collected:</b> human stem cells, one structure made to glow, imaged in 3D with a microscope, measured by a computer.</li>
+    <li><b>What your team did:</b> which cells, how many, what you calculated.</li>
+    <li><b>What the result means</b> for how cells work.</li>
+    <li><b>One thing you would change</b> if you did the project again, and why.</li>
+  </ol>
+  <div class="checklist" data-list>
+    <h4>Paragraph checklist <span class="cnt"></span></h4>
+    <label><input type="checkbox" data-k="s9.coll"><span>I explained how the data were collected.</span></label>
+    <label><input type="checkbox" data-k="s9.did"><span>I described what our team did, with n and what we calculated.</span></label>
+    <label><input type="checkbox" data-k="s9.mean"><span>I explained what the result means, using a cell-biology idea.</span></label>
+    <label><input type="checkbox" data-k="s9.change"><span>I named one thing I would change, and why.</span></label>
+    <label><input type="checkbox" data-k="s9.own"><span>I wrote it alone, in my own words.</span></label>
+    <label><input type="checkbox" data-k="s9.in"><span>I turned it in.</span></label>
+    <div class="allset">Paragraph complete. That is the whole project.</div>
+  </div>
+</section>
+
+<!-- =================== REFERENCE =================== -->
+<section class="step" id="concepts" data-ref>
+  <div class="num" style="font-size:15px; font-weight:800; color:var(--blue); letter-spacing:.05em; text-transform:uppercase">Reference</div>
+  <h2>Concept cards for your “because”</h2>
+  <p>Your hypothesis and your reasoning must use one of these ideas, in your own words.</p>
+  <div class="cards">
+    <div class="ccard">
+      <h4>Surface area to volume (SA:V)</h4>
+      <svg viewBox="0 0 300 150" role="img" aria-label="A 1 micrometer cube has SA 6 and volume 1, SA:V 6. A 2 micrometer cube has SA 24 and volume 8, SA:V 3." style="width:100%;height:auto">
+        <g font-family="system-ui,Segoe UI,Arial" font-size="12" text-anchor="middle">
+          <g transform="translate(45,50)"><path d="M0,20 l20,-12 h30 l-20,12z" fill="#cfe2f8" stroke="#2878d6"/><rect x="0" y="20" width="30" height="30" fill="#e8f1fc" stroke="#2878d6"/><path d="M30,20 l20,-12 v30 l-20,12z" fill="#b6d2f2" stroke="#2878d6"/></g>
+          <text x="70" y="122">1 µm cube</text><text x="70" y="140">SA 6 µm² · V 1 µm³ · <tspan font-weight="700">SA:V 6</tspan></text>
+          <g transform="translate(180,22)"><path d="M0,40 l40,-24 h60 l-40,24z" fill="#cfe2f8" stroke="#2878d6"/><rect x="0" y="40" width="60" height="60" fill="#e8f1fc" stroke="#2878d6"/><path d="M60,40 l40,-24 v60 l-40,24z" fill="#b6d2f2" stroke="#2878d6"/></g>
+          <text x="225" y="140"><tspan x="230" dy="-18">2 µm cube</tspan><tspan x="230" dy="18">SA 24 · V 8 · <tspan font-weight="700">SA:V 3</tspan></tspan></text>
+        </g>
+      </svg>
+      <p>Everything a cell takes in or gets rid of crosses its membrane. When a shape grows, its volume grows faster than its surface. So a bigger cell has less membrane for each µm³ inside it.</p>
+      <div class="use">Use for: SA:V, cell size, height or shape questions.</div>
+    </div>
+    <div class="ccard">
+      <h4>Share vs total</h4>
+      <p>Share = part ÷ whole × 100. A big cell can have more of a structure (bigger total) and still the same share, if the structure grew as fast as the cell. When you compare cells of different sizes, compare shares. A total only tells you about size.</p>
+      <div class="use">Use for: every “take up the same share” question.</div>
+    </div>
+    <div class="ccard">
+      <h4>Nucleus and nucleolus</h4>
+      <p>The nucleus holds the cell's DNA: one full set of instructions. The nucleolus, inside the nucleus, builds the parts of ribosomes. Ribosomes build proteins.</p>
+      <div class="use">Use for: nucleus share, nucleolus, nuclear speckles questions.</div>
+    </div>
+    <div class="ccard">
+      <h4>Mitochondria and energy</h4>
+      <p>Mitochondria make ATP, the cell's energy molecule. A cell spends ATP on building molecules, moving things inside the cell, and running membrane pumps such as the sodium-potassium pump (Block 2.5). More work means more ATP needed.</p>
+      <div class="use">Use for: mitochondria questions. Say what the ATP is used for.</div>
+    </div>
+    <div class="ccard">
+      <h4>The protein factory (ER, Golgi, lysosomes)</h4>
+      <p>The ER builds proteins and new membrane. The Golgi sorts, packages and ships them. Lysosomes break down worn-out parts and food and recycle them (Block 2.2). A bigger cell has more volume to build, supply and clean up.</p>
+      <div class="use">Use for: ER, Golgi, lysosome, peroxisome, endosome questions.</div>
+    </div>
+    <div class="ccard">
+      <h4>The cell cycle</h4>
+      <p>Interphase: the cell grows and copies its DNA, so it gets bigger before it divides. Mitosis: the nuclear envelope breaks down, and the copied chromosomes line up and separate. The DNA packs very tightly. Cytokinesis: the cell splits into two daughter cells.</p>
+      <div class="use">Use for: mitosis-file questions (size by stage, daughters, DNA volume, shape).</div>
+    </div>
+    <div class="ccard">
+      <h4>Colony edge vs inside</h4>
+      <p>These cells grow packed together in colonies on glass. A cell on the edge has open space on one side; a cell inside is squeezed by neighbors on every side. The data do not say why edge cells differ, so your “because” must be a reasoned guess.</p>
+      <div class="use">Use for: edge questions. The class file has few edge cells, so name the small n as a limit.</div>
+    </div>
+    <div class="ccard">
+      <h4>Trend is not cause</h4>
+      <p>If bigger cells have more mitochondria, that does not show that mitochondria make cells grow. Both could rise for a third reason. Your hypothesis predicts a pattern; it cannot prove a cause.</p>
+      <div class="use">Use for: every scatter-plot question.</div>
+    </div>
+  </div>
+</section>
+
+<section class="step" id="sheets" data-ref>
+  <div class="num" style="font-size:15px; font-weight:800; color:var(--blue); letter-spacing:.05em; text-transform:uppercase">Reference</div>
+  <h2>Data files and Google Sheets moves</h2>
+  <div class="cols">
+    <div>
+      <h3 style="margin-top:0">The two class files</h3>
+      <ul>
+        <li><b><span data-link="interphaseSheet">Interphase cells</span></b>: 2,000 cells, 250 to 400 for each of 8 tagged structures. Use this file unless your question is about mitosis.</li>
+        <li><b><span data-link="mitosisSheet">Cells in mitosis</span></b>: 510 cells, 85 at each of 6 stages. In this file, <code>nucleus_volume_um3</code> is the volume of the DNA.</li>
+        <li><b><a href="https://cfe.allencell.org" target="_blank" rel="noopener">Cell Feature Explorer</a></b> (website): explore all the cells and see any cell in 3D. Good for screenshots. Use the class files for medians and ratios.</li>
+      </ul>
+      <h3>Columns</h3>
+      <table>
+        <tr><th>Column</th><th>Meaning</th></tr>
+        <tr><td><code>structure_tagged</code></td><td>Which cell structure glows in this cell</td></tr>
+        <tr><td><code>cell_volume_um3</code></td><td>Size of the whole cell (µm³)</td></tr>
+        <tr><td><code>cell_surface_area_um2</code></td><td>Area of the cell membrane (µm²)</td></tr>
+        <tr><td><code>cell_height_um</code></td><td>Height from the glass to the top of the cell (µm)</td></tr>
+        <tr><td><code>nucleus_volume_um3</code></td><td>Size of the nucleus (µm³)</td></tr>
+        <tr><td><code>nucleus_surface_area_um2</code></td><td>Area of the nuclear envelope (µm²)</td></tr>
+        <tr><td><code>structure_volume_um3</code></td><td>Total volume of the tagged structure in that cell (µm³)</td></tr>
+        <tr><td><code>on_colony_edge</code></td><td>yes if the cell sits on the edge of its colony</td></tr>
+        <tr><td><code>stage</code> (mitosis file)</td><td>Interphase or the mitosis stage the cell was caught in</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3 style="margin-top:0">Sheets moves</h3>
+      <table>
+        <tr><th>To do this</th><th>Do this</th></tr>
+        <tr><td>Your own copy</td><td>File → Make a copy</td></tr>
+        <tr><td>Show only your cells</td><td>Data → Create a filter → filter button on column B (or stage)</td></tr>
+        <tr><td>Keep only those cells</td><td>Copy the visible rows → new tab (+) → paste in A1</td></tr>
+        <tr><td>Smallest to largest</td><td>Data → Sort range → by <code>cell_volume_um3</code>, A → Z</td></tr>
+        <tr><td>Ratio column</td><td><code>=H2/C2*100</code>, then drag the small blue square in the corner down</td></tr>
+        <tr><td>Median of a group</td><td><code>=MEDIAN(J2:J126)</code></td></tr>
+        <tr><td>Graph</td><td>Select → Insert → Chart → Column or Scatter → Customize → titles; vertical axis Min = 0</td></tr>
+      </table>
+      <h3>Data rules</h3>
+      <ul>
+        <li>Use interphase cells unless your question is about mitosis.</li>
+        <li>At least 100 cells in each group. Report the median and n.</li>
+        <li>Write down every step so another team could repeat it.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="step" id="rubric" data-ref>
+  <div class="num" style="font-size:15px; font-weight:800; color:var(--blue); letter-spacing:.05em; text-transform:uppercase">Reference</div>
+  <h2>Rubric (40 points)</h2>
+  <div class="scroll">
+  <table>
+    <tr><th>Part</th><th>Full credit looks like this</th><th>Points</th></tr>
+    <tr><td><b>Question and hypothesis</b></td><td>The question can be answered with this dataset. It names what is measured, in which cells, and what is compared. The hypothesis gives a reason from cell biology (“because …”).</td><td>6</td></tr>
+    <tr><td><b>Methods</b></td><td>Names the data source, which cells were used (stage, tagged structure), how many cells (n), the units, and how the key numbers were calculated (for example a median or a ratio).</td><td>5</td></tr>
+    <tr><td><b>Graph</b></td><td>Right type of graph for the question. Both axes labeled with units. Title. n shown. Readable on the TV from the back of the room.</td><td>8</td></tr>
+    <tr><td><b>Results</b></td><td>At least two specific numbers with units that answer the question. The trend is described accurately.</td><td>6</td></tr>
+    <tr><td><b>Conclusion and reasoning</b></td><td>States whether the hypothesis was supported. Explains the result with cell biology: membrane, organelles, energy or the cell cycle.</td><td>7</td></tr>
+    <tr><td><b>Limits and next question</b></td><td>One real limit of the data and one next question.</td><td>3</td></tr>
+    <tr><td><b>Talk</b></td><td>About 4 minutes. Every member speaks. Answers a question with evidence.</td><td>2</td></tr>
+    <tr><td><b>Individual paragraph</b></td><td>Written alone: how the data were collected, what you did, what the result means, one thing you would change.</td><td>3</td></tr>
+    <tr><td colspan="2" style="text-align:right"><b>Total</b></td><td><b>40</b></td></tr>
+  </table>
+  </div>
+</section>
+
+<section class="step" id="terms" data-ref>
+  <div class="num" style="font-size:15px; font-weight:800; color:var(--blue); letter-spacing:.05em; text-transform:uppercase">Reference</div>
+  <h2>Key terms</h2>
+  <dl class="gloss">
+    <dt>Stem cell</dt><dd>A cell that can still turn into many kinds of cells. These are human iPS cells: adult cells reprogrammed in a lab to act like stem cells.</dd>
+    <dt>µm (micrometer)</dt><dd>One-thousandth of a millimeter. µm³ measures volume. µm² measures area.</dd>
+    <dt>Interphase / mitosis</dt><dd>Interphase is the part of a cell's life when it is not dividing. Mitosis is when the nucleus divides (prophase, prometaphase, metaphase, anaphase, telophase).</dd>
+    <dt>Tagged structure</dt><dd>The one cell part made to glow in that batch of cells, so a computer could measure it.</dd>
+    <dt>Median</dt><dd>The middle value when all the values are put in order. Half the cells are above it and half are below.</dd>
+    <dt>n</dt><dd>The number of cells in a group. Always report it.</dd>
+    <dt>SA:V ratio</dt><dd>Surface area divided by volume: how much membrane a cell has for each µm³ inside it.</dd>
+    <dt>Share</dt><dd>Part ÷ whole × 100. What percent of the cell (or nucleus) one structure takes up.</dd>
+    <dt>Independent variable</dt><dd>What you compare or group by (for example cell size group).</dd>
+    <dt>Dependent variable</dt><dd>What you measure in each group (for example nucleolus share, %).</dd>
+  </dl>
+  <p class="small muted">Data: Allen Institute for Cell Science, hiPSC Single-Cell Image Dataset (Viana et al., <i>Nature</i>, 2023). Each measurement is one living human stem cell imaged in 3D with a microscope.</p>
+</section>
+
+<section class="step" id="device" data-ref>
+  <h2>Your saved progress</h2>
+  <p>Checkmarks are saved only in this browser on this device. They are not sent to anyone. If you switch laptops or clear your browser history, they will be gone. Your teacher still initials each checkpoint on paper.</p>
+  <div class="tools">
+    <button id="printBtn" type="button">Print my checklist</button>
+    <button id="resetBtn" type="button" class="danger">Clear all my checkmarks</button>
+    <span id="resetMsg" class="small muted"></span>
+  </div>
+  <p id="storeWarn" class="warn" style="display:none"><b>This browser is not saving checkmarks</b> (private window or blocked storage). Use a normal window to keep your progress.</p>
+</section>
+
+</main>
+
+<footer class="wrap">Cell Research Project manual · 7th and 8th grade science · 2026–2027</footer>
+
+<script>
+(function(){
+  "use strict";
+  var KEY = "cell-research-manual-v1";
+  var NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, parent, text){ var e=document.createElementNS(NS,tag); for(var k in attrs) e.setAttribute(k,attrs[k]); if(text!=null) e.textContent=text; if(parent) parent.appendChild(e); return e; }
+
+  /* ---------- storage ---------- */
+  var canStore = true, state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; localStorage.setItem(KEY+"-test","1"); localStorage.removeItem(KEY+"-test"); }
+  catch(e){ canStore = false; state = {}; }
+  if(!canStore) document.getElementById("storeWarn").style.display="block";
+  function save(){ if(!canStore) return; try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+  /* ---------- links from CONFIG ---------- */
+  document.querySelectorAll("[data-link]").forEach(function(s){
+    var url = (window.CONFIG && CONFIG.links && CONFIG.links[s.dataset.link]) || "";
+    if(url){ var a=document.createElement("a"); a.href=url; a.target="_blank"; a.rel="noopener"; a.textContent=s.textContent; s.replaceWith(a); }
+    else { s.insertAdjacentHTML("afterend", ' <span class="small muted">(link from your teacher)</span>'); }
+  });
+
+  /* ---------- deadlines timeline ---------- */
+  var tl = document.getElementById("timeline");
+  var now = new Date(); var today = now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
+  var nextFound = false;
+  CONFIG.deadlines.forEach(function(d){
+    var div = document.createElement("div"); div.className="tl";
+    if(d.off) div.classList.add("off");
+    if(d.date < today) div.classList.add("past");
+    else if(!d.off && !nextFound){ div.classList.add("next"); nextFound = true; }
+    div.innerHTML = '<div class="d"></div><div class="w"></div>' + (d.who?'<div class="who"></div>':'');
+    div.querySelector(".d").textContent = d.label; div.querySelector(".w").textContent = d.what;
+    if(d.who) div.querySelector(".who").textContent = d.who;
+    tl.appendChild(div);
+  });
+
+  /* ---------- flow diagram ---------- */
+  var flow = document.getElementById("flow");
+  var steps = ["Question +|hypothesis","Get your|cells","Key|numbers","Graph","Result|sentence","Conclusion|+ limit","Poster|slide","Talk","Your|paragraph"];
+  var w = 96, gap = 10.5, x0 = 4;
+  steps.forEach(function(s,i){
+    var x = x0 + i*(w+gap);
+    var g = el("g",{},flow);
+    var a = el("a",{href:"#s"+(i+1)},g);
+    el("rect",{x:x,y:28,width:w,height:84,rx:10,fill:"#fff",stroke:"#141414","stroke-width":2,"data-flow":i+1},a);
+    el("circle",{cx:x+w/2,cy:28,r:15,fill:"#2878d6","data-flowc":i+1},a);
+    el("text",{x:x+w/2,y:33,fill:"#fff","font-weight":800,"font-size":15},a,String(i+1));
+    s.split("|").forEach(function(line,j,arr){ el("text",{x:x+w/2,y:75+(j-(arr.length-1)/2)*18,"font-size":14.5,"font-weight":600,fill:"#141414"},a,line); });
+    if(i<steps.length-1) el("line",{x1:x+w+1,y1:70,x2:x+w+gap-1,y2:70,stroke:"#8a877f","stroke-width":2,"marker-end":"url(#ar)"},g);
+  });
+  el("text",{x:x0+ (w+gap)*1.5, y:138, "font-size":13, fill:"#5b5b5b"},flow,"Checkpoints A–B");
+  el("text",{x:x0+ (w+gap)*4, y:138, "font-size":13, fill:"#5b5b5b"},flow,"Checkpoints C–F · Fri Nov 13");
+  el("text",{x:x0+ (w+gap)*7, y:138, "font-size":13, fill:"#5b5b5b"},flow,"Nov 20 / Nov 24");
+
+  /* ---------- filter vs tab rows ---------- */
+  function rows(id, mine){
+    var g = document.getElementById(id), y=10;
+    for(var r=0;r<9;r++){
+      var isMine = mine.indexOf(r)>=0;
+      if(id==="rowsB" && !isMine) continue;
+      var fill = r===0 ? "#141414" : (isMine ? "#e8f1fc" : "#ecebe7");
+      el("rect",{x:10,y:y,width:340,height:18,rx:3,fill:fill},g);
+      var label = r===0 ? "structure_tagged · cell_volume · …" : (isMine ? "Nucleolus · your cell" : "Golgi / Mito / ER (hidden)");
+      el("text",{x:20,y:y+13.5,"font-size":12.5,fill:r===0?"#fff":(isMine?"#141414":"#9b9993")},g,label);
+      y += 20.5;
+    }
+  }
+  rows("rowsA",[0,2,5,7,8]); rows("rowsB",[0,2,5,7,8]);
+
+  /* ---------- sorted bars ---------- */
+  var sb = document.getElementById("sortbars"), N=50;
+  for(var i=0;i<N;i++){
+    var h = 40 + 120*Math.pow(i/(N-1),1.25);
+    el("rect",{x:i*16.8,y:170-h,width:13,height:h,rx:2,fill:i<N/2?"#2878d6":"#e0b13b"},sb);
+  }
+
+  /* ---------- scatter + histogram icons (fixed pseudo-random) ---------- */
+  var sc = document.getElementById("scatter"), seed=7;
+  function rnd(){ seed = (seed*16807)%2147483647; return seed/2147483647; }
+  for(var k=0;k<90;k++){ var xv=rnd(); var yv=0.15+0.65*xv+(rnd()-0.5)*0.35; el("circle",{cx:10+xv*220,cy:150-Math.max(0.03,Math.min(0.97,yv))*145,r:4},sc); }
+  var hs = document.getElementById("hist"), hv=[8,22,45,70,62,44,26,14,7];
+  hv.forEach(function(v,j){ el("rect",{x:8+j*25,y:150-v*2,width:25,height:v*2},hs); });
+
+  /* ---------- talk bar ---------- */
+  var tb = document.getElementById("talkbar");
+  var parts=[["Speaker 1","Question","#2878d6"],["Speaker 2","Methods","#3c8be0"],["Speaker 3","The graph","#5c9fe6"],["Speaker 4","Conclusion","#2e7d4f"],["Everyone","Questions (2 min)","#a77d00"]];
+  var unit = 860/6, xx=20;
+  parts.forEach(function(p,j){
+    var ww = j===4 ? unit*2 : unit;
+    el("rect",{x:xx,y:30,width:ww-4,height:64,rx:8,fill:p[2]},tb);
+    el("text",{x:xx+10,y:56,fill:"#fff","font-weight":800,"font-size":15},tb,p[0]);
+    el("text",{x:xx+10,y:78,fill:"#fff","font-size":14},tb,p[1]);
+    el("text",{x:xx,y:118,fill:"#5b5b5b","font-size":13},tb, j<4 ? (j)+":00" : "4:00");
+    xx += ww;
+  });
+  el("text",{x:xx-36,y:118,fill:"#5b5b5b","font-size":13},tb,"6:00");
+  el("text",{x:20,y:18,"font-weight":700,"font-size":14,fill:"#141414"},tb,"About 1 minute each");
+
+  /* ---------- checklists ---------- */
+  var sections = Array.prototype.slice.call(document.querySelectorAll("section.step[data-title]"));
+  var nav = document.getElementById("stepnav");
+  sections.forEach(function(sec,i){
+    var a=document.createElement("a"); a.href="#"+sec.id; a.innerHTML='<span class="n">'+(i+1)+'</span><span></span>';
+    a.lastChild.textContent = sec.dataset.title; nav.appendChild(a); sec._nav = a;
+  });
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.checklist input[type=checkbox]'));
+  boxes.forEach(function(b){
+    b.checked = !!state[b.dataset.k];
+    b.addEventListener("change", function(){
+      if(b.checked) state[b.dataset.k] = Date.now(); else delete state[b.dataset.k];
+      save(); update();
+    });
+  });
+  function update(){
+    var total=0, done=0;
+    sections.forEach(function(sec,i){
+      var bs = sec.querySelectorAll('.checklist input'), d=0;
+      bs.forEach(function(b){ if(b.checked) d++; });
+      total += bs.length; done += d;
+      sec.querySelectorAll('.checklist').forEach(function(cl){
+        var cb=cl.querySelectorAll('input'), cd=0; cb.forEach(function(b){ if(b.checked) cd++; });
+        cl.querySelector('.cnt').textContent = cd+" / "+cb.length;
+        cl.classList.toggle("complete", cd===cb.length);
+      });
+      var p = sec.querySelector('[data-prog]');
+      if(p){ p.textContent = d+" of "+bs.length+" done"; p.classList.toggle("full", d===bs.length); }
+      sec._nav.classList.toggle("done", d===bs.length);
+      sec._nav.classList.toggle("part", d>0 && d<bs.length);
+      var r = document.querySelector('[data-flow="'+(i+1)+'"]'), c = document.querySelector('[data-flowc="'+(i+1)+'"]');
+      if(r){ r.setAttribute("fill", d===bs.length ? "#e6f3ea" : (d>0 ? "#fff6d6" : "#fff")); r.setAttribute("stroke", d===bs.length ? "#2e7d4f" : "#141414"); }
+      if(c){ c.setAttribute("fill", d===bs.length ? "#2e7d4f" : "#2878d6"); }
+    });
+    var pct = total ? Math.round(done/total*100) : 0;
+    document.getElementById("overallBar").style.width = pct+"%";
+    document.getElementById("overallPct").textContent = pct+"%";
+  }
+  update();
+
+  /* ---------- tools ---------- */
+  document.getElementById("printBtn").addEventListener("click", function(){ window.print(); });
+  var armed=false, rb=document.getElementById("resetBtn"), rm=document.getElementById("resetMsg");
+  rb.addEventListener("click", function(){
+    if(!armed){ armed=true; rb.textContent="Click again to clear everything"; rm.textContent="This cannot be undone."; setTimeout(function(){ armed=false; rb.textContent="Clear all my checkmarks"; rm.textContent=""; },5000); return; }
+    state={}; save(); boxes.forEach(function(b){ b.checked=false; }); update();
+    armed=false; rb.textContent="Clear all my checkmarks"; rm.textContent="Cleared.";
+  });
+
+  /* keep checkmarks in sync if the page is open in two tabs */
+  window.addEventListener("storage", function(e){
+    if(e.key!==KEY) return;
+    try{ state = JSON.parse(e.newValue||"{}")||{}; }catch(_){ state={}; }
+    boxes.forEach(function(b){ b.checked=!!state[b.dataset.k]; }); update();
+  });
+})();
+</script>
+</body>
+</html>

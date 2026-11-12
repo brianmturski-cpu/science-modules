@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Museum of a Moving Planet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Student project manual for the Unit 2 Museum of a Moving Planet project: six panels, step-by-step checklists that save on your device.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Layout: one museum hallway. A hero "floor plan" of 6 colored panels, then one room (section) per panel, each in its panel color. */
+:root{
+  --bg:#f3f4f1; --surface:#ffffff; --ink:#1c2228; --muted:#5a6570; --line:#d8dcd6; --soft:#e9ebe6;
+  --p0:#45525e; --p1:#2463a6; --p2:#7646ad; --p3:#c96a12; --p4:#2b8248; --p5:#c23a33; --p6:#a47a06;
+  --mantle:#f3c79c; --mantle-ink:#8a4a12; --plateA:#b9cde0; --plateB:#e6c9a4; --magma:#d9452f; --sea:#cfe3f2; --rock:#d8cbb0;
+  --ok:#2b8248;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Lexend", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#13171b; --surface:#1b2126; --ink:#e8ebe7; --muted:#9ba6ae; --line:#2f373e; --soft:#232a30;
+  --p0:#93a1ad; --p1:#6ea6e6; --p2:#b18ae6; --p3:#f0a052; --p4:#62c285; --p5:#f07a72; --p6:#e2bd48;
+  --mantle:#5a3a1e; --mantle-ink:#f3c79c; --plateA:#3b5874; --plateB:#6b5236; --magma:#ff6a50; --sea:#21384a; --rock:#5b5140;
+  --ok:#62c285; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#13171b; --surface:#1b2126; --ink:#e8ebe7; --muted:#9ba6ae; --line:#2f373e; --soft:#232a30;
+  --p0:#93a1ad; --p1:#6ea6e6; --p2:#b18ae6; --p3:#f0a052; --p4:#62c285; --p5:#f07a72; --p6:#e2bd48;
+  --mantle:#5a3a1e; --mantle-ink:#f3c79c; --plateA:#3b5874; --plateB:#6b5236; --magma:#ff6a50; --sea:#21384a; --rock:#5b5140;
+  --ok:#62c285; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+a{color:var(--p1)}
+.wrap{max-width:900px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+:focus-visible{outline:3px solid var(--p1);outline-offset:2px;border-radius:4px}
+
+/* Hero */
+header.hero{padding-block:40px 28px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.hero h1{font-size:clamp(36px,7vw,60px);font-weight:800;letter-spacing:-.02em;margin-top:6px}
+.dq{margin-top:16px;font-size:clamp(19px,2.6vw,23px);max-width:34ch;font-weight:700}
+.dq small{display:block;font-size:14px;font-weight:400;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.lede{color:var(--muted);max-width:62ch;margin-top:12px}
+
+/* floor plan */
+.plan{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:26px}
+.plan a{display:flex;flex-direction:column;gap:2px;text-decoration:none;color:#fff;background:var(--c);border-radius:10px;padding:12px 10px 10px;min-height:104px;position:relative}
+.plan a .n{font-family:var(--display);font-weight:800;font-size:30px;line-height:1}
+.plan a .t{font-weight:700;font-size:14px;line-height:1.2}
+.plan a .pc{margin-top:auto;font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.plan a.done::after{content:"✓";position:absolute;top:8px;right:10px;font-weight:700;font-size:18px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .plan a{color:#13171b}}
+:root[data-theme="dark"] .plan a{color:#13171b}
+@media (max-width:640px){.plan{grid-template-columns:repeat(3,1fr)}}
+
+/* sticky progress */
+.bar{position:sticky;top:env(safe-area-inset-top, 0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top, 0px);z-index:10;background:var(--bg)}
+.bar .wrap{display:flex;align-items:center;gap:14px;padding-block:10px;flex-wrap:wrap}
+.bar label{font-weight:700;font-size:14px}
+.bar select{font:inherit;font-size:15px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
+.meter{flex:1;min-width:140px;display:flex;align-items:center;gap:10px}
+.track{flex:1;height:10px;border-radius:99px;background:var(--soft);overflow:hidden}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--p1),var(--p2),var(--p3),var(--p4),var(--p5),var(--p6));transition:width .4s}
+.meter b{font-variant-numeric:tabular-nums;font-size:14px;white-space:nowrap}
+
+/* due dates */
+.dates{margin-block:28px 8px}
+.dates h2{font-size:22px;margin-bottom:10px}
+.dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.dl>div{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:8px;padding:10px 12px}
+.dl>div .d{font-weight:700}
+.dl .w{font-size:14px;color:var(--muted)}
+.note{font-size:14px;color:var(--muted);margin-top:8px}
+.dl>div.past{opacity:.55}
+.dl>div.next{border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 22%,transparent)}
+.dl .nx{display:none;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.dl>div.next .nx{display:block}
+.duetag{font-size:12px;font-weight:700;border-radius:99px;padding:4px 10px;border:1.5px solid var(--c);color:var(--c);white-space:nowrap}
+.roomhead .tags{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.roomhead .tags .status{margin-left:0}
+.solo{margin-top:16px;border:2px solid var(--p0);border-radius:12px;padding:14px 16px;background:var(--surface)}
+.solo h3{font-size:19px;margin-bottom:6px}
+.solo ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.copylink{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;text-decoration:none;background:var(--c);color:var(--bg);padding:10px 16px;border-radius:10px}
+.copylink:hover{filter:brightness(1.08)}
+.askteacher{font-size:14px;color:var(--muted);font-style:italic}
+.warn{margin-top:10px;border-radius:10px;padding:10px 14px;background:color-mix(in srgb,var(--p5) 14%,var(--surface));border:1px solid var(--p5);font-size:15px}
+footer h2{font-size:22px;color:var(--ink);margin-bottom:8px}
+footer p{max-width:65ch}
+@media print{
+  .bar,.plan,footer .row,.toast,.bcard:not(.mine),.calc input{display:none!important}
+  body{background:#fff;color:#000;font-size:12pt}
+  section.room{break-inside:avoid-page;margin-top:18px}
+  figure img{max-width:60%}
+}
+.cases{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+@media (max-width:760px){.cases{grid-template-columns:1fr}}
+.case{background:var(--surface);border:2px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.case.mine{border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 25%,transparent)}
+.case svg{display:block;width:100%;height:auto;background:var(--sea)}
+.case .bt{padding:10px 12px;font-size:14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.case .bt b.h{font-family:var(--display);font-size:17px}
+.case .who2{font-size:13px;color:var(--muted)}
+.case .frame{margin-top:auto;border:2px dashed var(--c);border-radius:8px;padding:8px 10px;font-size:14px}
+.case .frame small{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+.case .mineflag{display:none;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+.case.mine .mineflag{display:block}
+.okbox{margin-top:16px;background:color-mix(in srgb,var(--c) 12%,var(--surface));border-left:6px solid var(--c);border-radius:8px;padding:12px 14px;font-size:16px}
+.hint{margin-top:12px;background:var(--surface);border:2px solid var(--c);border-radius:12px;padding:14px 16px}
+.hint h4{margin:0 0 4px;font-family:var(--display);font-size:18px}
+.hint p{margin:4px 0 0}
+.homework{margin-top:12px;background:var(--soft);border-radius:10px;padding:12px 14px;font-weight:700}
+
+/* sections */
+section.room{margin-top:44px;scroll-margin-top:70px}
+.roomhead{display:flex;gap:14px;align-items:center;border-bottom:4px solid var(--c);padding-bottom:10px}
+.badge{flex:none;width:58px;height:58px;border-radius:12px;background:var(--c);color:var(--bg);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:30px}
+.roomhead h2{font-size:clamp(26px,4.4vw,34px)}
+.roomhead .sub{color:var(--muted);font-size:15px;margin-top:2px}
+.status{margin-left:auto;font-size:13px;font-weight:700;border-radius:99px;padding:4px 10px;background:var(--soft);color:var(--muted);white-space:nowrap}
+.status.done{background:var(--c);color:var(--bg)}
+.grid2{display:grid;grid-template-columns:1.05fr 1fr;gap:22px;margin-top:18px;align-items:start}
+.grid2>*{min-width:0}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.what{font-size:18px;margin:16px 0 0;max-width:65ch}
+
+/* checklist */
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps li label{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;transition:border-color .15s, background .15s}
+.steps li label:hover{border-color:var(--c)}
+.steps input{appearance:none;flex:none;width:26px;height:26px;border:2.5px solid var(--c);border-radius:7px;margin:0;display:grid;place-items:center;cursor:pointer;background:var(--surface)}
+.steps input:checked{background:var(--c)}
+.steps input:checked::after{content:"";width:7px;height:13px;border:solid var(--bg);border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.steps .txt{min-width:0}
+.steps .txt b{display:block}
+.steps .txt span{color:var(--muted);font-size:15px}
+.steps li input:checked + .txt{opacity:.6}
+.steps li input:checked + .txt b{text-decoration:line-through;text-decoration-thickness:2px}
+.who{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--c);margin-left:4px}
+.ck-title{font-family:var(--display);font-size:18px;margin:0 0 10px}
+
+/* figures */
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+figure img{display:block;width:100%;height:auto;background:#fff}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:14px;color:var(--muted);padding:10px 12px;border-top:1px solid var(--line)}
+figcaption b{color:var(--ink)}
+.tip{margin-top:12px;border-radius:10px;padding:12px 14px;background:var(--soft);font-size:15px}
+.tip b{color:var(--c)}
+.caption-ex{margin-top:12px;border:2px dashed var(--c);border-radius:10px;padding:12px 14px;font-size:16px}
+.caption-ex small{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+
+/* SVG theme classes */
+.s-sea{fill:var(--sea)} .s-mantle{fill:var(--mantle)} .s-pa{fill:var(--plateA)} .s-pb{fill:var(--plateB)} .s-magma{fill:var(--magma)}
+.s-rock{fill:var(--rock)} .s-ink{fill:var(--ink)} .s-muted{fill:var(--muted)} .s-surf{fill:var(--surface)} .s-line{stroke:var(--ink);fill:none}
+.s-arrow{stroke:var(--p5);fill:none;stroke-width:5;stroke-linecap:round} .s-arrowhead{fill:var(--p5)}
+.s-conv{stroke:var(--mantle-ink);fill:none;stroke-width:3;stroke-dasharray:6 5}
+.s-c{fill:var(--c)} .s-cs{stroke:var(--c)}
+svg text{font-family:var(--body)}
+
+/* tools */
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+@media (max-width:560px){.tools{grid-template-columns:repeat(2,1fr)}}
+.tools div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
+.tools b{display:block;font-size:16px}
+.tools code{font-family:inherit;font-weight:700;color:var(--p0)}
+.slidelist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.slidelist li{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:15px}
+.slidelist i{font-style:normal;width:46px;height:28px;border-radius:4px;background:var(--c);color:var(--bg);display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+
+/* evidence cards */
+.clues{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}
+.clue{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:14px}
+.clue svg{width:44px;height:44px;display:block;margin-bottom:4px}
+.clue b{display:block;font-size:15px}
+
+/* boundary gallery */
+.bgal{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:12px}
+.bcard{background:var(--surface);border:2px solid var(--line);border-radius:12px;overflow:hidden}
+.bcard.mine{border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 25%,transparent)}
+.bcard svg{display:block;width:100%;height:auto;background:var(--sea)}
+.bcard .bt{padding:10px 12px;font-size:14px}
+.bcard .bt b{display:block;font-size:16px;font-family:var(--display)}
+.bcard .mineflag{display:none;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+.bcard.mine .mineflag{display:block}
+.bcard ol{margin:6px 0 0;padding-left:20px}
+
+/* calculator */
+.calc{background:var(--surface);border:2px solid var(--c);border-radius:12px;padding:16px}
+.calc label{font-weight:700;display:block;margin-bottom:6px}
+.calc input{font:inherit;font-size:22px;width:120px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.calc .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.math{margin-top:12px;font-variant-numeric:tabular-nums;font-size:17px;display:flex;flex-direction:column;gap:4px}
+.math .big{font-family:var(--display);font-size:30px;font-weight:800;color:var(--c)}
+
+/* script frame */
+.script{display:flex;flex-direction:column;gap:8px}
+.script div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;display:grid;grid-template-columns:70px 1fr;gap:10px;align-items:start}
+.script .tm{font-variant-numeric:tabular-nums;font-weight:700;color:var(--c)}
+.script .sp{font-size:15px}
+.script .sp i{color:var(--muted)}
+
+/* jobs, rubric */
+.jobs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+@media (max-width:640px){.jobs{grid-template-columns:1fr}}
+.jobs div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.jobs b{font-family:var(--display);font-size:20px;display:block}
+.jobs span{color:var(--muted);font-size:15px}
+.tablewrap{overflow-x:auto;margin-top:14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-family:var(--display);font-size:15px;background:var(--soft)}
+td:first-child{font-weight:700}
+tr:last-child td{border-bottom:0}
+
+footer{margin-top:56px;padding-block:24px 48px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+footer .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.btn{font:inherit;font-size:14px;font-weight:700;border-radius:8px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.btn.danger{border-color:var(--p5);color:var(--p5)}
+.confirm{display:inline-flex;gap:8px;align-items:center}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%) translateY(120px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-weight:700;font-size:15px;transition:transform .3s;z-index:20;max-width:calc(100% - 32px);text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<!-- =================== TEACHER: EDIT DATES AND LINKS HERE =================== -->
+<script>
+var CONFIG = {
+  // Dates are YYYY-MM-DD. "panels" puts a "Due" tag on those panels. off:true = no class.
+  deadlines: [
+    {date:"2026-11-05", label:"Thu, Nov 5", what:"Panel 1: Then", panels:[1], c:"--p1"},
+    {date:"2026-11-12", label:"Thu, Nov 12", what:"Panel 2: Evidence", panels:[2], c:"--p2"},
+    {date:"2026-11-17", label:"Tue, Nov 17", what:"Panels 3 + 5: How it formed and Future", panels:[3,5], c:"--p3"},
+    {date:"2026-11-17", label:"Tue, Nov 17", what:"Build Day + Gallery Walk: Panels 4 + 6", panels:[4,6], c:"--p4"}
+  ],
+  // Share links. A "/copy" link makes the student their own copy. Leave "" to show "link from your teacher".
+  links: {
+    panelTemplate: "https://docs.google.com/presentation/d/11l1kGeCoRRupkJHbTI7jEWkz9LtVJCFr8Lz9JeyQnZQ/copy",
+    evidenceFiles: "https://docs.google.com/document/d/1P2nEdCAS19pRcSwXE5-g4BUKZwICgEj2RiyED0dToG4/copy",
+    modelPlanning: "https://docs.google.com/document/d/1uNwux57ELlBXAy3UYjXn4eJXCjDRkmZyz9V-icBgpSw/copy"
+  }
+};
+</script>
+<!-- ========================================================================== -->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">6th Grade Science · Unit 2 Project Manual</div>
+    <h1>Museum of a Moving Planet</h1>
+    <p class="dq"><small>Driving question</small>How did our landform get here, and where will it be in 50 million years?</p>
+    <p class="lede">Your group is the curator of one exhibit in our class museum. Your exhibit has 6 panels. Each panel below has pictures, an example, and a checklist. Click a box when a step is done. Your checks save on this device, so you can close the page and come back.</p>
+    <nav class="plan" aria-label="Jump to a panel">
+      <a href="#panel-1" style="--c:var(--p1)" data-plan="1"><span class="n">1</span><span class="t">Then</span><span class="pc">0 of 0</span></a>
+      <a href="#panel-2" style="--c:var(--p2)" data-plan="2"><span class="n">2</span><span class="t">Evidence</span><span class="pc">0 of 0</span></a>
+      <a href="#panel-3" style="--c:var(--p3)" data-plan="3"><span class="n">3</span><span class="t">How it formed</span><span class="pc">0 of 0</span></a>
+      <a href="#panel-4" style="--c:var(--p4)" data-plan="4"><span class="n">4</span><span class="t">Model</span><span class="pc">0 of 0</span></a>
+      <a href="#panel-5" style="--c:var(--p5)" data-plan="5"><span class="n">5</span><span class="t">Future</span><span class="pc">0 of 0</span></a>
+      <a href="#panel-6" style="--c:var(--p6)" data-plan="6"><span class="n">6</span><span class="t">Docent talk</span><span class="pc">0 of 0</span></a>
+    </nav>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <label for="landform">Our landform</label>
+    <select id="landform">
+      <option value="">Choose one…</option>
+      <option value="himalayas">Himalayas and Mount Everest</option>
+      <option value="andes">Andes Mountains</option>
+      <option value="japan">Japan and Mount Fuji</option>
+      <option value="mariana">Mariana Trench</option>
+      <option value="iceland">Iceland</option>
+      <option value="rift">East African Rift Valley</option>
+      <option value="redsea">Red Sea</option>
+      <option value="sanandreas">San Andreas Fault</option>
+      <option value="hawaii">Hawaiian Islands</option>
+      <option value="appalachians">Appalachian Mountains</option>
+    </select>
+    <div class="meter" aria-live="polite"><div class="track"><div class="fill" id="fill"></div></div><b id="pct">0 of 0 steps</b></div>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <section class="dates" aria-labelledby="dates-h">
+    <h2 id="dates-h">Due dates</h2>
+    <div class="dl" id="duelist"></div>
+    <p class="homework">Project work happens at home. Class time is short, so come to class with your panel already started.</p>
+    <div class="solo" id="solo">
+      <h3>Working without your teacher today?</h3>
+      <ol>
+        <li>Sit with your group. Open this page and your group's Slides file.</li>
+        <li>Find the date marked <b>Next due</b> above. Work on those panels first.</li>
+        <li>Go to the first panel that is not done and do the next unchecked step.</li>
+        <li>Stuck? Read that step again here, then ask your group. Still stuck? Write the question down for your teacher and move to the next step.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- STEP 0 -->
+  <section class="room" id="setup" style="--c:var(--p0)" data-room="0">
+    <div class="roomhead">
+      <div class="badge">0</div>
+      <div><h2>Set up your group file</h2><div class="sub">Do this once, before any panel. About 2 minutes.</div></div>
+      <span class="status" data-status="0">0 of 0</span>
+    </div>
+    <div class="grid2">
+      <div>
+        <h3 class="ck-title">Checklist</h3>
+        <ul class="steps">
+          <li><label><input type="checkbox" data-k="s0-1"><span class="txt"><b>Make ONE copy of the panel template <span class="who">Recorder</span></b><span>Click the button below, then click <em>Make a copy</em>. It already has all 6 titled panels. Only one person per group does this.</span></span></label></li>
+          <li><label><input type="checkbox" data-k="s0-3"><span class="txt"><b>Rename your copy</b><span>Click the title and type <em>Landform</em> - Exhibit Panels (example: Andes - Exhibit Panels)</span></span></label></li>
+          <li><label><input type="checkbox" data-k="s0-2"><span class="txt"><b>Share it with your group</b><span>Share › add each group member › Editor</span></span></label></li>
+          <li><label><input type="checkbox" data-k="s0-4"><span class="txt"><b>Split up the slides</b><span>Each person can work on a different slide at the same time.</span></span></label></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="ck-title">Your file's slide list</h3>
+        <span data-link="panelTemplate" class="copylink">Make a copy of the panel template</span>
+        <p class="note">Your group already made a file? Keep using it. Just check it has all 6 slides below.</p>
+        <ul class="slidelist">
+          <li style="--c:var(--p1)"><i>1</i>Panel 1: Then</li>
+          <li style="--c:var(--p2)"><i>2</i>Panel 2: Evidence</li>
+          <li style="--c:var(--p3)"><i>3</i>Panel 3: How it formed</li>
+          <li style="--c:var(--p4)"><i>4</i>Panel 4: Model</li>
+          <li style="--c:var(--p5)"><i>5</i>Panel 5: Future</li>
+          <li style="--c:var(--p6)"><i>6</i>Panel 6: Docent talk</li>
+        </ul>
+      </div>
+    </div>
+    <h3 class="ck-title" style="margin-top:22px">Your 6 Google Slides tools</h3>
+    <div class="tools">
+      <div><b>Image</b><code>Insert › Image</code><br>Camera, Upload or Drive</div>
+      <div><b>Shape</b><code>Insert › Shape › Shapes</code><br>stars, boxes, triangles</div>
+      <div><b>Arrow</b><code>Insert › Line › Arrow</code><br>or Shape › Arrows</div>
+      <div><b>Text box</b><code>Insert › Text box</code><br>labels and captions</div>
+      <div><b>Curve</b><code>Insert › Line › Curve</code><br>convection loops</div>
+      <div><b>Group</b>Select the pieces, then <code>Ctrl + Alt + G</code></div>
+    </div>
+    <p class="tip"><b>Handy keys:</b> Ctrl+D duplicate · Ctrl+Z undo · Shift+drag keeps shapes straight · double-click an image to crop</p>
+  </section>
+
+  <!-- PANEL 1 -->
+  <section class="room" id="panel-1" style="--c:var(--p1)" data-room="1">
+    <div class="roomhead">
+      <div class="badge">1</div>
+      <div><h2>Then</h2><div class="sub">A Pangaea map with a star on your landform's land</div></div>
+      <div class="tags"><span class="status" data-status="1">0 of 0</span></div>
+    </div>
+    <p class="what">Show where your landform's land was about 250 million years ago, when all the continents were joined as Pangaea. If your landform did not exist yet, say so and explain why.</p>
+    <div class="grid2">
+      <figure>
+        <img src="img/alps-panel1-pangaea.png" alt="Sample Panel 1: a sketch of Pangaea with Laurasia on top and Gondwana below, the Tethys Ocean to the east, and a red star between Europe and Africa where the Alps will be." loading="lazy" width="900" height="620">
+        <figcaption><b>Sample exhibit: the Alps.</b> The Alps did not exist yet either! The star marks the shallow sea where they would rise later, and the caption says so. The Alps are not one of our 10 landforms.</figcaption>
+      </figure>
+      <div>
+        <h3 class="ck-title">Checklist</h3>
+        <ul class="steps">
+          <li><label><input type="checkbox" data-k="p1-1"><span class="txt"><b>Base map</b><span>Photo of your glued Pangaea puzzle (Insert › Image › Camera) or a Pangaea map image</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p1-2"><span class="txt"><b>Crop it</b><span>Double-click the image, drag the black corners</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p1-3"><span class="txt"><b>Add a red star</b><span>Insert › Shape › Shapes › star, then paint bucket › red</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p1-4"><span class="txt"><b>Label it</b><span>Text box with your landform's name + an arrow to the star</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p1-5"><span class="txt"><b>Write the caption</b><span>Use the caption frame for your case below</span></span></label></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="okbox"><b>Most of our landforms did not exist 250 million years ago. That is OK, and it is not a wrong answer.</b> You still make Panel 1. Put the star on the spot where your landform is today, even if that spot was ocean. Then your caption explains what was there instead. A landform that was not there yet is proof that Earth changes.</div>
+
+    <h3 class="ck-title" style="margin-top:22px">Which case is your landform?</h3>
+    <div class="cases">
+      <div class="case" data-case="A">
+        <svg viewBox="0 0 300 130" role="img" aria-label="Case A: a mountain range already sits in the middle of Pangaea, with the star right on it.">
+          <path class="s-pb" d="M40 30 Q150 0 260 30 Q290 65 260 100 Q150 130 40 100 Q10 65 40 30Z"/>
+          <path class="s-rock" d="M120 78 L135 52 L148 70 L160 48 L178 78Z"/>
+          <path d="M150 34 l4.5 9.2 10.1 1.5 -7.3 7.1 1.7 10.1 -9 -4.8 -9 4.8 1.7 -10.1 -7.3 -7.1 10.1 -1.5z" fill="#e0342b" stroke="#7a1410" stroke-width="1"/>
+          <text x="150" y="122" text-anchor="middle" font-size="12" class="s-ink">Landform already there</text>
+        </svg>
+        <div class="bt"><span class="mineflag">Our case</span><b class="h">A. Yes, it was there</b><span class="who2">Appalachians</span>
+          <span>Put the star right on it.</span>
+          <div class="frame"><small>Caption frame</small>On Pangaea, our landform was already here. It was next to ______. It formed when ______.</div></div>
+      </div>
+      <div class="case" data-case="B">
+        <svg viewBox="0 0 300 130" role="img" aria-label="Case B: the land is part of Pangaea but flat, and the star marks the spot where the landform will form later.">
+          <path class="s-pb" d="M40 30 Q150 0 260 30 Q290 65 260 100 Q150 130 40 100 Q10 65 40 30Z"/>
+          <path d="M226 30 Q250 60 230 100" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/>
+          <path d="M228 55 l4.5 9.2 10.1 1.5 -7.3 7.1 1.7 10.1 -9 -4.8 -9 4.8 1.7 -10.1 -7.3 -7.1 10.1 -1.5z" fill="#e0342b" stroke="#7a1410" stroke-width="1"/>
+          <text x="125" y="70" text-anchor="middle" font-size="12" class="s-ink">land, but no landform yet</text>
+          <text x="150" y="122" text-anchor="middle" font-size="12" class="s-ink">Star the land where it will form</text>
+        </svg>
+        <div class="bt"><span class="mineflag">Our case</span><b class="h">B. The land was there, the landform was not</b><span class="who2">Himalayas, Andes, Japan, East African Rift, San Andreas</span>
+          <span>Star the piece of land where your landform will form later.</span>
+          <div class="frame"><small>Caption frame</small>Our landform did not exist yet. Its land was part of ______, next to ______. It formed later when ______.</div></div>
+      </div>
+      <div class="case" data-case="C">
+        <svg viewBox="0 0 300 130" role="img" aria-label="Case C: the star sits in the ocean or on a seam between joined continents, where no land existed yet.">
+          <path class="s-pb" d="M20 30 Q110 4 190 30 Q215 65 190 100 Q110 126 20 100 Q0 65 20 30Z"/>
+          <path d="M100 18 Q112 65 100 112" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/>
+          <path d="M100 48 l4 8 9 1.3 -6.5 6.3 1.5 9 -8 -4.2 -8 4.2 1.5 -9 -6.5 -6.3 9 -1.3z" fill="#e0342b" stroke="#7a1410" stroke-width="1"/>
+          <path d="M250 40 l4.5 9.2 10.1 1.5 -7.3 7.1 1.7 10.1 -9 -4.8 -9 4.8 1.7 -10.1 -7.3 -7.1 10.1 -1.5z" fill="#e0342b" stroke="#7a1410" stroke-width="1"/>
+          <text x="254" y="92" text-anchor="middle" font-size="11" class="s-ink">open ocean</text>
+          <text x="100" y="124" text-anchor="middle" font-size="11" class="s-ink">seam: still joined</text>
+        </svg>
+        <div class="bt"><span class="mineflag">Our case</span><b class="h">C. No land there yet</b><span class="who2">Hawaii, Mariana Trench, Iceland, Red Sea</span>
+          <span>Star the open ocean, or the seam where two continents were still joined.</span>
+          <div class="frame"><small>Caption frame</small>Our landform did not exist yet. Where it is today was ______. It formed later when ______.</div></div>
+      </div>
+    </div>
+    <div class="hint" id="landhint" hidden>
+      <h4 id="lh-title"></h4>
+      <p id="lh-where"></p>
+      <p id="lh-when"></p>
+    </div>
+    <p class="note" id="lh-pick">Choose your landform at the top of the page to see a hint for your exact star spot.</p>
+  </section>
+
+  <!-- PANEL 2 -->
+  <section class="room" id="panel-2" style="--c:var(--p2)" data-room="2">
+    <div class="roomhead">
+      <div class="badge">2</div>
+      <div><h2>Evidence</h2><div class="sub">Two clues that your land moved or changed</div></div>
+      <div class="tags"><span class="status" data-status="2">0 of 0</span></div>
+    </div>
+    <p class="what">Find two pieces of evidence that the land at your landform has moved or changed. Show a picture of each clue and explain what it proves. Look in your Evidence Files doc and your Block 1.8 notes.</p>
+    <span data-link="evidenceFiles" class="copylink" style="--c:var(--p2)">Open a copy of the Evidence Files</span>
+    <h3 class="ck-title" style="margin-top:16px">Pick 2 clues from these 5 kinds</h3>
+    <div class="clues">
+      <div class="clue"><svg viewBox="0 0 44 44" aria-hidden="true"><path class="s-rock" d="M4 34 Q22 22 40 34 L40 40 L4 40Z"/><path d="M22 14 a9 9 0 1 1 -0.1 0" fill="none" stroke="var(--p2)" stroke-width="3"/><path d="M22 18 a5 5 0 1 1 -0.1 0" fill="none" stroke="var(--p2)" stroke-width="2.5"/></svg><b>Fossils</b>Same fossils on far-apart continents, or sea fossils up high</div>
+      <div class="clue"><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="4" y="8" width="36" height="8" class="s-rock"/><rect x="4" y="18" width="36" height="8" fill="var(--p2)" opacity=".55"/><rect x="4" y="28" width="36" height="8" class="s-rock"/></svg><b>Rock types</b>Matching rock layers that line up like puzzle pieces</div>
+      <div class="clue"><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="20" y="6" width="4" height="32" class="s-magma"/><rect x="13" y="6" width="5" height="32" fill="var(--p2)" opacity=".7"/><rect x="26" y="6" width="5" height="32" fill="var(--p2)" opacity=".7"/><rect x="5" y="6" width="6" height="32" fill="var(--p2)" opacity=".35"/><rect x="33" y="6" width="6" height="32" fill="var(--p2)" opacity=".35"/></svg><b>Seafloor ages</b>Rock is youngest at the ridge and older farther away</div>
+      <div class="clue"><svg viewBox="0 0 44 44" aria-hidden="true"><polyline points="2,22 10,22 13,10 17,34 21,6 25,38 29,14 32,22 42,22" fill="none" stroke="var(--p2)" stroke-width="3" stroke-linejoin="round"/></svg><b>Earthquakes</b>Lots of quakes means plates are still moving here</div>
+      <div class="clue"><svg viewBox="0 0 44 44" aria-hidden="true"><path class="s-rock" d="M4 40 L18 14 L26 14 L40 40Z"/><path class="s-magma" d="M18 14 L22 4 L26 14Z"/><circle cx="16" cy="8" r="3" fill="var(--muted)"/><circle cx="28" cy="6" r="2.5" fill="var(--muted)"/></svg><b>Volcanoes</b>Volcanoes form at certain boundaries and hotspots</div>
+    </div>
+    <div class="grid2">
+      <figure>
+        <svg viewBox="0 0 480 270" role="img" aria-label="Layout of Panel 2: two picture boxes side by side, each with a caption and a source line under it.">
+          <rect width="480" height="270" class="s-surf"/>
+          <text x="20" y="34" font-size="20" font-weight="700" class="s-ink">Panel 2: Evidence</text>
+          <rect x="20" y="50" width="210" height="120" rx="8" fill="var(--p2)" opacity=".18"/>
+          <rect x="250" y="50" width="210" height="120" rx="8" fill="var(--p2)" opacity=".18"/>
+          <text x="125" y="105" text-anchor="middle" font-size="16" font-weight="700" fill="var(--p2)">Clue 1</text>
+          <text x="125" y="126" text-anchor="middle" font-size="13" class="s-muted">picture</text>
+          <text x="355" y="105" text-anchor="middle" font-size="16" font-weight="700" fill="var(--p2)">Clue 2</text>
+          <text x="355" y="126" text-anchor="middle" font-size="13" class="s-muted">picture</text>
+          <text x="20" y="192" font-size="13" class="s-ink">Sea fossils on the peaks, so</text>
+          <text x="20" y="209" font-size="13" class="s-ink">this rock was once seafloor.</text>
+          <text x="20" y="234" font-size="11" class="s-muted">Source: ____</text>
+          <text x="250" y="192" font-size="13" class="s-ink">Lots of earthquakes here, so</text>
+          <text x="250" y="209" font-size="13" class="s-ink">the plates are still moving.</text>
+          <text x="250" y="234" font-size="11" class="s-muted">Source: ____</text>
+        </svg>
+        <figcaption><b>Layout:</b> 2 clues + 2 pictures + 2 captions + 2 sources.</figcaption>
+      </figure>
+      <div>
+        <h3 class="ck-title">Checklist</h3>
+        <ul class="steps">
+          <li><label><input type="checkbox" data-k="p2-1"><span class="txt"><b>Pick clue 1</b><span>Fossils, rock types, seafloor ages, earthquakes or volcanoes</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p2-2"><span class="txt"><b>Pick clue 2</b><span>A different kind from clue 1 makes your panel stronger</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p2-3"><span class="txt"><b>Add a picture for each clue</b><span>An image or a simple drawing</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p2-4"><span class="txt"><b>Write a caption for each clue</b><span>What the clue is + what it proves</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p2-5"><span class="txt"><b>Add a source under each picture</b><span>Tiny text saying where it came from</span></span></label></li>
+        </ul>
+        <div class="caption-ex"><small>Caption frame</small>We found ______ here. This proves ______.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANEL 3 -->
+  <section class="room" id="panel-3" style="--c:var(--p3)" data-room="3">
+    <div class="roomhead">
+      <div class="badge">3</div>
+      <div><h2>How it formed</h2><div class="sub">A labeled cross-section of the boundary under your landform</div></div>
+      <div class="tags"><span class="status" data-status="3">0 of 0</span></div>
+    </div>
+    <p class="what">Draw a slice through the Earth under your landform. Show the plates, which way they move, and the convection in the mantle below that drives them.</p>
+    <div class="grid2">
+      <figure>
+        <img src="img/alps-panel3-cross-section.png" alt="Sample Panel 3: cross-section of the Alps. The European plate bends down under the African plate, folded rock layers rise into mountains, and curved convection arrows loop through the orange mantle below." loading="lazy" width="1000" height="640">
+        <figcaption><b>Sample exhibit: the Alps.</b> Plates labeled, arrows for plate motion, convection loops in the mantle, and the landform labeled on top.</figcaption>
+      </figure>
+      <div>
+        <h3 class="ck-title">Checklist</h3>
+        <ul class="steps">
+          <li><label><input type="checkbox" data-k="p3-1"><span class="txt"><b>Mantle</b><span>Big orange rectangle across the bottom</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p3-2"><span class="txt"><b>Plates</b><span>Two brown rectangles. Tilt one with the round handle to dive under, or leave a gap to pull apart</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p3-3"><span class="txt"><b>Plate motion arrows</b><span>Thick arrows above the plates</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p3-4"><span class="txt"><b>Convection</b><span>Curved arrows in the mantle (Insert › Line › Curve)</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p3-5"><span class="txt"><b>Labels</b><span>Plate names, boundary type, magma, your landform</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p3-6"><span class="txt"><b>Color key</b><span>Use the same colors on every panel and add a small key</span></span></label></li>
+        </ul>
+      </div>
+    </div>
+    <h3 class="ck-title" style="margin-top:24px">The 5 ways land gets built</h3>
+    <p class="note" style="margin-top:-4px">Which one is under your landform? Block 1.9 and 1.10 teach these. Use the matching picture as your starting idea.</p>
+    <div class="bgal" id="bgal">
+      <div class="bcard" data-type="squeeze">
+        <svg viewBox="0 0 300 150" role="img" aria-label="Two continental plates push together and the crust crumples up into tall mountains.">
+          <rect y="100" width="300" height="50" class="s-mantle"/>
+          <path class="s-pa" d="M0 70 H130 L150 100 H0Z"/><path class="s-pb" d="M300 70 H170 L150 100 H300Z"/>
+          <path class="s-rock" d="M105 70 L135 22 L150 40 L165 18 L195 70Z"/>
+          <path d="M70 55 H110" class="s-arrow"/><path d="M115 55 l-10 -7 v14z" class="s-arrowhead"/>
+          <path d="M230 55 H190" class="s-arrow"/><path d="M185 55 l10 -7 v14z" class="s-arrowhead"/>
+          <path d="M40 140 Q40 112 80 112 Q120 112 120 135" class="s-conv"/><path d="M260 140 Q260 112 220 112 Q180 112 180 135" class="s-conv"/>
+        </svg>
+        <div class="bt"><span class="mineflag">Our landform</span><b>Push together: crumple up</b>Two continents collide. Neither sinks, so the rock folds up into high mountains.</div>
+      </div>
+      <div class="bcard" data-type="dive">
+        <svg viewBox="0 0 300 150" role="img" aria-label="An ocean plate dives under another plate, making a trench and a line of volcanoes.">
+          <rect y="100" width="300" height="50" class="s-mantle"/>
+          <path class="s-pa" d="M0 76 H120 Q150 78 175 120 L160 128 Q138 92 110 90 H0Z"/>
+          <path class="s-pb" d="M300 66 H150 Q165 72 178 96 L300 96Z"/>
+          <path class="s-rock" d="M195 66 L212 34 L222 34 L240 66Z"/><path class="s-magma" d="M212 34 L217 24 L222 34Z"/>
+          <path d="M184 116 Q205 96 214 40" stroke="var(--magma)" stroke-width="3" fill="none" stroke-dasharray="4 4"/>
+          <text x="128" y="70" font-size="11" class="s-muted">trench</text>
+          <path d="M30 62 H80" class="s-arrow"/><path d="M85 62 l-10 -7 v14z" class="s-arrowhead"/>
+          <path d="M60 145 Q60 115 100 115 Q140 115 150 140" class="s-conv"/>
+        </svg>
+        <div class="bt"><span class="mineflag">Our landform</span><b>Dive under: trench + volcanoes</b>Heavy ocean crust sinks under the other plate. It melts and feeds volcanoes.</div>
+      </div>
+      <div class="bcard" data-type="apart">
+        <svg viewBox="0 0 300 150" role="img" aria-label="Two plates pull apart, magma rises in the gap and makes new crust.">
+          <rect y="100" width="300" height="50" class="s-mantle"/>
+          <path class="s-pa" d="M0 70 H138 L132 100 H0Z"/><path class="s-pb" d="M300 70 H162 L168 100 H300Z"/>
+          <path class="s-magma" d="M138 70 H162 L168 100 H132Z"/>
+          <path d="M110 55 H60" class="s-arrow"/><path d="M55 55 l10 -7 v14z" class="s-arrowhead"/>
+          <path d="M190 55 H240" class="s-arrow"/><path d="M245 55 l-10 -7 v14z" class="s-arrowhead"/>
+          <path d="M140 140 Q140 112 100 112 Q60 112 60 135" class="s-conv"/><path d="M160 140 Q160 112 200 112 Q240 112 240 135" class="s-conv"/>
+        </svg>
+        <div class="bt"><span class="mineflag">Our landform</span><b>Pull apart: rift or ridge</b>Plates spread apart. Magma rises into the gap and makes new crust.</div>
+      </div>
+      <div class="bcard" data-type="slide">
+        <svg viewBox="0 0 300 150" role="img" aria-label="Seen from above, two plates slide past each other along a fault and a road across them is broken and offset.">
+          <rect width="300" height="150" class="s-rock"/>
+          <rect x="0" y="0" width="150" height="150" class="s-pa"/><rect x="150" y="0" width="150" height="150" class="s-pb"/>
+          <path d="M150 0 V150" stroke="var(--magma)" stroke-width="3" stroke-dasharray="8 5"/>
+          <rect x="0" y="82" width="150" height="14" fill="var(--muted)"/><rect x="150" y="54" width="150" height="14" fill="var(--muted)"/>
+          <path d="M80 120 V40" class="s-arrow"/><path d="M80 34 l-7 10 h14z" class="s-arrowhead"/>
+          <path d="M220 30 V110" class="s-arrow"/><path d="M220 116 l-7 -10 h14z" class="s-arrowhead"/>
+          <text x="156" y="144" font-size="11" class="s-ink">fault (view from above)</text>
+        </svg>
+        <div class="bt"><span class="mineflag">Our landform</span><b>Slide past: broken ground</b>Plates grind sideways past each other. Roads and fences crack and shift.</div>
+      </div>
+      <div class="bcard" data-type="hotspot">
+        <svg viewBox="0 0 300 150" role="img" aria-label="A plate moves over a fixed hotspot, leaving a chain of volcanoes that get older farther from the hotspot.">
+          <rect y="100" width="300" height="50" class="s-mantle"/>
+          <rect y="72" width="300" height="28" class="s-pa"/>
+          <path class="s-rock" d="M210 72 L228 32 L246 72Z"/><path class="s-magma" d="M224 40 L228 32 L232 40Z"/>
+          <path class="s-rock" d="M150 72 L164 46 L178 72Z"/><path class="s-rock" d="M95 72 L105 56 L115 72Z"/><path class="s-rock" d="M45 72 L52 64 L59 72Z"/>
+          <path class="s-magma" d="M218 150 Q228 120 222 100 L234 100 Q228 120 238 150Z"/>
+          <path d="M228 98 V44" stroke="var(--magma)" stroke-width="3" stroke-dasharray="4 4"/>
+          <path d="M150 20 H60" class="s-arrow"/><path d="M55 20 l10 -7 v14z" class="s-arrowhead"/>
+          <text x="40" y="92" font-size="11" class="s-ink">oldest</text><text x="214" y="92" font-size="11" class="s-ink">newest</text>
+        </svg>
+        <div class="bt"><span class="mineflag">Our landform</span><b>Hotspot: volcano chain</b>The plate slides over a hot plume that stays put, leaving a line of volcanoes.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANEL 4 -->
+  <section class="room" id="panel-4" style="--c:var(--p4)" data-room="4">
+    <div class="roomhead">
+      <div class="badge">4</div>
+      <div><h2>Model</h2><div class="sub">A 3D model a visitor can push, pull or slide. Built in class on Build Day.</div></div>
+      <div class="tags"><span class="status" data-status="4">0 of 0</span></div>
+    </div>
+    <p class="what">Your model shows the <em>process</em> that built your landform, not just the shape. A visitor should be able to push, pull or slide part of it and watch the land change. Your teacher supplies clay and cardboard or foam. <b>Hands</b> leads the model.</p>
+    <span data-link="modelPlanning" class="copylink" style="--c:var(--p4)">Make a copy of the Model Planning Sheet</span>
+    <div class="grid2">
+      <div>
+        <h3 class="ck-title">Checklist</h3>
+        <ul class="steps">
+          <li><label><input type="checkbox" data-k="p4-1"><span class="txt"><b>Find your model recipe</b><span>Choose your landform at the top. Your recipe is highlighted below.</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p4-2"><span class="txt"><b>Sketch the plan and list materials</b><span>On your Model Planning Sheet, before Build Day</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p4-3"><span class="txt"><b>Build it on Build Day</b><span>Make sure the moving part really moves</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p4-4"><span class="txt"><b>Photograph the model <span class="who">Recorder</span></b><span>Insert › Image › Camera on Panel 4</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p4-5"><span class="txt"><b>Add 3 labels to the photo</b><span>Plates, direction of motion, landform</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p4-6"><span class="txt"><b>Write the caption</b><span>One sentence on what process the model shows</span></span></label></li>
+        </ul>
+      </div>
+      <figure>
+        <svg viewBox="0 0 420 260" role="img" aria-label="Diagram of a squeeze-box model: two foam blocks on a cardboard base push layered clay strips so they fold up into a mountain.">
+          <rect width="420" height="260" class="s-surf"/>
+          <path d="M20 210 L380 210 L400 240 L40 240Z" fill="var(--rock)" opacity=".7"/>
+          <rect x="30" y="140" width="90" height="70" fill="var(--plateA)"/><rect x="300" y="140" width="90" height="70" fill="var(--plateB)"/>
+          <path d="M120 210 L120 168 Q150 168 165 140 Q185 92 210 92 Q235 92 255 140 Q270 168 300 168 L300 210Z" fill="var(--p4)" opacity=".35"/>
+          <path d="M120 186 Q150 186 168 156 Q188 110 210 110 Q232 110 252 156 Q270 186 300 186" fill="none" stroke="var(--p4)" stroke-width="4"/>
+          <path d="M120 200 Q150 200 172 176 Q190 130 210 130 Q230 130 248 176 Q270 200 300 200" fill="none" stroke="var(--p4)" stroke-width="4" opacity=".6"/>
+          <path d="M-10 175 H20" class="s-arrow" transform="translate(30 0)"/><path d="M55 175 l-10 -7 v14z" class="s-arrowhead"/>
+          <path d="M400 175 H370" class="s-arrow" transform="translate(-30 0)"/><path d="M335 175 l10 -7 v14z" class="s-arrowhead"/>
+          <text x="75" y="130" text-anchor="middle" font-size="13" class="s-ink">foam block</text>
+          <text x="345" y="130" text-anchor="middle" font-size="13" class="s-ink">foam block</text>
+          <text x="210" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="var(--p4)">clay layers fold up</text>
+          <text x="210" y="256" text-anchor="middle" font-size="12" class="s-muted">cardboard base</text>
+        </svg>
+        <figcaption><b>Example: squeeze box.</b> A visitor pushes the two blocks together and watches flat clay layers fold into a mountain.</figcaption>
+      </figure>
+    </div>
+    <h3 class="ck-title" style="margin-top:24px">Model recipes</h3>
+    <div class="bgal" id="recipes">
+      <div class="bcard" data-type="squeeze"><div class="bt"><span class="mineflag">Our recipe</span><b>Squeeze box</b><span class="note">Himalayas, Appalachians</span><ol><li>Stack 3 thin strips of different-color clay on cardboard.</li><li>Put a foam block at each end.</li><li>Visitor pushes the blocks together. The layers fold up into mountains.</li></ol></div></div>
+      <div class="bcard" data-type="dive"><div class="bt"><span class="mineflag">Our recipe</span><b>Dive-under plates</b><span class="note">Andes, Japan, Mariana Trench</span><ol><li>Two cardboard plates. Cut a slot in a box lid so one plate can slide down under the other.</li><li>Add clay volcanoes on the top plate and mark the trench.</li><li>Visitor pushes the ocean plate down through the slot.</li></ol></div></div>
+      <div class="bcard" data-type="apart"><div class="bt"><span class="mineflag">Our recipe</span><b>Pull-apart blocks</b><span class="note">Iceland, East African Rift, Red Sea</span><ol><li>Two blocks with clay on top, pushed together.</li><li>Put red clay "magma" underneath, between them.</li><li>Visitor pulls the blocks apart. The gap opens and the red magma shows.</li></ol></div></div>
+      <div class="bcard" data-type="slide"><div class="bt"><span class="mineflag">Our recipe</span><b>Broken road</b><span class="note">San Andreas Fault</span><ol><li>Two blocks side by side on cardboard.</li><li>Draw a road or fence straight across both.</li><li>Visitor slides the blocks past each other. The road breaks and shifts.</li></ol></div></div>
+      <div class="bcard" data-type="hotspot"><div class="bt"><span class="mineflag">Our recipe</span><b>Hotspot chain</b><span class="note">Hawaiian Islands</span><ol><li>A cardboard plate that slides over a box. Mark one fixed red "hotspot" on the box.</li><li>Make clay volcanoes, biggest over the hotspot, smaller and older down the line.</li><li>Visitor slides the plate and sees new islands form over the hotspot.</li></ol></div></div>
+    </div>
+  </section>
+
+  <!-- PANEL 5 -->
+  <section class="room" id="panel-5" style="--c:var(--p5)" data-room="5">
+    <div class="roomhead">
+      <div class="badge">5</div>
+      <div><h2>Future</h2><div class="sub">The 50-million-year math and a future map</div></div>
+      <div class="tags"><span class="status" data-status="5">0 of 0</span></div>
+    </div>
+    <p class="what">Calculate how far your plate will move in 50 million years, then show it on a world map: a star where your landform is today and a star where it will be.</p>
+    <div class="grid2">
+      <div class="calc">
+        <div class="row"><label for="speed" style="margin:0">Our plate's speed</label><input id="speed" type="number" min="0" step="0.5" value="2" inputmode="decimal"> <b>cm per year</b></div>
+        <div class="math" id="math"></div>
+        <p class="note">Use the speed from Block 1.10 for your plate. 100,000 cm = 1 km.</p>
+      </div>
+      <figure>
+        <img src="img/alps-panel5-future-map.png" alt="Sample Panel 5: map of Europe and Africa. Dashed outline shows Africa today, a shaded shape shows Africa 500 km farther north in 50 million years, and the Mediterranean is almost squeezed shut." loading="lazy" width="900" height="710">
+        <figcaption><b>Sample exhibit: the Alps.</b> 1 cm/yr × 50 million years = 500 km north. Dashed line = today, shaded = future.</figcaption>
+      </figure>
+    </div>
+    <h3 class="ck-title" style="margin-top:20px">Checklist</h3>
+    <ul class="steps">
+      <li><label><input type="checkbox" data-k="p5-1"><span class="txt"><b>Do the math first</b><span>speed (cm/yr) × 50,000,000 yr = cm. Divide by 100,000 for km. Show your work on the slide.</span></span></label></li>
+      <li><label><input type="checkbox" data-k="p5-2"><span class="txt"><b>Insert a world map with a scale bar</b><span>Star your landform where it is today</span></span></label></li>
+      <li><label><input type="checkbox" data-k="p5-3"><span class="txt"><b>Make a ruler</b><span>Draw a line as long as the scale bar, then copy it end to end</span></span></label></li>
+      <li><label><input type="checkbox" data-k="p5-4"><span class="txt"><b>Move the star</b><span>Ctrl+D the star and move it that far in your plate's direction</span></span></label></li>
+      <li><label><input type="checkbox" data-k="p5-5"><span class="txt"><b>Connect and label</b><span>Dashed arrow from old star to new star. Labels: Today and In 50 million years</span></span></label></li>
+    </ul>
+  </section>
+
+  <!-- PANEL 6 -->
+  <section class="room" id="panel-6" style="--c:var(--p6)" data-room="6">
+    <div class="roomhead">
+      <div class="badge">6</div>
+      <div><h2>Docent talk</h2><div class="sub">A 2-minute tour of your exhibit at the Gallery Walk</div></div>
+      <div class="tags"><span class="status" data-status="6">0 of 0</span></div>
+    </div>
+    <p class="what">A docent is a museum guide. Your group gives visitors a 2-minute tour that answers the driving question. Type your script in the speaker notes under each panel (View › Show speaker notes). <b>Reporter</b> leads the talk, but everyone should be able to explain any panel.</p>
+    <div class="grid2">
+      <div>
+        <h3 class="ck-title">A 2-minute script, panel by panel</h3>
+        <div class="script">
+          <div><span class="tm">0:00</span><span class="sp"><b>Welcome.</b> <i>"Welcome to the Andes! Today we'll show you how this place got here and where it's going."</i></span></div>
+          <div><span class="tm">0:15</span><span class="sp"><b>Panel 1.</b> <i>"250 million years ago, this land was…"</i></span></div>
+          <div><span class="tm">0:35</span><span class="sp"><b>Panel 2.</b> <i>"We know it moved because…"</i></span></div>
+          <div><span class="tm">0:55</span><span class="sp"><b>Panel 3.</b> <i>"Under the ground, the plates…"</i></span></div>
+          <div><span class="tm">1:15</span><span class="sp"><b>Panel 4.</b> <i>"Try our model! Push here to see…"</i></span></div>
+          <div><span class="tm">1:35</span><span class="sp"><b>Panel 5.</b> <i>"In 50 million years it will be…"</i></span></div>
+          <div><span class="tm">1:55</span><span class="sp"><b>Wrap up.</b> <i>"Any questions?"</i></span></div>
+        </div>
+      </div>
+      <div>
+        <h3 class="ck-title">Checklist</h3>
+        <ul class="steps">
+          <li><label><input type="checkbox" data-k="p6-1"><span class="txt"><b>Slide: big title + 3 key words</b><span>Three words visitors should remember</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p6-2"><span class="txt"><b>Write the script in speaker notes</b><span>A few sentences under each panel</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p6-3"><span class="txt"><b>It answers the driving question</b><span>How did it get here? Where will it be in 50 million years?</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p6-4"><span class="txt"><b>Practice out loud with a timer</b><span>Aim for 2 minutes</span></span></label></li>
+          <li><label><input type="checkbox" data-k="p6-5"><span class="txt"><b>Everyone can explain any panel</b><span>Quiz each other: point to a panel and explain it</span></span></label></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- MUSEUM READY -->
+  <section class="room" id="ready" style="--c:var(--p0)" data-room="7">
+    <div class="roomhead">
+      <div class="badge">✓</div>
+      <div><h2>Is it museum ready?</h2><div class="sub">Run this check on every panel before a teacher check</div></div>
+      <div class="tags"><span class="status" data-status="7">0 of 0</span></div>
+    </div>
+    <div class="grid2">
+      <ul class="steps">
+        <li><label><input type="checkbox" data-k="r-1"><span class="txt"><b>Big title with the panel name</b></span></label></li>
+        <li><label><input type="checkbox" data-k="r-2"><span class="txt"><b>At least 3 labels, 18 pt or bigger</b></span></label></li>
+        <li><label><input type="checkbox" data-k="r-3"><span class="txt"><b>Arrows show which way things move</b></span></label></li>
+        <li><label><input type="checkbox" data-k="r-4"><span class="txt"><b>Same colors on every panel + a color key</b></span></label></li>
+        <li><label><input type="checkbox" data-k="r-5"><span class="txt"><b>One caption sentence that explains it</b></span></label></li>
+        <li><label><input type="checkbox" data-k="r-6"><span class="txt"><b>Pieces grouped so nothing slides</b><span>Select them, then Ctrl + Alt + G</span></span></label></li>
+      </ul>
+      <div>
+        <h3 class="ck-title">Group jobs</h3>
+        <p class="note" style="margin-top:0">Everyone works on every part. Each job leads one part.</p>
+        <div class="jobs" style="grid-template-columns:1fr">
+          <div><b>Hands</b><span>Leads the model (Panel 4)</span></div>
+          <div><b>Recorder</b><span>Leads the panels and diagrams, makes the group file</span></div>
+          <div><b>Reporter</b><span>Leads the docent talk (Panel 6) and keeps the group folder</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="room" id="rubric" style="--c:var(--p0)">
+    <div class="roomhead"><div><h2>How it's graded</h2><div class="sub">Aim for 3: Meets. A 4 goes a step further.</div></div></div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Criteria</th><th>4: Exceeds</th><th>3: Meets</th><th>2: Approaching</th><th>1: Beginning</th></tr></thead>
+        <tbody>
+          <tr><td>Science explanation</td><td>Explains the full chain: convection moves the plates, the boundary type builds the landform, and how this changed over time</td><td>Correctly names the boundary type and explains how it built the landform</td><td>Names the boundary type but the explanation has gaps or errors</td><td>Boundary type missing or incorrect</td></tr>
+          <tr><td>Evidence and data</td><td>Two or more strong pieces of evidence, explained; speed calculation correct with units and shown on the map</td><td>Two pieces of evidence; speed calculation correct with units</td><td>One piece of evidence, or calculation has errors</td><td>No evidence or calculation</td></tr>
+          <tr><td>Model</td><td>Accurately shows the process, labeled, and the group can name one way it differs from the real thing</td><td>Shows the process and is labeled</td><td>Shows the landform but not the process</td><td>Model missing or unclear</td></tr>
+          <tr><td>Communication and teamwork</td><td>Docent talk answers the driving question clearly; every member contributed and can explain any part</td><td>Docent talk answers the driving question; every member contributed</td><td>Talk is unclear or one member did most of the work</td><td>No talk, or the group did not work together</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <h2>Your saved progress</h2>
+    <p>Your checkmarks save in this browser on this laptop. They stay when you close the page or restart. They are not sent to anyone. They will not follow you to a different laptop, browser or profile, and they are lost in a private window or if you clear your browsing history. Your Google Slides file is always saved. Your teacher still checks each panel.</p>
+    <p class="warn" id="storeWarn" hidden><b>This browser is not saving checkmarks</b> (private window or blocked storage). Open the page in a normal window to keep your progress.</p>
+    <div class="row">
+      <button class="btn" id="printBtn" type="button" hidden>Print my checklist</button>
+      <button class="btn danger" id="reset" type="button">Clear my checkmarks</button>
+      <span class="confirm" id="confirm" hidden>Clear every checkmark? <button class="btn danger" id="yes" type="button">Yes, clear</button><button class="btn" id="no" type="button">Keep them</button></span>
+    </div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  var TYPE = {himalayas:"squeeze",appalachians:"squeeze",andes:"dive",japan:"dive",mariana:"dive",iceland:"apart",rift:"apart",redsea:"apart",sanandreas:"slide",hawaii:"hotspot"};
+  var P = "mmp-v1:";
+  function get(k){try{return localStorage.getItem(P+k)}catch(e){return null}}
+  function set(k,v){try{ if(v===null) localStorage.removeItem(P+k); else localStorage.setItem(P+k,v)}catch(e){}}
+
+  var CFG = window.CONFIG || {deadlines:[],links:{}};
+  var canStore=true;
+  try{localStorage.setItem(P+"test","1");localStorage.removeItem(P+"test")}catch(e){canStore=false}
+  if(!canStore) document.getElementById("storeWarn").hidden=false;
+
+  // links
+  document.querySelectorAll("[data-link]").forEach(function(s){
+    var url=(CFG.links||{})[s.dataset.link]||"";
+    if(url){var a=document.createElement("a");a.href=url;a.target="_blank";a.rel="noopener";a.className=s.className;a.setAttribute("style",s.getAttribute("style")||"");a.textContent=s.textContent+" ↗";s.replaceWith(a)}
+    else{s.className="askteacher";s.textContent=s.textContent+" (link from your teacher)"}
+  });
+
+  // deadlines
+  var now=new Date(), today=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
+  var dl=document.getElementById("duelist"), nextDate=null;
+  (CFG.deadlines||[]).forEach(function(d){
+    var el=document.createElement("div");el.style.setProperty("--c","var("+(d.c||"--p0")+")");
+    el.innerHTML='<div class="nx">Next due</div><div class="d"></div><div class="w"></div>';
+    el.querySelector(".d").textContent=d.off?d.label+" · no class":d.label;el.querySelector(".w").textContent=d.what;
+    if(d.date<today) el.classList.add("past");
+    else if(!d.off && (nextDate===null||d.date===nextDate)){nextDate=d.date;el.classList.add("next")}
+    dl.appendChild(el);
+    (d.panels||[]).forEach(function(n){
+      var tags=document.querySelector('[data-room="'+n+'"] .tags'); if(!tags) return;
+      var tg=document.createElement("span");tg.className="duetag";tg.textContent=(d.date<today?"Was due ":"Due ")+d.label;tags.insertBefore(tg,tags.firstChild);
+    });
+  });
+  if(window.self===window.top){var pb=document.getElementById("printBtn");pb.hidden=false;pb.addEventListener("click",function(){window.print()})}
+
+  var boxes=[].slice.call(document.querySelectorAll('input[type=checkbox][data-k]'));
+  boxes.forEach(function(b){ if(get(b.dataset.k)==="1") b.checked=true; });
+
+  var toast=document.getElementById("toast"),tt;
+  function say(m){toast.textContent=m;toast.classList.add("show");clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove("show")},2200)}
+
+  function update(changed){
+    var done=0;
+    boxes.forEach(function(b){if(b.checked)done++});
+    document.getElementById("fill").style.width=(boxes.length?done/boxes.length*100:0)+"%";
+    document.getElementById("pct").textContent=done+" of "+boxes.length+" steps";
+    document.querySelectorAll("[data-room]").forEach(function(sec){
+      var r=sec.dataset.room, bs=sec.querySelectorAll("input[data-k]"), n=0;
+      bs.forEach(function(b){if(b.checked)n++});
+      var st=document.querySelector('[data-status="'+r+'"]'), full=bs.length&&n===bs.length;
+      if(st){st.textContent=full?"Done ✓":n+" of "+bs.length;st.classList.toggle("done",!!full)}
+      var pl=document.querySelector('[data-plan="'+r+'"]');
+      if(pl){pl.querySelector(".pc").textContent=n+" of "+bs.length+" steps";pl.classList.toggle("done",!!full)}
+      if(changed && sec.contains(changed) && changed.checked && full){
+        var h=sec.querySelector("h2").textContent;
+        say(h+" is done!");
+      }
+    });
+  }
+  boxes.forEach(function(b){b.addEventListener("change",function(){set(b.dataset.k,b.checked?"1":null);update(b)})});
+
+  var CASE = {
+    appalachians:["A","Already there","The Appalachians existed, and they were much taller than today. They sat in the middle of Pangaea, where North America was joined to Africa.","They were built when Africa and North America crashed together to make Pangaea, before 250 million years ago."],
+    himalayas:["B","Land there, no mountains yet","India was far to the south, in Gondwana, next to Africa and Antarctica. Asia was to the north, across the Tethys Ocean. Star the north edge of India.","The mountains rose when India crashed into Asia, starting about 50 million years ago."],
+    andes:["B","Land there, no mountains yet","The land was the west edge of South America, in Gondwana, on the shore of the giant ocean (Panthalassa). Star the west coast of South America.","The mountains rose as an ocean plate dove under South America after Pangaea broke apart."],
+    japan:["B","Land there, no islands yet","Japan's rock was the east edge of Asia, in Laurasia, on the shore of Panthalassa. Star the east coast of Asia.","Japan pulled away from Asia and became islands about 15 to 20 million years ago."],
+    rift:["B","Land there, no rift yet","Eastern Africa was there, near the middle of Gondwana, next to Madagascar and India. Star eastern Africa.","The rift started cracking open about 25 million years ago."],
+    sanandreas:["B","Land there, no fault yet","Star the west edge of North America, on the shore of Panthalassa.","The fault formed when the Pacific Plate started sliding past North America, about 30 million years ago."],
+    hawaii:["C","Open ocean","There was no land, only the middle of Panthalassa, the giant ocean around Pangaea. Star the open ocean far from any continent.","The islands are young volcanoes, about 5 million years old or less. They formed as the Pacific Plate slid over a hotspot."],
+    mariana:["C","Open ocean","There was no trench, only Panthalassa, the giant ocean. Star the ocean east of Asia.","The trench formed when one ocean plate started diving under another, about 50 million years ago."],
+    iceland:["C","Continents still joined","There was no Atlantic Ocean yet. Greenland and northern Europe (Norway) were joined. Star the seam between Greenland and Europe.","Iceland grew from lava at the Mid-Atlantic Ridge in the last 20 million years."],
+    redsea:["C","Continents still joined","There was no sea yet. Africa and Arabia were one piece of land. Star the line between Africa and Arabia.","The Red Sea opened when Arabia pulled away from Africa, starting about 25 to 30 million years ago."]
+  };
+  var sel=document.getElementById("landform");
+  function applyLand(){
+    var t=TYPE[sel.value]||"", cs=CASE[sel.value];
+    document.querySelectorAll(".case[data-case]").forEach(function(c){c.classList.toggle("mine",!!cs&&c.dataset.case===cs[0])});
+    var h=document.getElementById("landhint");
+    h.hidden=!cs; document.getElementById("lh-pick").hidden=!!cs;
+    if(cs){
+      document.getElementById("lh-title").textContent=sel.options[sel.selectedIndex].text+": Case "+cs[0]+" ("+cs[1]+")";
+      document.getElementById("lh-where").textContent="Where to put the star: "+cs[2];
+      document.getElementById("lh-when").textContent="For your caption: "+cs[3];
+    }
+    document.querySelectorAll(".bcard[data-type]").forEach(function(c){c.classList.toggle("mine",c.dataset.type===t)});
+  }
+  var saved=get("landform"); if(saved) sel.value=saved;
+  sel.addEventListener("change",function(){set("landform",sel.value||null);applyLand()});
+  applyLand();
+
+  var sp=document.getElementById("speed"), math=document.getElementById("math");
+  var sv=get("speed"); if(sv) sp.value=sv;
+  function fmt(n){return n.toLocaleString("en-US",{maximumFractionDigits:1})}
+  function calc(){
+    var s=parseFloat(sp.value);
+    if(!(s>=0)){math.innerHTML="<span>Type your plate's speed in cm per year.</span>";return}
+    var cm=s*50000000, km=cm/100000;
+    math.innerHTML="<span>"+fmt(s)+" cm/yr × 50,000,000 yr = "+fmt(cm)+" cm</span><span>"+fmt(cm)+" cm ÷ 100,000 = </span><span class=\"big\">"+fmt(km)+" km</span><span>On a map with a 500 km scale bar, that is "+fmt(km/500)+" scale bars.</span>";
+  }
+  sp.addEventListener("input",function(){set("speed",sp.value);calc()});
+  calc();
+
+  var reset=document.getElementById("reset"), conf=document.getElementById("confirm");
+  reset.addEventListener("click",function(){conf.hidden=false;reset.hidden=true});
+  document.getElementById("no").addEventListener("click",function(){conf.hidden=true;reset.hidden=false});
+  document.getElementById("yes").addEventListener("click",function(){
+    boxes.forEach(function(b){b.checked=false;set(b.dataset.k,null)});
+    conf.hidden=true;reset.hidden=false;update();say("All checkmarks cleared");
+  });
+  window.addEventListener("storage",function(e){
+    if(!e.key||e.key.indexOf(P)!==0) return;
+    boxes.forEach(function(b){b.checked=get(b.dataset.k)==="1"});
+    var lf=get("landform"); sel.value=lf||""; applyLand(); update();
+  });
+  update();
+})();
+</script>
+</body>
+</html>

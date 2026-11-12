@@ -92,6 +92,7 @@ table{border-collapse:collapse; width:100%; font-size:15px}
 th,td{border-bottom:1px solid var(--line); padding:7px 8px; text-align:left; vertical-align:top}
 th{background:#141414; color:#fff; font-weight:700}
 .scroll{overflow-x:auto}
+td code{overflow-wrap:anywhere}
 
 /* ---------- checklist ---------- */
 .checklist{margin:18px 0 4px; border:2px solid var(--ink); border-radius:14px; padding:12px 14px 8px; background:#fff}
@@ -180,9 +181,9 @@ const CONFIG = {
   ],
   // Paste share links here (leave "" to show "ask your teacher").
   links: {
-    interphaseSheet: "",   // Class data: interphase cells (2,000)
-    mitosisSheet: "",      // Class data: cells in mitosis (510)
-    posterTemplate: ""     // Poster slide template (make a copy)
+    interphaseSheet: "https://docs.google.com/spreadsheets/d/14WO6el1mQ20Q1uwIg7hn4hgg1SDmRtcX8NhdL28_NF8/copy",   // Class data: interphase cells (2,000)
+    mitosisSheet: "https://docs.google.com/spreadsheets/d/1OfvnaMtj5FTlIO41cxMn-TN6IV0PPlD0BmkPQbmHznc/copy",      // Class data: cells in mitosis (510)
+    posterTemplate: "https://docs.google.com/presentation/d/1k50H4atSEqS50js_QR98RrPMOevH4C7k0ZLTCkryTSE/copy"     // Poster slide template (make a copy)
   }
 };
 </script>
@@ -329,7 +330,7 @@ const CONFIG = {
 
   <h3>How to do it in Google Sheets</h3>
   <ol class="how">
-    <li>Open the class sheet (<span data-link="interphaseSheet">interphase cells</span> or <span data-link="mitosisSheet">cells in mitosis</span>). <b>File → Make a copy.</b> Name it with your station number. Never type in the class file.</li>
+    <li>Click the class sheet link (<span data-link="interphaseSheet">interphase cells</span> or <span data-link="mitosisSheet">cells in mitosis</span>). Google asks “Make a copy?” Click <b>Make a copy</b>. Rename the copy with your station number. Only one person per team makes the copy, then shares it with the team (Share → teammates).</li>
     <li><b>Data → Create a filter.</b> Click the filter button on column B (<code>structure_tagged</code>), or on <code>stage</code> in the mitosis file. Keep only your structure or stage.</li>
     <li>Select the visible rows, including row 1. Copy. Click <b>+</b> at the bottom to add a tab, name it <b>Our cells</b>, and paste in cell A1.</li>
     <li>Make your groups. For small vs large: <b>Data → Sort range</b> (data has a header row), sort by <code>cell_volume_um3</code>, A → Z. The smallest cell is now on top. Split the rows at the middle.</li>
@@ -630,7 +631,7 @@ const CONFIG = {
     <div class="badges"><span class="badge due">Due Fri Nov 20</span><span class="badge prog" data-prog></span></div>
   </div>
   <div class="done-looks"><b>Done looks like</b>One 16:9 Google Slides slide with all 7 required parts, shared with the teacher. Big graph, short sentences. Your talk fills in the details.</div>
-  <p>Start from the <span data-link="posterTemplate">poster slide template</span> (File → Make a copy). The graph gets the biggest box.</p>
+  <p>Click the <span data-link="posterTemplate">poster slide template</span> link and click <b>Make a copy</b>. One person per team makes it, renames it with your station, and shares it with the team. The graph gets the biggest box.</p>
 
   <figure>
     <div class="poster" aria-label="Poster layout with seven numbered parts">
@@ -811,7 +812,7 @@ const CONFIG = {
       <h3 style="margin-top:0">The two class files</h3>
       <ul>
         <li><b><span data-link="interphaseSheet">Interphase cells</span></b>: 2,000 cells, 250 to 400 for each of 8 tagged structures. Use this file unless your question is about mitosis.</li>
-        <li><b><span data-link="mitosisSheet">Cells in mitosis</span></b>: 510 cells, 85 at each of 6 stages. In this file, <code>nucleus_volume_um3</code> is the volume of the DNA.</li>
+        <li><b><span data-link="mitosisSheet">Cells in mitosis</span></b>: 510 cells, 85 at each of 6 stages. Column B is <code>stage</code>, and column F, <code>nucleus_or_DNA_volume_um3</code>, is the volume of the DNA.</li>
         <li><b><a href="https://cfe.allencell.org" target="_blank" rel="noopener">Cell Feature Explorer</a></b> (website): explore all the cells and see any cell in 3D. Good for screenshots. Use the class files for medians and ratios.</li>
       </ul>
       <h3>Columns</h3>
@@ -821,7 +822,7 @@ const CONFIG = {
         <tr><td><code>cell_volume_um3</code></td><td>Size of the whole cell (µm³)</td></tr>
         <tr><td><code>cell_surface_area_um2</code></td><td>Area of the cell membrane (µm²)</td></tr>
         <tr><td><code>cell_height_um</code></td><td>Height from the glass to the top of the cell (µm)</td></tr>
-        <tr><td><code>nucleus_volume_um3</code></td><td>Size of the nucleus (µm³)</td></tr>
+        <tr><td><code>nucleus_volume_um3</code></td><td>Size of the nucleus (µm³). Mitosis file: <code>nucleus_or_DNA_volume_um3</code></td></tr>
         <tr><td><code>nucleus_surface_area_um2</code></td><td>Area of the nuclear envelope (µm²)</td></tr>
         <tr><td><code>structure_volume_um3</code></td><td>Total volume of the tagged structure in that cell (µm³)</td></tr>
         <tr><td><code>on_colony_edge</code></td><td>yes if the cell sits on the edge of its colony</td></tr>
@@ -832,7 +833,7 @@ const CONFIG = {
       <h3 style="margin-top:0">Sheets moves</h3>
       <table>
         <tr><th>To do this</th><th>Do this</th></tr>
-        <tr><td>Your own copy</td><td>File → Make a copy</td></tr>
+        <tr><td>Your own copy</td><td>Click the class sheet link → Make a copy</td></tr>
         <tr><td>Show only your cells</td><td>Data → Create a filter → filter button on column B (or stage)</td></tr>
         <tr><td>Keep only those cells</td><td>Copy the visible rows → new tab (+) → paste in A1</td></tr>
         <tr><td>Smallest to largest</td><td>Data → Sort range → by <code>cell_volume_um3</code>, A → Z</td></tr>

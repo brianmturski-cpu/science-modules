@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diffusion and Osmosis Explorer</title>
+<style>
+:root{
+  --bg:#f4f6f8;--panel:#ffffff;--ink:#1b1f24;--muted:#56606c;--line:#d3d9e0;--soft:#eef1f5;
+  --accent:#1d5fd1;--accent-ink:#ffffff;--dye:#7c3aed;--water:#2f7bd8;--sugar:#d97706;
+  --mem:#8a6a45;--prot:#0f8a5f;--ok:#067647;--okbg:#e7f6ee;--bad:#b42318;--badbg:#fdecea;
+  --write:#fff7d6;--writeline:#c99a06;--cell:#c8102e;--cellf:#f7b4bd;--wall:#2e7d32;--vac:#cfe3ff;--fluid:#f8fbff;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101317;--panel:#181d23;--ink:#e7ebf0;--muted:#a2acb8;--line:#2d3640;--soft:#202730;
+    --accent:#5a95ff;--accent-ink:#0b1220;--dye:#a78bfa;--water:#60a5fa;--sugar:#fbbf24;
+    --mem:#c9a27a;--prot:#34d399;--ok:#4ade80;--okbg:#12291c;--bad:#f87171;--badbg:#2e1515;
+    --write:#2b2614;--writeline:#e0b43a;--cell:#ef4444;--cellf:#7f2a33;--wall:#66bb6a;--vac:#1e3a5f;--fluid:#151a20;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101317;--panel:#181d23;--ink:#e7ebf0;--muted:#a2acb8;--line:#2d3640;--soft:#202730;
+  --accent:#5a95ff;--accent-ink:#0b1220;--dye:#a78bfa;--water:#60a5fa;--sugar:#fbbf24;
+  --mem:#c9a27a;--prot:#34d399;--ok:#4ade80;--okbg:#12291c;--bad:#f87171;--badbg:#2e1515;
+  --write:#2b2614;--writeline:#e0b43a;--cell:#ef4444;--cellf:#7f2a33;--wall:#66bb6a;--vac:#1e3a5f;--fluid:#151a20;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+button,input{font:inherit}
+.wrap{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+aside{background:var(--panel);border-right:1px solid var(--line);padding:14px 10px}
+aside h1{font-size:17px;margin:0 6px 2px}
+aside .sub{font-size:13px;color:var(--muted);margin:0 6px 12px}
+aside ol{list-style:none;margin:0;padding:0}
+aside li button{width:100%;text-align:left;border:none;background:none;color:var(--ink);padding:7px 8px;border-radius:7px;cursor:pointer;display:flex;gap:8px;align-items:center;font-size:14px}
+aside li button:hover{background:var(--soft)}
+aside li button.on{background:var(--accent);color:var(--accent-ink);font-weight:600}
+aside .part{font-size:12px;font-weight:700;color:var(--muted);margin:10px 8px 2px;text-transform:uppercase;letter-spacing:.04em}
+aside .mark{width:18px;flex:0 0 18px;text-align:center}
+main{padding:18px 22px 40px;max-width:1000px}
+.stepno{font-size:13px;color:var(--muted);font-weight:600}
+h2{font-size:24px;margin:2px 0 10px}
+.do{background:var(--panel);border:2px solid var(--accent);border-radius:10px;padding:10px 14px;margin:0 0 12px}
+.do b.t{display:block;color:var(--accent);margin-bottom:2px}
+.do ol{margin:4px 0 0;padding-left:22px}
+.do li{margin:3px 0}
+.write{background:var(--write);border-left:5px solid var(--writeline);border-radius:6px;padding:8px 12px;margin:12px 0;font-weight:600}
+.write::before{content:"\270E  Write in your handout: ";font-weight:800}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px}
+canvas{display:block;width:100%;height:auto;border-radius:6px;background:var(--fluid)}
+.ctrl{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:10px 0 0}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:600}
+.btn.ghost{background:var(--panel);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sel{outline:3px solid var(--writeline);outline-offset:1px}
+.read{font-size:18px;font-weight:700;margin-left:auto}
+table{border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:5px 9px;text-align:center}
+th{background:var(--soft)}
+td.big{font-weight:700;font-size:17px}
+.check{background:var(--soft);border-radius:10px;padding:10px 14px;margin:16px 0}
+.check b.t{display:block;margin-bottom:6px}
+.check label{display:block;padding:6px 8px;border-radius:6px;cursor:pointer}
+.check label:hover{background:var(--panel)}
+.fb{margin-top:6px;padding:6px 10px;border-radius:6px;font-weight:600;display:none}
+.fb.ok{display:block;background:var(--okbg);color:var(--ok)}
+.fb.bad{display:block;background:var(--badbg);color:var(--bad)}
+.nav{display:flex;justify-content:space-between;margin-top:22px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:14px;color:var(--muted);margin-top:6px}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.muted{color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.beakers{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:6px 0 4px}
+.beaker{border:2px solid var(--line);border-radius:8px;padding:6px 4px;text-align:center;cursor:pointer;background:var(--panel);color:var(--ink)}
+.beaker.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.beaker .c{font-weight:700}
+.beaker small{display:block;color:var(--muted);font-size:12px}
+.balance{font:700 30px/1 ui-monospace,Menlo,Consolas,monospace;background:#0b1220;color:#7CFC9A;border-radius:8px;padding:10px 16px;display:inline-block;min-width:150px;text-align:right}
+input.pc{width:84px;padding:5px 7px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);text-align:right}
+td.okc{color:var(--ok);font-weight:700}
+td.badc{color:var(--bad);font-weight:700}
+@media (max-width:820px){.wrap{grid-template-columns:1fr}aside{border-right:none;border-bottom:1px solid var(--line)}aside ol{display:flex;flex-wrap:wrap;gap:4px}aside .part{display:none}aside li button{font-size:13px;padding:5px 7px}.grid2{grid-template-columns:1fr}.beakers{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<aside>
+  <h1>Diffusion and Osmosis Explorer</h1>
+  <p class="sub">Block 2.4 &middot; Work alone, top to bottom.</p>
+  <ol id="toc"></ol>
+</aside>
+<main id="main"></main>
+</div>
+<script>
+// Block 2.4 Diffusion and Osmosis Explorer: simulation engine.
+// Pure functions with a seeded random number generator, so every student sees
+// the same numbers and the answer key (computed in Node) matches the module.
+
+function rng(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function gauss(r) {
+  let u = 0, v = 0;
+  while (u === 0) u = r();
+  v = r();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+const BOX = { W: 640, H: 320, MID: 320 };
+const DT = 0.1; // simulated seconds per step
+
+// ---------------------------------------------------------------- diffusion
+// 300 dye particles start in the left half. The barrier is lifted at t = 0.
+const DIFF = {
+  N: 300,
+  warm: { label: "Warm water (40 °C)", sigma: 19, seed: 4011 },
+  cold: { label: "Cold water (5 °C)", sigma: 11.8, seed: 5022 },
+};
+function diffInit(kind) {
+  const P = DIFF[kind], r = rng(P.seed), pts = [];
+  for (let i = 0; i < DIFF.N; i++) pts.push({ x: 4 + r() * (BOX.MID - 8), y: 4 + r() * (BOX.H - 8) });
+  return { kind, r, sigma: P.sigma, pts, step: 0 };
+}
+function reflect(v, lo, hi) {
+  if (v < lo) v = 2 * lo - v;
+  if (v > hi) v = 2 * hi - v;
+  return Math.min(hi, Math.max(lo, v));
+}
+function diffStep(s) {
+  for (const p of s.pts) {
+    p.x = reflect(p.x + s.sigma * gauss(s.r), 0, BOX.W);
+    p.y = reflect(p.y + s.sigma * gauss(s.r), 0, BOX.H);
+  }
+  s.step++;
+}
+function diffRight(s) {
+  let n = 0;
+  for (const p of s.pts) if (p.x > BOX.MID) n++;
+  return Math.round((100 * n) / DIFF.N);
+}
+
+// ---------------------------------------------------------------- membrane
+// 40 molecules start on the left. When a move would cross the membrane, the
+// molecule gets through with probability P, otherwise it bounces back.
+const MOLS = {
+  o2:  { name: "Oxygen (O₂)", note: "small, no charge", bare: 0.6, prot: 0.6, r: 4 },
+  co2: { name: "Carbon dioxide (CO₂)", note: "small, no charge", bare: 0.6, prot: 0.6, r: 4.5 },
+  h2o: { name: "Water (H₂O)", note: "small, polar", bare: 0.02, prot: 0.6, r: 3.5 },
+  glu: { name: "Glucose", note: "large, polar", bare: 0, prot: 0.25, r: 7 },
+  na:  { name: "Sodium ion (Na⁺)", note: "small, charged", bare: 0, prot: 0.3, r: 3.5 },
+};
+const MEM = { N: 40, sigma: 24, steps: 200 }; // 200 steps = 20 s
+function memSeed(mol) { return { o2: 11, co2: 22, h2o: 33, glu: 44, na: 55 }[mol] * 100 + 7; }
+function memInit(mol, prot) {
+  const r = rng(memSeed(mol)), pts = [];
+  for (let i = 0; i < MEM.N; i++) pts.push({ x: 6 + r() * (BOX.MID - 30), y: 6 + r() * (BOX.H - 12) });
+  return { mol, prot, r, pts, step: 0, p: prot ? MOLS[mol].prot : MOLS[mol].bare };
+}
+function crossStep(s, sigma, pCross, pts) {
+  for (const q of pts) {
+    const nx = q.x + sigma * gauss(s.r);
+    const ny = reflect(q.y + sigma * gauss(s.r), 0, BOX.H);
+    const crosses = (q.x <= BOX.MID) !== (nx <= BOX.MID);
+    const p = typeof pCross === "function" ? pCross(q) : pCross;
+    if (crosses && !(s.r() < p)) q.x = reflect(2 * BOX.MID - nx, q.x <= BOX.MID ? 0 : BOX.MID, q.x <= BOX.MID ? BOX.MID : BOX.W);
+    else {
+      if (crosses) { if (q.x <= BOX.MID) s.lr = (s.lr || 0) + 1; else s.rl = (s.rl || 0) + 1; }
+      q.x = reflect(nx, 0, BOX.W);
+    }
+    q.y = ny;
+  }
+  s.step++;
+}
+function memStep(s) { crossStep(s, MEM.sigma, s.p, s.pts); }
+function memRight(s) { return s.pts.filter((p) => p.x > BOX.MID).length; }
+
+// ---------------------------------------------------------------- osmosis
+// Left: 140 water. Right: 80 water + 60 sugar. Same volume at the start.
+// The membrane lets water through and stops sugar.
+const OSM = { wl: 140, wr: 80, sugar: 60, sigma: 12, pw: 0.5, seed: 7031, steps: 600 }; // 60 s
+function osmInit() {
+  const r = rng(OSM.seed), pts = [];
+  const add = (n, left, type) => { for (let i = 0; i < n; i++) pts.push({ type, x: left ? 6 + r() * (BOX.MID - 12) : BOX.MID + 6 + r() * (BOX.MID - 12), y: 6 + r() * (BOX.H - 12) }); };
+  add(OSM.wl, true, "w"); add(OSM.wr, false, "w"); add(OSM.sugar, false, "s");
+  return { r, pts, step: 0, lr: 0, rl: 0 };
+}
+function osmStep(s) { crossStep(s, OSM.sigma, (q) => (q.type === "w" ? OSM.pw : 0), s.pts); }
+function osmCount(s) {
+  const c = { wl: 0, wr: 0, sl: 0, sr: 0 };
+  for (const p of s.pts) { const L = p.x <= BOX.MID; if (p.type === "w") L ? c.wl++ : c.wr++; else L ? c.sl++ : c.sr++; }
+  return c;
+}
+
+// ---------------------------------------------------------------- potato cores
+// Fixed data, one core per beaker. The isotonic point is about 0.28 M.
+const POTATO = [
+  { c: 0.0, m0: 2.48, m1: 2.93 },
+  { c: 0.2, m0: 2.55, m1: 2.68 },
+  { c: 0.4, m0: 2.51, m1: 2.29 },
+  { c: 0.6, m0: 2.46, m1: 2.03 },
+  { c: 0.8, m0: 2.53, m1: 1.97 },
+  { c: 1.0, m0: 2.49, m1: 1.88 },
+];
+function pctChange(row) { return ((row.m1 - row.m0) / row.m0) * 100; }
+
+if (typeof module !== "undefined") module.exports = { rng, gauss, BOX, DT, DIFF, diffInit, diffStep, diffRight, MOLS, MEM, memInit, memStep, memRight, OSM, osmInit, osmStep, osmCount, POTATO, pctChange };
+
+</script>
+<script>
+"use strict";
+const $ = (s, el = document) => el.querySelector(s);
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const done = {};
+let cur = 0, anim = null;
+function stopAnim() { if (anim) cancelAnimationFrame(anim); anim = null; }
+function loop(fn) { stopAnim(); const f = () => { if (fn() !== false) anim = requestAnimationFrame(f); else anim = null; }; anim = requestAnimationFrame(f); }
+function canvas(w, h) { const c = document.createElement("canvas"); const d = Math.min(2, window.devicePixelRatio || 1); c.width = w * d; c.height = h * d; c.getContext("2d").scale(d, d); c._w = w; c._h = h; return c; }
+function circle(g, x, y, r, fill) { g.beginPath(); g.arc(x, y, r, 0, 2 * Math.PI); g.fillStyle = fill; g.fill(); }
+function check(id, q, opts, right, why) {
+  const box = document.createElement("div"); box.className = "check";
+  box.innerHTML = `<b class="t">Check yourself: ${q}</b>` + opts.map((o, i) => `<label><input type="radio" name="${id}" value="${i}"> ${o}</label>`).join("") + `<div class="fb"></div>`;
+  box.addEventListener("change", (e) => {
+    const fb = $(".fb", box), ok = +e.target.value === right;
+    fb.className = "fb " + (ok ? "ok" : "bad");
+    fb.textContent = ok ? "Correct. " + why : "Not quite. Look at the simulation again and try another answer.";
+    if (ok) { done[STEPS[cur].id] = true; toc(); }
+  });
+  return box;
+}
+function el(html) { const d = document.createElement("div"); d.innerHTML = html; return d; }
+
+// ---------------------------------------------------------------- steps
+const STEPS = [
+  { id: "start", part: "Start", title: "How this works", render: rStart },
+  { id: "a", part: "A. Random motion", title: "A. Watch one particle", render: rBrown },
+  { id: "b1", part: "B. Diffusion", title: "B1. Dye in warm water", render: (m) => rDiff(m, "warm") },
+  { id: "b2", part: "B. Diffusion", title: "B2. Dye in cold water", render: (m) => rDiff(m, "cold") },
+  { id: "c", part: "C. The membrane", title: "C. What gets through?", render: rMem },
+  { id: "d", part: "D. Osmosis", title: "D. Water and sugar", render: rOsm },
+  { id: "e1", part: "E. Potato lab", title: "E1. Weigh the cores", render: rPotato },
+  { id: "e2", part: "E. Potato lab", title: "E2. Graph and check", render: rGraph },
+  { id: "f", part: "F. Cells in solutions", title: "F. Red blood cell and plant cell", render: rTono },
+  { id: "end", part: "Finish", title: "Finished", render: rEnd },
+];
+function toc() {
+  const ol = $("#toc"); ol.innerHTML = ""; let last = "";
+  STEPS.forEach((s, i) => {
+    if (s.part !== last && s.part !== "Start" && s.part !== "Finish") { const p = document.createElement("li"); p.className = "part"; p.textContent = s.part; ol.appendChild(p); }
+    last = s.part;
+    const li = document.createElement("li"), b = document.createElement("button");
+    b.innerHTML = `<span class="mark">${done[s.id] ? "✔" : i === cur ? "▶" : "○"}</span>${s.title}`;
+    if (i === cur) b.className = "on";
+    b.onclick = () => go(i); li.appendChild(b); ol.appendChild(li);
+  });
+}
+function go(i) {
+  stopAnim(); cur = Math.max(0, Math.min(STEPS.length - 1, i));
+  const m = $("#main"); m.innerHTML = "";
+  const s = STEPS[cur];
+  m.appendChild(el(`<div class="stepno">Step ${cur + 1} of ${STEPS.length}</div><h2>${s.title}</h2>`));
+  s.render(m);
+  const nav = el(`<div class="nav"><button class="btn ghost" id="back">&larr; Back</button><button class="btn" id="next">Next step &rarr;</button></div>`);
+  m.appendChild(nav);
+  $("#back").disabled = cur === 0; $("#next").disabled = cur === STEPS.length - 1;
+  $("#back").onclick = () => go(cur - 1); $("#next").onclick = () => go(cur + 1);
+  toc(); window.scrollTo(0, 0);
+}
+
+// ---------------------------------------------------------------- start
+function rStart(m) {
+  m.appendChild(el(`
+  <div class="do"><b class="t">Read this first</b>
+  <ol>
+   <li>You work <b>alone</b>, at your own pace, from Step 1 to Step ${STEPS.length}. Use the <b>Next step</b> button at the bottom of each page.</li>
+   <li>Each step has a blue box like this one. It tells you exactly what to click.</li>
+   <li>Yellow boxes tell you what to <b>write in your handout</b>. Every number you need is shown on the screen.</li>
+   <li>The <b>Check yourself</b> questions give instant feedback. A check mark appears in the list on the left when you get one right.</li>
+   <li>Every student sees the same numbers, so you can compare with a neighbor. Press <b>Start over</b> on any step to watch it again.</li>
+  </ol></div>
+  <p>Today's question: <b>how do molecules get into and out of a cell without the cell spending any energy?</b> This is called <b>passive transport</b>. It has three kinds: <b>simple diffusion</b>, <b>facilitated diffusion</b> (through proteins) and <b>osmosis</b> (water). You will see all three.</p>`));
+  done.start = true;
+}
+
+// ---------------------------------------------------------------- A. Brownian motion
+function rBrown(m) {
+  m.appendChild(el(`<div class="do"><b class="t">Do this</b><ol>
+   <li>Watch the large particle for about 20 seconds. The gray line is the path it has taken.</li>
+   <li>Press <b>Show water molecules</b> to zoom in on what is hitting it.</li></ol></div>`));
+  const stage = document.createElement("div"); stage.className = "stage";
+  const c = canvas(640, 320); stage.appendChild(c);
+  const ctrl = el(`<div class="ctrl"><button class="btn" id="tw">Show water molecules</button><button class="btn ghost" id="rs">Start over</button><span class="read" id="tm">0 s</span></div>`);
+  stage.appendChild(ctrl); m.appendChild(stage);
+  m.appendChild(el(`<div class="write">Part A, Q1: describe the path of the particle. Does it head in one direction?</div>`));
+  m.appendChild(check("ca", "What makes the particle move?", ["It swims toward the light.", "Tiny water molecules hit it unevenly from every side.", "The water is flowing in one direction.", "It is pulled toward the edge."], 1, "Water molecules are always moving and bumping it. Each bump is random, so its path is random. This is called Brownian motion."));
+  let r, x, y, trail, ws, t, show = false;
+  const reset = () => { r = rng(99); x = 320; y = 160; trail = [[x, y]]; t = 0; ws = []; for (let i = 0; i < 260; i++) ws.push({ x: r() * 640, y: r() * 320, a: r() * 6.283 }); };
+  reset();
+  $("#tw", ctrl).onclick = (e) => { show = !show; e.target.textContent = show ? "Hide water molecules" : "Show water molecules"; };
+  $("#rs", ctrl).onclick = reset;
+  const g = c.getContext("2d");
+  loop(() => {
+    t++;
+    x = Math.min(600, Math.max(40, x + 1.7 * gauss(r))); y = Math.min(290, Math.max(30, y + 1.7 * gauss(r)));
+    trail.push([x, y]); if (trail.length > 1500) trail.shift();
+    g.fillStyle = css("--fluid"); g.fillRect(0, 0, 640, 320);
+    if (show) for (const w of ws) { w.a += (r() - 0.5) * 1.2; w.x = (w.x + 4 * Math.cos(w.a) + 640) % 640; w.y = (w.y + 4 * Math.sin(w.a) + 320) % 320; circle(g, w.x, w.y, 2.2, css("--water")); }
+    g.strokeStyle = css("--muted"); g.lineWidth = 1.2; g.beginPath(); trail.forEach(([a, b], i) => (i ? g.lineTo(a, b) : g.moveTo(a, b))); g.stroke();
+    circle(g, x, y, 14, css("--sugar"));
+    $("#tm", ctrl).textContent = Math.floor(t / 60) + " s";
+  });
+}
+
+// ---------------------------------------------------------------- B. Diffusion
+const DIFF_REC = { warm: [0, 10, 20, 30, 40, 50, 60], cold: [0, 10, 20, 30, 40, 50, 60, 90, 120, 150, 180] };
+function rDiff(m, kind) {
+  const P = DIFF[kind], cold = kind === "cold";
+  m.appendChild(el(`<div class="do"><b class="t">Do this</b><ol>
+   <li>This box holds ${P.label.replace("W","w").replace("C","c").replace("°c","°C")}. It has <b>300 dye particles</b> on the left, held back by a barrier.</li>
+   <li>Press <b>Remove the barrier</b>. The table fills in by itself every 10 seconds of simulated time.</li>
+   ${cold ? "<li>When it stops at 60 s, press <b>Keep running to 180 s</b>.</li>" : ""}</ol></div>`));
+  const stage = document.createElement("div"); stage.className = "stage";
+  const c = canvas(640, 320); stage.appendChild(c);
+  const ctrl = el(`<div class="ctrl"><button class="btn" id="go">Remove the barrier</button>${cold ? '<button class="btn" id="more" disabled>Keep running to 180 s</button>' : ""}<button class="btn ghost" id="rs">Start over</button><span class="read" id="rd"></span></div>`);
+  stage.appendChild(ctrl);
+  const cols = cold ? DIFF_REC.cold : DIFF_REC.warm;
+  const tbl = el(`<table><tr><th>Time (s)</th>${cols.map((t) => `<th>${t}</th>`).join("")}</tr><tr><th>Dye on the right (%)</th>${cols.map((t) => `<td class="big" id="d${t}"></td>`).join("")}</tr></table>`);
+  stage.appendChild(tbl); m.appendChild(stage);
+  m.appendChild(el(`<div class="write">Table 1, row "${cold ? "Cold, 5 °C" : "Warm, 40 °C"}": copy every number in this table.${cold ? " Then answer Q3 and Q4." : " Then answer Q2."}</div>`));
+  if (cold) m.appendChild(check("cb", "Compare the warm and cold runs. What did the cold water change?", ["Where the dye ended up (the cold run ends with less dye on the right).", "How fast the dye spread. Both runs head toward about 50% on each side.", "Nothing. The two runs are the same.", "The direction the dye moved."], 1, "Cold molecules move more slowly, so diffusion is slower. The end point is the same: an even spread."));
+  let s, target, running = false;
+  const g = c.getContext("2d");
+  const draw = (barrier) => {
+    g.fillStyle = css("--fluid"); g.fillRect(0, 0, 640, 320);
+    g.strokeStyle = css("--line"); g.setLineDash([6, 6]); g.beginPath(); g.moveTo(320, 0); g.lineTo(320, 320); g.stroke(); g.setLineDash([]);
+    if (barrier) { g.fillStyle = css("--ink"); g.fillRect(316, 0, 8, 320); }
+    const col = css("--dye"); for (const p of s.pts) circle(g, p.x, p.y, 3.2, col);
+    g.fillStyle = css("--muted"); g.font = "14px system-ui"; g.fillText("LEFT", 10, 18); g.fillText("RIGHT", 586, 18);
+    $("#rd", ctrl).textContent = `t = ${(s.step * DT).toFixed(0)} s   ·   dye on the right: ${diffRight(s)}%`;
+  };
+  const reset = () => { stopAnim(); s = diffInit(kind); running = false; cols.forEach((t) => ($("#d" + t, tbl).textContent = "")); $("#d0", tbl).textContent = "0"; $("#go", ctrl).disabled = false; if (cold) $("#more", ctrl).disabled = true; draw(true); };
+  const run = (until) => {
+    target = until; running = true;
+    loop(() => {
+      for (let k = 0; k < 2 && s.step < target; k++) { diffStep(s); const t = s.step / 10; if (s.step % 10 === 0 && cols.includes(t)) $("#d" + t, tbl).textContent = diffRight(s); }
+      draw(false);
+      if (s.step >= target) { running = false; if (cold && target === 600) $("#more", ctrl).disabled = false; if (target === (cold ? 1800 : 600)) { done[STEPS[cur].id] = done[STEPS[cur].id] || !cold; toc(); } return false; }
+    });
+  };
+  $("#go", ctrl).onclick = (e) => { e.target.disabled = true; run(600); };
+  if (cold) $("#more", ctrl).onclick = (e) => { e.target.disabled = true; run(1800); };
+  $("#rs", ctrl).onclick = reset;
+  reset();
+}
+
+// ---------------------------------------------------------------- C. Membrane
+function rMem(m) {
+  m.appendChild(el(`<div class="do"><b class="t">Do this</b><ol>
+   <li>Pick a molecule. 40 of them start on the left side of a cell membrane.</li>
+   <li>Leave <b>Membrane proteins: OFF</b> and press <b>Run 20 s</b>. Record how many reached the right.</li>
+   <li>Do all 5 molecules. Then switch <b>Membrane proteins: ON</b> (channel and carrier proteins) and run all 5 again.</li></ol></div>`));
+  const stage = document.createElement("div"); stage.className = "stage";
+  const pick = el(`<div class="ctrl">${Object.entries(MOLS).map(([k, v]) => `<button class="btn ghost" data-m="${k}">${v.name}</button>`).join("")}</div>`);
+  const c = canvas(640, 300);
+  const ctrl = el(`<div class="ctrl"><button class="btn ghost" id="pr">Membrane proteins: OFF</button><button class="btn" id="go">Run 20 s</button><span class="read" id="rd"></span></div>`);
+  stage.append(pick, c, ctrl);
+  const tbl = el(`<table><tr><th>Molecule</th><th>What it is like</th><th>Reached the right: proteins OFF</th><th>Reached the right: proteins ON</th></tr>${Object.entries(MOLS).map(([k, v]) => `<tr><td>${v.name}</td><td>${v.note}</td><td class="big" id="r_${k}_0"></td><td class="big" id="r_${k}_1"></td></tr>`).join("")}</table>`);
+  stage.appendChild(tbl); m.appendChild(stage);
+  m.appendChild(el(`<div class="write">Table 2: copy both columns (out of 40). Then answer Q5 and Q6.</div>`));
+  m.appendChild(check("cc", "Glucose crossed only when membrane proteins were ON. Did the cell spend energy (ATP) to move it?", ["Yes. Proteins always use ATP.", "No. Glucose still moved from where there was more of it to where there was less, through a protein. This is facilitated diffusion.", "Yes, because glucose moved against its gradient."], 1, "Facilitated diffusion is still passive: the protein only gives the molecule a path. Nothing moved from fewer to more."));
+  let mol = "o2", prot = false, s = null;
+  const g = c.getContext("2d");
+  const drawMem = () => {
+    g.fillStyle = css("--fluid"); g.fillRect(0, 0, 640, 300);
+    const memc = css("--mem");
+    for (let y = 4; y < 300; y += 9) { circle(g, 309, y, 3.6, memc); circle(g, 331, y, 3.6, memc); g.strokeStyle = memc; g.lineWidth = 1.2; g.beginPath(); g.moveTo(312, y); g.lineTo(319, y); g.moveTo(321, y); g.lineTo(328, y); g.stroke(); }
+    if (prot) { g.fillStyle = css("--prot"); for (const y of [40, 110, 180, 250]) { g.fillRect(304, y, 10, 26); g.fillRect(326, y, 10, 26); } }
+    g.fillStyle = css("--muted"); g.font = "14px system-ui"; g.fillText("LEFT: more molecules", 10, 18); g.fillText("RIGHT", 580, 18);
+  };
+  const draw = () => {
+    drawMem();
+    if (!s) return;
+    const col = { o2: css("--prot"), co2: css("--muted"), h2o: css("--water"), glu: css("--sugar"), na: css("--dye") }[mol];
+    for (const p of s.pts) circle(g, p.x, p.y, MOLS[mol].r, col);
+    $("#rd", ctrl).textContent = `${(s.step * DT).toFixed(0)} s · on the right: ${memRight(s)} of 40`;
+  };
+  const sel = () => { pick.querySelectorAll("button").forEach((b) => b.classList.toggle("sel", b.dataset.m === mol)); $("#pr", ctrl).textContent = "Membrane proteins: " + (prot ? "ON" : "OFF"); stopAnim(); s = memInit(mol, prot); draw(); $("#rd", ctrl).textContent = `${MOLS[mol].name}: press Run 20 s`; };
+  pick.onclick = (e) => { if (e.target.dataset.m) { mol = e.target.dataset.m; sel(); } };
+  $("#pr", ctrl).onclick = () => { prot = !prot; sel(); };
+  $("#go", ctrl).onclick = () => {
+    s = memInit(mol, prot); const id = `#r_${mol}_${prot ? 1 : 0}`;
+    loop(() => { for (let k = 0; k < 2 && s.step < MEM.steps; k++) memStep(s); draw(); if (s.step >= MEM.steps) { $(id, tbl).textContent = memRight(s); return false; } });
+  };
+  sel();
+}
+
+// ---------------------------------------------------------------- D. Osmosis
+function rOsm(m) {
+  m.appendChild(el(`<div class="do"><b class="t">Do this</b><ol>
+   <li>The membrane lets <b>water</b> (blue) through but not <b>sugar</b> (orange). Both sides start at the same height.</li>
+   <li>Count the start values in the table. Then press <b>Run 60 s</b> and watch the water levels.</li></ol></div>`));
+  const stage = document.createElement("div"); stage.className = "stage";
+  const c = canvas(640, 340);
+  const ctrl = el(`<div class="ctrl"><button class="btn" id="go">Run 60 s</button><button class="btn ghost" id="rs">Start over</button><span class="read" id="rd"></span></div>`);
+  const tbl = el(`<table><tr><th>Time (s)</th><th>Water, left</th><th>Sugar, left</th><th>Water, right</th><th>Sugar, right</th><th>Water crossings left &rarr; right</th><th>Water crossings right &rarr; left</th></tr>${[0, 20, 40, 60].map((t) => `<tr><td>${t}</td>${["wl", "sl", "wr", "sr", "lr", "rl"].map((k) => `<td class="big" id="o_${t}_${k}"></td>`).join("")}</tr>`).join("")}</table>`);
+  stage.append(c, ctrl, tbl); m.appendChild(stage);
+  m.appendChild(el(`<div class="write">Table 3: copy the start (0 s) and end (60 s) rows. Then answer Q7.</div>`));
+  m.appendChild(check("cd", "Water crossed in both directions. Which way was the NET movement of water?", ["From the sugar side to the pure-water side.", "No net movement at all.", "From the side with more water molecules (left) to the side with fewer water molecules and more sugar (right)."], 2, "Water moves by osmosis toward the side with more dissolved solute, where water molecules are less concentrated. The sugar side rose."));
+  let s; const g = c.getContext("2d");
+  const fill = (t) => { const k = osmCount(s); for (const key of ["wl", "sl", "wr", "sr"]) $(`#o_${t}_${key}`, tbl).textContent = k[key]; $(`#o_${t}_lr`, tbl).textContent = t ? s.lr : "0"; $(`#o_${t}_rl`, tbl).textContent = t ? s.rl : "0"; };
+  const draw = () => {
+    const k = osmCount(s), H = 320, unit = 1.15;
+    const hl = (k.wl + k.sl) * unit, hr = (k.wr + k.sr) * unit;
+    g.fillStyle = css("--panel"); g.fillRect(0, 0, 640, 340);
+    g.fillStyle = css("--fluid"); g.globalAlpha = 1;
+    g.fillStyle = css("--water"); g.globalAlpha = 0.15; g.fillRect(8, H - hl, 304, hl); g.fillRect(328, H - hr, 304, hr); g.globalAlpha = 1;
+    g.strokeStyle = css("--ink"); g.lineWidth = 2; g.strokeRect(8, 6, 624, H - 6);
+    g.strokeStyle = css("--mem"); g.lineWidth = 6; g.setLineDash([10, 5]); g.beginPath(); g.moveTo(320, 6); g.lineTo(320, H); g.stroke(); g.setLineDash([]);
+    g.strokeStyle = css("--water"); g.lineWidth = 3; g.beginPath(); g.moveTo(8, H - hl); g.lineTo(312, H - hl); g.moveTo(328, H - hr); g.lineTo(632, H - hr); g.stroke();
+    for (const p of s.pts) { const L = p.x <= BOX.MID, h = L ? hl : hr; const yy = H - 4 - (p.y / BOX.H) * (h - 8); circle(g, p.x <= BOX.MID ? 10 + p.x * 0.94 : 330 + (p.x - 320) * 0.94, yy, p.type === "s" ? 5.5 : 3, p.type === "s" ? css("--sugar") : css("--water")); }
+    g.fillStyle = css("--ink"); g.font = "bold 14px system-ui"; g.fillText("LEFT: pure water", 14, 24); g.fillText("RIGHT: sugar water", 474, 24);
+    g.font = "14px system-ui"; g.fillText(`level: ${k.wl + k.sl}`, 14, 44); g.fillText(`level: ${k.wr + k.sr}`, 474, 44);
+    $("#rd", ctrl).textContent = `t = ${(s.step * DT).toFixed(0)} s`;
+  };
+  const reset = () => { stopAnim(); s = osmInit(); [0, 20, 40, 60].forEach((t) => ["wl", "sl", "wr", "sr", "lr", "rl"].forEach((k) => ($(`#o_${t}_${k}`, tbl).textContent = ""))); fill(0); $("#go", ctrl).disabled = false; draw(); };
+  $("#go", ctrl).onclick = (e) => { e.target.disabled = true; loop(() => { for (let k = 0; k < 2 && s.step < OSM.steps; k++) { osmStep(s); if (s.step % 200 === 0) fill(s.step / 10); } draw(); return s.step < OSM.steps; }); };
+  $("#rs", ctrl).onclick = reset;
+  reset();
+}
+
+// ---------------------------------------------------------------- E. Potato lab
+const pstate = POTATO.map(() => ({ before: false, soaked: false, after: false, ok: false }));
+let pSel = 0;
+function rPotato(m) {
+  m.appendChild(el(`<div class="do"><b class="t">Do this, for each of the 6 beakers</b><ol>
+   <li>Click a beaker. Each one holds a different <b>sucrose (sugar) solution</b>, from 0 M (pure water) to 1.0 M.</li>
+   <li>Press <b>Weigh before</b>, then <b>Soak 24 hours</b>, then <b>Weigh after</b>. Copy both masses into Table 4.</li>
+   <li>Calculate the percent change in your handout. Type it in the box and press <b>Check</b>.</li></ol>
+   <p style="margin:6px 0 0"><b>Percent change = (mass after &minus; mass before) &divide; mass before &times; 100.</b> Keep the sign: a loss is negative. Round to 1 decimal place.</p></div>`));
+  const stage = document.createElement("div"); stage.className = "stage";
+  const bk = el(`<div class="beakers">${POTATO.map((p, i) => `<button class="beaker" data-i="${i}"><span class="c">${p.c.toFixed(1)} M</span><small id="bs${i}"></small></button>`).join("")}</div>`);
+  const work = el(`<div class="grid2"><div><canvas id="pc"></canvas></div><div><p class="muted" id="pl"></p><div class="balance" id="bal">0.00 g</div><div class="ctrl"><button class="btn" id="wb">Weigh before</button><button class="btn" id="sk">Soak 24 hours</button><button class="btn" id="wa">Weigh after</button></div></div></div>`);
+  const tbl = el(`<table><tr><th>Sucrose (M)</th><th>Mass before (g)</th><th>Mass after (g)</th><th>Your % change</th><th></th></tr>${POTATO.map((p, i) => `<tr><td>${p.c.toFixed(1)}</td><td id="mb${i}"></td><td id="ma${i}"></td><td><input class="pc" id="in${i}" inputmode="decimal" placeholder="%"> <button class="btn ghost" data-k="${i}">Check</button></td><td id="fb${i}"></td></tr>`).join("")}</table>`);
+  stage.append(bk, work, tbl); m.appendChild(stage);
+  m.appendChild(el(`<div class="write">Table 4: both masses and your percent change for all 6 beakers.</div>`));
+  const c = canvas(300, 200); $("#pc", work).replaceWith(c); const g = c.getContext("2d");
+  const drawB = (soakT) => {
+    const p = POTATO[pSel], S = pstate[pSel];
+    g.fillStyle = css("--panel"); g.fillRect(0, 0, 300, 200);
+    g.strokeStyle = css("--ink"); g.lineWidth = 3; g.beginPath(); g.moveTo(70, 30); g.lineTo(80, 185); g.lineTo(220, 185); g.lineTo(230, 30); g.stroke();
+    const shade = 0.08 + 0.35 * p.c; g.fillStyle = css("--sugar"); g.globalAlpha = shade; g.fillRect(76, 70, 148, 112); g.globalAlpha = 1;
+    const f = S.soaked ? p.m1 / p.m0 : 1 + (soakT || 0) * (p.m1 / p.m0 - 1);
+    const w = 70 * Math.sqrt(f), h = 30 * Math.sqrt(f);
+    g.fillStyle = "#e9d8a6"; g.strokeStyle = "#8a6a45"; g.lineWidth = 2; g.beginPath(); g.ellipse(150, 140, w / 2, h / 2, 0, 0, 7); g.fill(); g.stroke();
+    g.fillStyle = css("--ink"); g.font = "bold 15px system-ui"; g.fillText(`${p.c.toFixed(1)} M sucrose`, 92, 22);
+  };
+  const upd = () => {
+    const S = pstate[pSel], p = POTATO[pSel];
+    bk.querySelectorAll(".beaker").forEach((b) => b.classList.toggle("on", +b.dataset.i === pSel));
+    POTATO.forEach((_, i) => { $("#bs" + i, bk).textContent = pstate[i].ok ? "✔ done" : pstate[i].after ? "weighed" : ""; });
+    $("#pl", work).textContent = `Beaker ${pSel + 1} of 6: potato core in ${p.c.toFixed(1)} M sucrose.`;
+    $("#wb", work).disabled = S.before; $("#sk", work).disabled = !S.before || S.soaked; $("#wa", work).disabled = !S.soaked || S.after;
+    $("#bal", work).textContent = S.after ? p.m1.toFixed(2) + " g" : S.before && !S.soaked ? p.m0.toFixed(2) + " g" : "0.00 g";
+    drawB();
+  };
+  bk.onclick = (e) => { const b = e.target.closest(".beaker"); if (b) { stopAnim(); pSel = +b.dataset.i; upd(); } };
+  $("#wb", work).onclick = () => { pstate[pSel].before = true; $("#mb" + pSel, tbl).textContent = POTATO[pSel].m0.toFixed(2); upd(); };
+  $("#sk", work).onclick = () => { let t = 0; $("#sk", work).disabled = true; $("#bal", work).textContent = "soaking..."; loop(() => { t += 1 / 60; drawB(Math.min(1, t)); if (t >= 1) { pstate[pSel].soaked = true; upd(); return false; } }); };
+  $("#wa", work).onclick = () => { pstate[pSel].after = true; $("#ma" + pSel, tbl).textContent = POTATO[pSel].m1.toFixed(2); upd(); };
+  tbl.onclick = (e) => {
+    const k = e.target.dataset.k; if (k === undefined) return;
+    const i = +k, S = pstate[i], v = parseFloat(($("#in" + i, tbl).value || "").replace("−", "-").replace("+", "")), fb = $("#fb" + i, tbl);
+    if (!S.after) { fb.className = "badc"; fb.textContent = "Weigh it first"; return; }
+    const want = pctChange(POTATO[i]);
+    if (isNaN(v)) { fb.className = "badc"; fb.textContent = "Type a number"; return; }
+    if (Math.abs(v - want) <= 0.25) { S.ok = true; fb.className = "okc"; fb.textContent = "✔ correct"; }
+    else if (Math.abs(-v - want) <= 0.25) { fb.className = "badc"; fb.textContent = "Check the sign (+ gained, − lost)"; }
+    else { fb.className = "badc"; fb.textContent = "Not yet: redo the calculation"; }
+    if (pstate.every((q) => q.ok)) { done.e1 = true; toc(); }
+    upd();
+  };
+  POTATO.forEach((p, i) => { if (pstate[i].before) $("#mb" + i, tbl).textContent = p.m0.toFixed(2); if (pstate[i].after) $("#ma" + i, tbl).textContent = p.m1.toFixed(2); if (pstate[i].ok) { $("#in" + i, tbl).value = pctChange(p).toFixed(1); $("#fb" + i, tbl).className = "okc"; $("#fb" + i, tbl).textContent = "✔ correct"; } });
+  upd();
+}
+function rGraph(m) {
+  m.appendChild(el(`<div class="do"><b class="t">Do this</b><ol>
+   <li>On the graph grid in your handout, plot <b>percent change in mass</b> (y-axis) against <b>sucrose concentration (M)</b> (x-axis) for all 6 beakers.</li>
+   <li>Draw a smooth best-fit curve through the points. Do not connect them dot to dot.</li>
+   <li>Find where your curve crosses 0% (the <b>x-intercept</b>). Write the concentration.</li>
+   <li>Only then tick the box below and press <b>Show the answer graph</b> to check your work.</li></ol></div>`));
+  const stage = document.createElement("div"); stage.className = "stage";
+  const ctrl = el(`<div class="ctrl"><label><input type="checkbox" id="ok"> I plotted all 6 points and drew my curve on paper.</label><button class="btn" id="sh" disabled>Show the answer graph</button></div>`);
+  const c = canvas(640, 380); c.style.display = "none";
+  stage.append(ctrl, c); m.appendChild(stage);
+  m.appendChild(el(`<div class="write">Below the graph: the x-intercept, then Q8.</div>`));
+  m.appendChild(check("ce", "What does the x-intercept (where the curve crosses 0%) tell you?", ["The concentration where the potato cells gain the most water.", "The concentration with no net water movement: the solution is isotonic to the potato cells.", "The concentration where the cells die."], 1, "At about 0.28 M the potato neither gains nor loses mass, so the solution matches the solute concentration inside its cells."));
+  $("#ok", ctrl).onchange = (e) => ($("#sh", ctrl).disabled = !e.target.checked);
+  $("#sh", ctrl).onclick = () => {
+    c.style.display = "block"; const g = c.getContext("2d");
+    const X0 = 70, X1 = 610, Y0 = 330, Y1 = 30, ymin = -30, ymax = 25;
+    const X = (v) => X0 + (X1 - X0) * v, Y = (v) => Y0 - (Y0 - Y1) * (v - ymin) / (ymax - ymin);
+    g.fillStyle = css("--panel"); g.fillRect(0, 0, 640, 380);
+    g.font = "13px system-ui"; g.fillStyle = css("--muted"); g.strokeStyle = css("--line"); g.lineWidth = 1;
+    for (let v = ymin; v <= ymax; v += 5) { g.beginPath(); g.moveTo(X0, Y(v)); g.lineTo(X1, Y(v)); g.stroke(); g.textAlign = "right"; g.fillText((v > 0 ? "+" : "") + v, X0 - 6, Y(v) + 4); }
+    for (let i = 0; i <= 10; i++) { const v = i / 10; g.beginPath(); g.moveTo(X(v), Y0); g.lineTo(X(v), Y1); g.stroke(); g.textAlign = "center"; g.fillText(v.toFixed(1), X(v), Y0 + 18); }
+    g.strokeStyle = css("--ink"); g.lineWidth = 2; g.beginPath(); g.moveTo(X0, Y(0)); g.lineTo(X1, Y(0)); g.stroke();
+    g.fillStyle = css("--ink"); g.textAlign = "center"; g.fillText("Sucrose concentration (M)", (X0 + X1) / 2, Y0 + 40);
+    g.save(); g.translate(18, (Y0 + Y1) / 2); g.rotate(-Math.PI / 2); g.fillText("Change in mass (%)", 0, 0); g.restore();
+    const f = (cc) => (cc < 0.28 ? 64 * (0.28 - cc) : -27 * (1 - Math.exp(-(cc - 0.28) / 0.3)));
+    g.strokeStyle = css("--accent"); g.lineWidth = 3; g.beginPath(); for (let i = 0; i <= 100; i++) { const v = i / 100; i ? g.lineTo(X(v), Y(f(v))) : g.moveTo(X(v), Y(f(v))); } g.stroke();
+    for (const p of POTATO) circle(g, X(p.c), Y(pctChange(p)), 6, css("--sugar"));
+    g.strokeStyle = css("--ink"); g.setLineDash([5, 5]); g.beginPath(); g.moveTo(X(0.28), Y(0)); g.lineTo(X(0.28), Y(16)); g.stroke(); g.setLineDash([]);
+    g.fillStyle = css("--ink"); g.textAlign = "left"; g.font = "bold 14px system-ui"; g.fillText("x-intercept ≈ 0.28 M (isotonic)", X(0.28) + 8, Y(16));
+    g.font = "13px system-ui"; g.fillText("Accept 0.25 to 0.30 M", X(0.28) + 8, Y(16) + 18);
+  };
+}
+
+// ---------------------------------------------------------------- F. Tonicity
+function rTono(m) {
+  m.appendChild(el(`<div class="do"><b class="t">Do this</b><ol>
+   <li>Press each solution button. Watch the <b>red blood cell</b> (left) and the <b>plant cell</b> (right). The arrows show the net movement of water.</li>
+   <li>Fill in one row of Table 5 for each solution.</li></ol></div>`));
+  const stage = document.createElement("div"); stage.className = "stage";
+  const ctrl = el(`<div class="ctrl"><button class="btn ghost" data-s="hypo">Pure water</button><button class="btn ghost" data-s="iso">0.9% salt water (like blood)</button><button class="btn ghost" data-s="hyper">3% salt water</button></div>`);
+  const c = canvas(640, 300); const info = el(``); info.style.cssText = "font-size:18px;font-weight:700;min-height:84px;margin:8px 0 0";
+  stage.append(ctrl, c, info); m.appendChild(stage);
+  m.appendChild(el(`<div class="write">Table 5: tonicity, which way water moves, and what happens to each cell. Then answer Q9.</div>`));
+  m.appendChild(check("cf", "A plant cell in pure water does not burst, but a red blood cell does. Why?", ["The plant cell has no membrane.", "The plant cell's wall pushes back and stops it from bursting.", "Water cannot enter a plant cell."], 1, "The cell wall resists the swelling. The firm, full plant cell is called turgid."));
+  const g = c.getContext("2d");
+  const TXT = { hypo: ["Hypotonic: less solute outside than inside.", "Water moves IN.", "Red blood cell swells and bursts. Plant cell is firm (turgid)."], iso: ["Isotonic: equal solute inside and outside.", "No net movement of water.", "Red blood cell keeps its normal shape. Plant cell is limp (flaccid)."], hyper: ["Hypertonic: more solute outside than inside.", "Water moves OUT.", "Red blood cell shrinks and turns spiky. Plant cell membrane pulls away from the wall (plasmolysis)."] };
+  let sol = "iso";
+  const draw = (t) => {
+    g.fillStyle = css("--fluid"); g.fillRect(0, 0, 640, 300);
+    const k = sol === "hypo" ? 1 : sol === "hyper" ? -1 : 0, e = Math.min(1, t);
+    // red blood cell
+    const R = 62 * (1 + 0.32 * k * e), cx = 160, cy = 150;
+    if (k === 1 && t > 1.25) {
+      g.fillStyle = css("--cellf"); for (let i = 0; i < 9; i++) { const a = i * 0.7, d = 70 + 40 * Math.min(1, t - 1.25); g.beginPath(); g.ellipse(cx + d * Math.cos(a), cy + d * Math.sin(a), 16, 9, a, 0, 7); g.fill(); }
+      g.fillStyle = css("--ink"); g.font = "bold 15px system-ui"; g.textAlign = "center"; g.fillText("BURST", cx, cy + 5);
+    } else {
+      g.beginPath(); const spikes = k === -1 ? 18 : 0;
+      for (let i = 0; i <= 180; i++) { const a = (i / 180) * 2 * Math.PI, rr = R * (1 + (spikes ? 0.12 * e * Math.max(0, Math.cos(spikes * a)) ** 3 : 0)); i ? g.lineTo(cx + rr * Math.cos(a), cy + rr * Math.sin(a)) : g.moveTo(cx + rr * Math.cos(a), cy + rr * Math.sin(a)); }
+      g.fillStyle = css("--cellf"); g.fill(); g.strokeStyle = css("--cell"); g.lineWidth = 3; g.stroke();
+    }
+    // plant cell
+    const px = 360, py = 60, W = 220, H = 180;
+    const inset = sol === "hypo" ? 4 : sol === "iso" ? 4 + 10 * e : 4 + 42 * e;
+    g.fillStyle = css("--vac"); g.strokeStyle = css("--accent"); g.lineWidth = 2.5;
+    const rx = px + inset, ry = py + inset * (sol === "hyper" ? 0.8 : 1);
+    g.beginPath(); g.roundRect ? g.roundRect(rx, ry, W - 2 * inset, H - 2 * inset * (sol === "hyper" ? 0.8 : 1), sol === "hyper" ? 40 : 8) : g.rect(rx, ry, W - 2 * inset, H - 2 * inset); g.fill(); g.stroke();
+    g.strokeStyle = css("--wall"); g.lineWidth = 8; g.strokeRect(px, py, W, H);
+    // arrows
+    g.strokeStyle = css("--water"); g.fillStyle = css("--water"); g.lineWidth = 4;
+    const arrow = (x1, y1, x2, y2) => { g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); const a = Math.atan2(y2 - y1, x2 - x1); g.beginPath(); g.moveTo(x2, y2); g.lineTo(x2 - 12 * Math.cos(a - 0.45), y2 - 12 * Math.sin(a - 0.45)); g.lineTo(x2 - 12 * Math.cos(a + 0.45), y2 - 12 * Math.sin(a + 0.45)); g.fill(); };
+    for (const [ox, oy, ix, iy] of [[20, 150, 70, 150], [300, 150, 250, 150], [340, 150, 380, 150], [620, 150, 580, 150]]) {
+      if (k === 1) arrow(ox, oy, ix, iy); else if (k === -1) arrow(ix, iy, ox, oy); else { arrow(ox, oy - 8, ix, iy - 8); arrow(ix, iy + 8, ox, oy + 8); }
+    }
+    g.fillStyle = css("--ink"); g.font = "bold 14px system-ui"; g.textAlign = "center"; g.fillText("Red blood cell", 160, 290); g.fillText("Plant cell", 470, 290); g.textAlign = "left";
+  };
+  ctrl.onclick = (e) => {
+    const b = e.target.closest("button"); if (!b) return; sol = b.dataset.s;
+    ctrl.querySelectorAll("button").forEach((x) => x.classList.toggle("sel", x === b));
+    info.innerHTML = ""; let t = 0;
+    loop(() => { t += 1 / 90; draw(t); if (t >= 1.7) { info.innerHTML = TXT[sol].join("<br>"); return false; } });
+  };
+  draw(0);
+}
+
+// ---------------------------------------------------------------- end
+function rEnd(m) {
+  const list = STEPS.filter((s) => s.id !== "start" && s.id !== "end");
+  m.appendChild(el(`<p>Your checklist. A check mark means you got that step's check question right (or finished all 6 potato calculations).</p><table><tr><th>Step</th><th>Done</th></tr>${list.map((s) => `<tr><td style="text-align:left">${s.title}</td><td class="big">${done[s.id] ? "✔" : "&mdash;"}</td></tr>`).join("")}</table>
+  <div class="write">Finish any blank table or question in your handout. Then start the exit ticket only when your teacher says so.</div>`));
+}
+
+go(0);
+</script>
+</body>
+</html>
